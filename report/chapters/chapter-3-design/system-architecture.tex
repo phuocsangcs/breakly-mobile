@@ -1,0 +1,49 @@
+\subsection{Overall Architecture}
+\label{sec:overall-architecture}
+
+Breakly is organised as a mobile-first system. The mobile client contains the
+presentation layer, break-session orchestration, local persistence, and
+notification integration. An optional backend can provide authenticated
+content synchronisation and analytics without being required for the core
+offline flow. External services are isolated behind adapters so that the
+application remains testable when a service is unavailable.
+
+\begin{figure}[H]
+\centering
+\fbox{\parbox{0.85\textwidth}{\centering
+Mobile app $\leftrightarrow$ API/backend $\leftrightarrow$ database and
+content services\\[4pt]
+The mobile app also uses local storage and the operating-system notification
+service directly.}}
+\caption{Breakly overall architecture placeholder}
+\label{fig:overall-architecture}
+\end{figure}
+
+\subsection{In-App Architecture}
+\label{sec:in-app-architecture}
+
+The app follows a pragmatic Clean Architecture with MVVM at the presentation
+boundary:
+\begin{itemize}
+\item \textbf{Presentation:} screens, navigation, view models, and reusable
+  UI components.
+\item \textbf{Domain:} break-session rules, duration validation, activity
+  selection, and session result policies.
+\item \textbf{Data:} repositories, local storage, optional API client, and
+  notification adapter.
+\end{itemize}
+
+This separation keeps timer and preference rules independent of React
+components and makes them unit-testable. React Native with Expo is selected
+for cross-platform delivery, TypeScript for type safety, and a local
+database or key-value store for offline-first persistence. Final package
+versions and the decision matrix will be recorded before implementation.
+
+\subsection{Main Flow Sequences}
+\label{sec:sequence-diagrams}
+
+The final report will include sequence diagrams for: starting a break,
+pausing/resuming and completing a break, scheduling a reminder, and loading
+content while offline. Each diagram must show the user, screen/view model,
+domain service, repository, storage, and notification service where relevant,
+including failure paths.

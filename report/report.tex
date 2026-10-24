@@ -1,0 +1,166 @@
+% !TEX program = xelatex
+\documentclass[12pt,a4paper,oneside]{report}
+\usepackage{xcolor}
+\usepackage{listings}
+
+% Define custom colors
+\definecolor{codegreen}{rgb}{0,0.6,0}
+\definecolor{codegray}{rgb}{0.5,0.5,0.5}
+\definecolor{codepurple}{rgb}{0.58,0,0.82}
+\definecolor{backcolour}{rgb}{0.95,0.95,0.92}
+\definecolor{codeblue}{rgb}{0.1,0.1,0.8}
+
+% Global setup for listings
+\lstset{
+    language=Java,                      % Set language to Java
+    commentstyle=\color{codegreen},    % Color for comments
+    keywordstyle=\color{codeblue}\bfseries, % Color for keywords (public, void, etc)
+    numberstyle=\tiny\color{codegray},
+    stringstyle=\color{codepurple},    % Color for strings
+    basicstyle=\ttfamily\small,        % Use a monospaced font
+    breakatwhitespace=false,         
+    breaklines=true,                 
+    captionpos=b,                    
+    keepspaces=true,                 
+    showspaces=false,                
+    showstringspaces=false,
+    showtabs=false,                  
+    tabsize=2,
+    frame=none                         % We let tcolorbox handle the frame
+}
+\usepackage{fontspec}
+\usepackage[english]{babel}
+\usepackage{amssymb,fancyhdr}
+\usepackage{graphicx}
+\usepackage{tabularx, caption}
+\usepackage{array}
+\usepackage{rotating}
+\usepackage[a4paper, top=3cm, bottom=4.5cm, left=2cm, right=2cm]{geometry}
+
+\usepackage{setspace}
+\usepackage{indentfirst}
+\usepackage{eso-pic}
+\usepackage{tikz}
+\usepackage{xfrac}
+\usepackage{bm}
+
+\usepackage[colorlinks]{hyperref}
+\captionsetup[table]{name=Table}
+\captionsetup[figure]{name=Figure}
+\hypersetup{urlcolor=blue,linkcolor=black,citecolor=black,colorlinks=true}
+\usetikzlibrary{arrows,backgrounds}
+\definecolor{mathblue}{RGB}{0,114,188}
+\newtheorem{theorem}{{\bf Theorem}}
+\newtheorem{property}{{\bf Property}}
+\newtheorem{proposition}{{\bf Proposition}}
+\newtheorem{corollary}[proposition]{{\bf Corollary}}
+\newtheorem{lemma}[proposition]{{\bf Lemma}}
+\AtBeginDocument{\renewcommand{\listfigurename}{List of Figures}}
+\AtBeginDocument{\renewcommand{\listtablename}{List of Tables}}
+\AtBeginDocument{\renewcommand*\contentsname{Table of Contents}}
+\AtBeginDocument{\renewcommand*\bibname{References}}
+\setlength{\headheight}{44pt}
+
+\pagestyle{fancy}
+\fancyhead{}
+\fancyhead[L]{
+ \begin{tabular}{rl}
+    \begin{picture}(25pt,15pt)
+        \put(0,-8pt){\includegraphics[width=25pt]{graphics/bia/logo.png}}
+      \end{picture}
+    &
+\hspace*{-0.75cm}\begingroup
+\renewcommand{\arraystretch}{0.85}
+\begin{tabular}{l}
+{\small\textbf{\ttfamily Ho Chi Minh City University of Technology (HCMUT)}}\\
+
+\hspace*{0cm}{\small\textbf{\ttfamily Faculty of Computer Science and Engineering}}
+\end{tabular}
+\endgroup
+ \end{tabular}
+}
+
+\fancyfoot{}
+\fancyfoot[L]{\scriptsize \ttfamily \hyperref[tocpage]{Breakly -- Mobile Application Development (CO3043) -- CC02}}
+\fancyfoot[R]{\scriptsize \ttfamily Page \thepage}
+
+\renewcommand{\headrulewidth}{0.3pt}
+\renewcommand{\headruleskip}{2pt}
+\renewcommand{\footrulewidth}{0.3pt}
+\setlength{\parindent}{1.5em}
+\setlength{\parskip}{0pt}
+\setlength{\emergencystretch}{3em}
+
+\usepackage{float}
+\usepackage{calc}
+\usepackage{booktabs}
+\usepackage{longtable}
+\setlength{\tabcolsep}{8pt} % Compact tables while retaining readability.
+\renewcommand{\arraystretch}{1.5}
+
+\usepackage{amsmath}
+\DeclareMathOperator{\arccot}{arccot}
+\usepackage{url}
+
+\usepackage{pdflscape}
+\usepackage{csquotes}
+\usepackage[backend=biber,style=ieee,sorting=none]{biblatex}
+\addbibresource{references.bib}
+
+\captionsetup[table]{skip=2pt}
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+\newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
+
+% Keep the root document short: each front-matter item, chapter, and
+% back-matter item is maintained in its own module.
+\newcommand{\reportinput}[1]{\input{#1}}
+
+\begin{document}
+
+\pagenumbering{gobble}
+\input{bia}
+\clearpage
+
+\pagenumbering{roman}
+\reportinput{frontmatter/member-declaration}
+
+\clearpage
+\reportinput{frontmatter/workload}
+
+\clearpage
+\reportinput{frontmatter/abstract}
+
+\clearpage
+
+\label{tocpage}
+\tableofcontents
+
+\clearpage
+\reportinput{frontmatter/abbreviations}
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Figures}
+\listoffigures
+
+\clearpage
+\phantomsection
+\addcontentsline{toc}{chapter}{List of Tables}
+\listoftables
+
+\clearpage
+
+\pagenumbering{arabic}
+
+\reportinput{chapters/chapter-1-introduction-requirements/main}
+\reportinput{chapters/chapter-2-system-analysis/main}
+\reportinput{chapters/chapter-3-design/main}
+\reportinput{chapters/chapter-4-implementation-testing/main}
+\reportinput{chapters/chapter-5-demonstration/main}
+\reportinput{backmatter/conclusion-future-work}
+\reportinput{backmatter/ai-usage-declaration}
+
+% \reportinput{backmatter/references}
+% \reportinput{appendices/main}
+
+\end{document}

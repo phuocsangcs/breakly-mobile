@@ -1,0 +1,37 @@
+\chapter{Design}
+\label{chap:design}
+
+\section{System Architecture}
+\label{sec:system-architecture}
+\input{chapters/chapter-3-design/system-architecture}
+
+\section{Sitemap Design}
+\label{sec:sitemap-design}
+
+The sitemap is organised around Home, Activity Details, Active Break, History,
+and Settings. Home is the entry point; activity details and the active break
+are reached from the primary break flow, while History and Settings are
+supporting destinations.
+
+\section{Sequence Diagram}
+\label{sec:sequence-diagram}
+
+Sequence diagrams will describe starting a break, pausing or resuming and
+completing a break, scheduling a reminder, and loading content while offline.
+Each diagram includes the user, screen or view model, domain service,
+repository, storage, and notification service where relevant.
+
+\section{Database Design}
+\label{sec:database-design}
+\input{chapters/chapter-3-design/database-api-design}
+
+\section{API Design}
+\label{sec:api-design}
+
+The optional synchronisation API uses versioned JSON endpoints for activities,
+preferences, and session history. Responses define explicit schemas and
+errors use consistent codes, messages, and optional details.
+
+\section{UI/UX Design}
+\label{sec:ui-ux-design}
+\input{chapters/chapter-3-design/ui-ux-design}

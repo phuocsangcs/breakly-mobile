@@ -1,0 +1,52 @@
+\subsection{User Flows}
+\label{sec:user-flows}
+
+The primary flow is: open Breakly $\rightarrow$ review the suggested
+activity $\rightarrow$ start a break $\rightarrow$ follow the timer
+$\rightarrow$ complete or skip $\rightarrow$ view the result. Supporting
+flows cover onboarding, preference changes, reminder configuration, history,
+offline use, and permission denial.
+
+\subsection{Screen Inventory}
+\label{sec:screen-inventory}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{3cm}|Y|Y|}
+\hline
+\textbf{Screen} & \textbf{Purpose} & \textbf{Required states} \\
+\hline
+Home & Start the next break and see a recommendation & First use, ready,
+offline, loading \\
+\hline
+Activity details & Explain the selected activity & Content, unavailable,
+empty result \\
+\hline
+Active break & Show timer and controls & Running, paused, completed, skipped \\
+\hline
+History & Review previous sessions & Populated, empty, loading, error \\
+\hline
+Settings & Manage duration, reminders, and accessibility & Saved, validation
+error, permission denied \\
+\hline
+\end{tabularx}
+\caption{Breakly screen inventory and state coverage}
+\label{tab:screen-inventory}
+\end{table}
+
+\subsection{Visual and Accessibility Guidelines}
+\label{sec:visual-accessibility}
+
+Hi-fi mockups will use a consistent Material or iOS HIG-inspired component
+system, spacing scale, typography hierarchy, and colour tokens. Every
+relevant screen will specify loading, empty, offline, validation, and error
+states. Accessibility review covers contrast, dynamic text size, screen-reader
+labels, focus order, reduced motion, and touch targets of at least 44 dp.
+
+\subsection{Prototype Evidence}
+\label{sec:prototype}
+
+The final submission will link a clickable prototype and include screenshots
+of the primary and exception flows. Each screen in the prototype will carry
+the same identifier used by the traceability matrix in
+Chapter~\ref{chap:implementation-testing}.

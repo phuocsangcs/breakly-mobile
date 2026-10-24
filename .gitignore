@@ -1,0 +1,113 @@
+# Operating-system metadata
+.DS_Store
+Thumbs.db
+Desktop.ini
+
+# Editors and IDEs
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Local environment files and secrets (keep shareable examples)
+.env
+.env.*
+!.env.example
+!.env.template
+*.pem
+*.key
+
+# Logs and runtime state
+*.log
+logs/
+*.pid
+*.pid.lock
+*.seed
+
+# Temporary files and caches
+.cache/
+.tmp/
+tmp/
+temp/
+*.tmp
+*.temp
+*.bak
+*.orig
+
+# Generic build and test output
+build/
+dist/
+out/
+coverage/
+.nyc_output/
+
+# JavaScript / TypeScript
+node_modules/
+.npm/
+.pnpm-store/
+.yarn/cache/
+.next/
+.nuxt/
+.svelte-kit/
+.vite/
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.tox/
+.nox/
+.coverage
+.coverage.*
+htmlcov/
+
+# Java / JVM
+*.class
+.gradle/
+target/
+
+# Native compiled output
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+
+# LaTeX helper and intermediate files (the final PDF remains trackable)
+/report/*.pdf
+*.aux
+*.bbl
+*.bcf
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.out
+*.run.xml
+*.synctex.gz
+*.toc
+*.nav
+*.snm
+*.vrb
+*.xdv
+*.acn
+*.acr
+*.alg
+*.glg
+*.glo
+*.gls
+*.glsdefs
+*.ist
+_minted-*/
+
+reference/
+
+local-ref/

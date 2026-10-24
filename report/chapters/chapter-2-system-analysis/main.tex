@@ -1,0 +1,31 @@
+\chapter{System Analysis}
+\label{chap:system-analysis}
+
+\section{Use Case Analysis}
+\label{sec:usecase-analysis}
+
+The main actor is the Breakly user. The operating-system notification service
+is an external supporting actor. The use cases are configuring preferences,
+starting a break, completing or skipping a break, browsing activities,
+reviewing history, and managing reminders.
+
+\subsection{Overall Usecase}
+
+\subsection{Usecase Descriptions}
+
+\section{Technology Stack}
+\label{sec:technology-stack}
+
+\subsection{Front End}
+\label{sec:frontend}
+
+The mobile client uses React Native with Expo and TypeScript. This stack
+supports Android and iOS delivery, shared UI components, platform-aware
+navigation, and type-safe application logic.
+
+\subsection{Back End}
+\label{sec:backend}
+
+The optional backend provides authenticated synchronisation for activities,
+preferences, and session history. It is isolated behind an API adapter so the
+core offline-first experience does not depend on network availability.

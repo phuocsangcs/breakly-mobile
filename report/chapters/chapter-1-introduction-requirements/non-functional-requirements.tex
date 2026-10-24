@@ -1,0 +1,49 @@
+\subsection{Non-Functional Requirements}
+\label{sec:quality-requirements}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{2cm}|p{3.2cm}|Y|}
+\hline
+\textbf{ID} & \textbf{Category} & \textbf{Target and verification} \\
+\hline
+NFR-01 & Performance & Cold start to usable home screen in at most 3 seconds
+on the reference device; measure over 10 runs. \\
+\hline
+NFR-02 & Interaction & Local navigation and timer controls respond within
+100 ms under normal conditions. \\
+\hline
+NFR-03 & Reliability & A running timer remains correct across backgrounding
+and foregrounding; verify with pause/resume scenarios. \\
+\hline
+NFR-04 & Accessibility & Core screens support text scaling, meaningful labels,
+minimum 44 dp touch targets, and non-colour-only status feedback. \\
+\hline
+NFR-05 & Security & Store only the minimum personal data locally; protect
+exported or synchronised data in transit and do not log sensitive content. \\
+\hline
+\end{tabularx}
+\caption{Initial measurable non-functional requirements}
+\label{tab:nfr}
+\end{table}
+
+\paragraph{Offline, Synchronisation, and Failure Behaviour}
+\label{sec:offline-behaviour}
+
+The core break flow must work without an internet connection. Preferences,
+activity content bundled with the app, and session history are available
+locally. If optional remote content cannot be loaded, the app shows cached
+content and an explicit offline state rather than a blank screen. A future
+synchronisation layer must use conflict-safe updates and report failures
+without discarding local sessions.
+
+\paragraph{Permissions, Platforms, Battery, and Network}
+\label{sec:mobile-constraints}
+
+The MVP targets Android and iOS versions supported by the selected Expo and
+React Native release. Notification permission is optional and requested in
+context. Location, contacts, microphone, and camera permissions are not
+required for the core experience. The timer uses timestamps rather than a
+busy polling loop, and background work is limited to scheduled notifications
+to reduce battery consumption. Network access is optional for the MVP and
+must tolerate latency, timeouts, and temporary disconnection.

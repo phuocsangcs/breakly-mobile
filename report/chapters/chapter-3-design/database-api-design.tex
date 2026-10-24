@@ -1,0 +1,55 @@
+\subsection{Data Model}
+\label{sec:data-model}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{3cm}|Y|}
+\hline
+\textbf{Entity} & \textbf{Main attributes} \\
+\hline
+UserPreferences & userId, defaultDuration, reminderEnabled, reminderSchedule,
+accessibilityPreferences \\
+\hline
+Activity & id, title, description, estimatedDuration, category, instructions \\
+\hline
+BreakSession & id, activityId, startedAt, endedAt, plannedDuration, status \\
+\hline
+Reminder & id, schedule, enabled, notificationPermissionState \\
+\hline
+\end{tabularx}
+\caption{Initial Breakly data model}
+\label{tab:data-model}
+\end{table}
+
+The ERD will define that a user has one preference set and many sessions;
+each session references one activity, while reminders belong to the user's
+notification configuration. Timestamps are stored in a consistent format,
+and deleted or reset data follows an explicit retention policy.
+
+\subsection{Local Storage Strategy}
+\label{sec:local-storage}
+
+Preferences and session history are persisted locally so the main experience
+works offline. The timer derives remaining time from a stored start timestamp
+and planned duration rather than relying only on elapsed foreground ticks.
+Repositories hide the storage implementation from the domain layer. The
+report will document schema migrations, reset behaviour, and corruption
+recovery.
+
+\subsection{API Contract}
+\label{sec:api-contract}
+
+Optional synchronisation endpoints will follow a versioned JSON contract:
+\begin{itemize}
+\item \texttt{GET /v1/activities} returns available activities and metadata.
+\item \texttt{GET /v1/preferences} and \texttt{PUT /v1/preferences} read and
+  update user preferences.
+\item \texttt{POST /v1/sessions} records a completed session.
+\item \texttt{GET /v1/sessions} returns paginated session history.
+\end{itemize}
+
+Successful responses will define explicit schemas, while errors use a
+consistent object containing \texttt{code}, \texttt{message}, and optional
+\texttt{details}. The contract must document 400 validation errors, 401
+authentication errors, 404 missing resources, 409 conflicts, and 429/5xx
+temporary failures, together with retry and offline fallback behaviour.

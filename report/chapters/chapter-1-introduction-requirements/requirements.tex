@@ -1,0 +1,113 @@
+\section{Requirements}
+\label{sec:requirements}
+
+\subsection{User Requirements}
+\label{sec:user-requirements}
+
+Users need to start a short break with minimal setup, choose or accept a
+suitable activity, control the timer, receive optional reminders, and review
+their previous sessions. The application should remain calm, readable, and
+usable when connectivity is unavailable.
+
+\subsection{Functional Requirements}
+\label{sec:functional-requirements}
+
+\subsubsection{System Boundary and Actors}
+\label{sec:system-boundary}
+
+The Breakly MVP includes the mobile client, local user preferences and break
+history, the break-session engine, and optional notification services. The
+MVP does not diagnose health conditions, monitor users continuously, or
+replace professional medical advice. The primary actor is the Breakly user;
+the operating system notification service is an external supporting actor.
+
+\subsubsection{Use Cases}
+\label{sec:use-cases}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{2cm}|p{4cm}|Y|}
+\hline
+\textbf{ID} & \textbf{Use case} & \textbf{Goal} \\
+\hline
+UC-01 & Configure preferences & Set break duration, reminder behaviour, and
+activity preferences. \\
+\hline
+UC-02 & Start a break & Select or accept an activity and begin a timed
+session. \\
+\hline
+UC-03 & Complete or skip a break & Finish, pause, skip, or cancel a session
+with an explicit result. \\
+\hline
+UC-04 & Browse activities & Discover suitable short break activities. \\
+\hline
+UC-05 & Review history & View completed and skipped break sessions. \\
+\hline
+UC-06 & Manage reminders & Enable, disable, and schedule local reminders. \\
+\hline
+\end{tabularx}
+\caption{Breakly MVP use cases}
+\label{tab:use-cases}
+\end{table}
+
+\subsubsection{User Stories and Acceptance Criteria}
+\label{sec:user-stories}
+
+\subsubsection{FR-01 -- Start a Timed Break}
+\textbf{User story:} As a user, I want to start a timed break quickly so
+that I can step away from my current task without configuring many options.
+
+\textbf{Acceptance criteria:}
+\begin{itemize}
+\item Given valid preferences, selecting ``Start break'' opens the active
+  session and displays the remaining time.
+\item The user can pause, resume, skip, or finish the session.
+\item The session result is saved exactly once when it ends.
+\end{itemize}
+
+\subsubsection{FR-02 -- Choose a Break Activity}
+\textbf{User story:} As a user, I want activity suggestions matched to the
+available time so that the break is easy to follow.
+
+\textbf{Acceptance criteria:}
+\begin{itemize}
+\item Suggestions show an estimated duration and a concise instruction.
+\item Activities longer than the configured break are not recommended by
+  default.
+\item An empty or unavailable activity list shows a useful fallback state.
+\end{itemize}
+
+\subsubsection{FR-03 -- Configure and Receive Reminders}
+\textbf{User story:} As a user, I want to control reminders so that Breakly
+supports my routine without becoming disruptive.
+
+\textbf{Acceptance criteria:}
+\begin{itemize}
+\item The user can enable or disable reminders and select a schedule.
+\item The app requests notification permission only when the feature needs it.
+\item Denying permission leaves the rest of the break flow usable.
+\end{itemize}
+
+\subsubsection{MoSCoW Prioritisation}
+\label{sec:moscow}
+
+\begin{table}[H]
+\centering
+\begin{tabularx}{\textwidth}{|p{2.2cm}|Y|}
+\hline
+\textbf{Priority} & \textbf{Requirements} \\
+\hline
+Must & FR-01 start/complete a timed break, FR-02 activity suggestions,
+local preferences, and accessible core navigation. \\
+\hline
+Should & FR-03 reminders, pause/resume, history, and offline-first operation. \\
+\hline
+Could & Themes, richer personalisation, streaks, and additional activity packs. \\
+\hline
+Won't (MVP) & Social features, public leaderboards, clinical claims, and
+continuous sensor-based monitoring. \\
+\hline
+\end{tabularx}
+\caption{MoSCoW prioritisation for the MVP}
+\label{tab:moscow}
+\end{table}
