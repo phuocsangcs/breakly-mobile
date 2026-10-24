@@ -1,12 +1,19 @@
 \chapter*{Workload Distribution}
 \addcontentsline{toc}{chapter}{Workload Distribution}
 
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{|X|c|X|}
+\begin{longtable}{|p{0.22\textwidth}|p{0.16\textwidth}|p{0.52\textwidth}|}
+\caption{Workload distribution for Breakly}\label{tab:workload}\\
 \hline
 \textbf{Member} & \textbf{Contribution} & \textbf{Main responsibilities} \\
 \hline
+\endfirsthead
+\multicolumn{3}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+\textbf{Member} & \textbf{Contribution} & \textbf{Main responsibilities} \\
+\hline
+\endhead
+\multicolumn{3}{r}{\textit{Continue on next page}}\\
+\endfoot
+\endlastfoot
 Tran Phuoc Sang & 50\% &
 Requirements analysis, functional and non-functional requirements,
 architecture, data/API design, implementation, and report integration. \\
@@ -15,10 +22,7 @@ Tran Ngoc Bao & 50\% &
 Stakeholder and competitor research, UI/UX flows and mockups,
 accessibility review, testing evidence, and report review. \\
 \hline
-\end{tabularx}
-\caption{Workload distribution for Breakly}
-\label{tab:workload}
-\end{table}
+\end{longtable}
 
 The members jointly reviewed the requirements, design decisions, test
 evidence, and final report before submission.

@@ -10,12 +10,20 @@ offline use, and permission denial.
 \subsection{Screen Inventory}
 \label{sec:screen-inventory}
 
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{|p{3cm}|Y|Y|}
+\begin{longtable}{|p{3cm}|p{0.31\textwidth}|p{0.39\textwidth}|}
+\caption{Breakly screen inventory and state coverage}
+\label{tab:screen-inventory}\\
 \hline
 \textbf{Screen} & \textbf{Purpose} & \textbf{Required states} \\
 \hline
+\endfirsthead
+\multicolumn{3}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+\textbf{Screen} & \textbf{Purpose} & \textbf{Required states} \\
+\hline
+\endhead
+\multicolumn{3}{r}{\textit{Continue on next page}}\\
+\endfoot
+\endlastfoot
 Home & Start the next break and see a recommendation & First use, ready,
 offline, loading \\
 \hline
@@ -29,10 +37,7 @@ History & Review previous sessions & Populated, empty, loading, error \\
 Settings & Manage duration, reminders, and accessibility & Saved, validation
 error, permission denied \\
 \hline
-\end{tabularx}
-\caption{Breakly screen inventory and state coverage}
-\label{tab:screen-inventory}
-\end{table}
+\end{longtable}
 
 \subsection{Visual and Accessibility Guidelines}
 \label{sec:visual-accessibility}

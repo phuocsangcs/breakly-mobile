@@ -1,12 +1,19 @@
 \subsection{Data Model}
 \label{sec:data-model}
 
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{|p{3cm}|Y|}
+\begin{longtable}{|p{3cm}|p{0.68\textwidth}|}
+\caption{Initial Breakly data model}\label{tab:data-model}\\
 \hline
 \textbf{Entity} & \textbf{Main attributes} \\
 \hline
+\endfirsthead
+\multicolumn{2}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+\textbf{Entity} & \textbf{Main attributes} \\
+\hline
+\endhead
+\multicolumn{2}{r}{\textit{Continue on next page}}\\
+\endfoot
+\endlastfoot
 UserPreferences & userId, defaultDuration, reminderEnabled, reminderSchedule,
 accessibilityPreferences \\
 \hline
@@ -16,10 +23,7 @@ BreakSession & id, activityId, startedAt, endedAt, plannedDuration, status \\
 \hline
 Reminder & id, schedule, enabled, notificationPermissionState \\
 \hline
-\end{tabularx}
-\caption{Initial Breakly data model}
-\label{tab:data-model}
-\end{table}
+\end{longtable}
 
 The ERD will define that a user has one preference set and many sessions;
 each session references one activity, while reminders belong to the user's

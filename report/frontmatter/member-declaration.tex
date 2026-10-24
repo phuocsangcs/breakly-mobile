@@ -8,18 +8,23 @@ from other sources will be cited in the relevant sections.
 
 \vspace{1cm}
 
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{|c|X|c|p{3.2cm}|}
+\begin{longtable}{|c|p{0.34\textwidth}|c|p{3.2cm}|}
 \hline
 \textbf{No.} & \textbf{Full Name} & \textbf{Student ID} & \textbf{Signature} \\
 \hline
+\endfirsthead
+\multicolumn{4}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+\textbf{No.} & \textbf{Full Name} & \textbf{Student ID} & \textbf{Signature} \\
+\hline
+\endhead
+\multicolumn{4}{r}{\textit{Continue on next page}}\\
+\endfoot
+\endlastfoot
 1 & Tran Phuoc Sang & 2353044 & \\[1.2cm]
 \hline
 2 & Tran Ngoc Bao & & \\[1.2cm]
 \hline
-\end{tabularx}
-\end{table}
+\end{longtable}
 
 \vfill
 

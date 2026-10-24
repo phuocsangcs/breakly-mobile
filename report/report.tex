@@ -111,6 +111,76 @@
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}
 \newcolumntype{P}[1]{>{\raggedright\arraybackslash}p{#1}}
 
+
+\usepackage{float}        % [H] placement
+\usepackage{graphicx}
+\usepackage{subcaption}   % subfigure
+\usepackage{tabularx}
+\usepackage{amssymb}      % \checkmark
+\usepackage{enumitem}     % compact lists inside table cells
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}  % skip if already defined
+\newcolumntype{C}{>{\centering\arraybackslash}X}
+
+\newcommand{\tablecontinuedfromprevious}[1][2]{%
+  \multicolumn{#1}{r}{\textit{Continued from previous page}}\\[-2pt]\hline}
+\newcommand{\tablecontinueonnext}[1][2]{%
+  \multicolumn{#1}{r}{\textit{Continue on next page}}\\}
+
+% Compact bullet list for table cells
+\newenvironment{swl}
+  {\begin{itemize}[nosep,leftmargin=1.1em,topsep=0pt,partopsep=0pt]}
+  {\end{itemize}}
+
+% 2x2 SWOT grid: \swotbox{S items}{W items}{O items}{T items}
+% (each argument is a sequence of \item ... lines)
+\newcommand{\swotbox}[4]{%
+  \begin{longtable}{|p{0.47\textwidth}|p{0.47\textwidth}|}
+    \hline
+    \textbf{Strengths} & \textbf{Weaknesses} \\ \hline
+    \endfirsthead
+    \multicolumn{2}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+    \textbf{Strengths} & \textbf{Weaknesses} \\ \hline
+    \endhead
+    \multicolumn{2}{r}{\textit{Continue on next page}}\\
+    \endfoot
+    \endlastfoot
+    \begin{swl}#1\end{swl} & \begin{swl}#2\end{swl} \\ \hline
+    \textbf{Opportunities} & \textbf{Threats} \\ \hline
+    \begin{swl}#3\end{swl} & \begin{swl}#4\end{swl} \\ \hline
+  \end{longtable}}
+
+% SWOT table of one app: \appswot{Name}{label-suffix}{S}{W}{O}{T}
+\newcommand{\appswot}[6]{%
+  \noindent\textbf{Table: SWOT analysis of #1}\label{tab:swot-#2}\par
+  \swotbox{#3}{#4}{#5}{#6}}
+
+% Persona card: \persona{caption}{label}{demographics}{goals}{pains}{usage}
+\newcommand{\persona}[6]{%
+  \begin{longtable}{|p{3.4cm}|p{0.68\textwidth}|}
+    \caption{#1}\label{#2}\\ \hline
+    \textbf{Section} & \textbf{Details} \\ \hline
+    \endfirsthead
+    \multicolumn{2}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+    \textbf{Section} & \textbf{Details} \\ \hline
+    \endhead
+    \multicolumn{2}{r}{\textit{Continue on next page}}\\
+    \endfoot
+    \endlastfoot
+      \hline
+      \textbf{Demographics} & \begin{swl}#3\end{swl} \\ \hline
+      \textbf{Goals \& Motivations} & \begin{swl}#4\end{swl} \\ \hline
+      \textbf{Pain Points} & \begin{swl}#5\end{swl} \\ \hline
+      \textbf{Mobile Usage Behaviour} & \begin{swl}#6\end{swl} \\ \hline
+  \end{longtable}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 % Keep the root document short: each front-matter item, chapter, and
 % back-matter item is maintained in its own module.
 \newcommand{\reportinput}[1]{\input{#1}}

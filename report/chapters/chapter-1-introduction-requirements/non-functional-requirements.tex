@@ -1,12 +1,19 @@
 \subsection{Non-Functional Requirements}
 \label{sec:quality-requirements}
 
-\begin{table}[H]
-\centering
-\begin{tabularx}{\textwidth}{|p{2cm}|p{3.2cm}|Y|}
+\begin{longtable}{|p{2cm}|p{3.2cm}|p{0.58\textwidth}|}
+\caption{Initial measurable non-functional requirements}\label{tab:nfr}\\
 \hline
 \textbf{ID} & \textbf{Category} & \textbf{Target and verification} \\
 \hline
+\endfirsthead
+\multicolumn{3}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+\textbf{ID} & \textbf{Category} & \textbf{Target and verification} \\
+\hline
+\endhead
+\multicolumn{3}{r}{\textit{Continue on next page}}\\
+\endfoot
+\endlastfoot
 NFR-01 & Performance & Cold start to usable home screen in at most 3 seconds
 on the reference device; measure over 10 runs. \\
 \hline
@@ -22,10 +29,7 @@ minimum 44 dp touch targets, and non-colour-only status feedback. \\
 NFR-05 & Security & Store only the minimum personal data locally; protect
 exported or synchronised data in transit and do not log sensitive content. \\
 \hline
-\end{tabularx}
-\caption{Initial measurable non-functional requirements}
-\label{tab:nfr}
-\end{table}
+\end{longtable}
 
 \paragraph{Offline, Synchronisation, and Failure Behaviour}
 \label{sec:offline-behaviour}
