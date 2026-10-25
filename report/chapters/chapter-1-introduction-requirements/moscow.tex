@@ -1,0 +1,57 @@
+\subsubsection{MosCow Analysis}
+
+Table~\ref{tab:moscow} summarises the prioritisation of the functional
+requirements using the MoSCoW scheme. Must and Should requirements correspond
+to the priorities given in Table~\ref{tab:functional-requirements}. Could and
+Won't items are listed so that the boundary of the project is explicit; Could
+items have no requirement identifiers because they will be specified only if
+time allows.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.25}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{1.5cm}|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{8.4cm}|>{\centering\arraybackslash}p{1.3cm}|}
+\caption{MoSCoW prioritisation of the functional requirements.}
+\label{tab:moscow}\\
+\hline
+\textbf{Priority} & \textbf{Meaning} & \textbf{Functional requirements or items} &
+\textbf{Count} \\ \hline
+\endfirsthead
+\multicolumn{4}{c}%
+{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\
+\hline
+\textbf{Priority} & \textbf{Meaning} & \textbf{Functional requirements or items} &
+\textbf{Count} \\ \hline
+\endhead
+\hline
+\endfoot
+
+Must &
+Needed for the app to be accepted; the minimum usable product. &
+FR 1.1--1.3, FR 2.1--2.6, FR 3.1--3.3, FR 4.1, FR 4.2, FR 4.4, FR 5.1,
+FR 5.4, FR 7.2--7.4 &
+20 \\ \hline
+
+Should &
+Expected in the final build; important but the app still works without them. &
+FR 2.7, FR 4.3, FR 4.5, FR 5.2, FR 5.3, FR 5.5, FR 6.1--6.3, FR 7.1,
+FR 7.5--7.8 &
+14 \\ \hline
+
+Could &
+Implemented only if time allows. &
+Password reset by email; first-launch onboarding; a wind-down effect on the
+Space at the end of a session; unlocking themes through streaks; night
+variants of the themes; reading cached articles offline; skipping a video clip
+that fails to load; a week view in the history; a default session duration
+setting; an optional daily reminder; adjustable article text size. &
+n/a \\ \hline
+
+Won't &
+Outside the scope of this project. &
+Co-watching and other social features; location-based content; personalised
+recommendation; user-generated or uploaded video; tablet, web or landscape
+layouts; multiple interface languages. &
+n/a \\ \hline
+\end{longtable}
+\endgroup

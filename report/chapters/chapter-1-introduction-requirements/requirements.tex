@@ -4,58 +4,78 @@
 \subsection{User Requirements}
 \label{sec:user-requirements}
 
-The following user requirements describe the expected user-facing behaviour
-of Breakly:
+The following user requirements describe the expected user-facing behaviour of
+Breakly. They are grouped into five areas.
 
+\medskip\noindent\textbf{Account and Session Management}\par\nopagebreak
 \begin{itemize}
-\item \textbf{UR-01}: As a user, I want to sign up, sign in, and sign out so
-that my sessions and streak are saved to my account.
-\item \textbf{UR-02}: As a user, I want to choose 10, 20, or 30 minutes so
-that my break fits the free time I have.
-\item \textbf{UR-03}: As a user, I want to start a session by tapping an
-object in the Space so that I can begin in two taps.
-\item \textbf{UR-04}: As a user, I want to see the remaining time on every
-screen, and have it stay accurate when I switch apps or lock my phone, so
-that I can trust the session length.
-\item \textbf{UR-05}: As a user, I want a gentle notice when one minute is
-left and an automatic end when time is up so that I never overrun my break.
-\item \textbf{UR-06}: As a user, I want to end a session early, with a
-confirmation, so that I can stop when I no longer need the break.
-\item \textbf{UR-07}: As a user, I want a calm illustrated Space as my home
-screen, where the radio, newspaper, and TV open the services, so that
-choosing entertainment feels simple and relaxing.
-\item \textbf{UR-08}: As a user, I want to choose a theme (Cozy Room or
-Garden) and have the app remember it so that the Space matches my mood every
-time I return.
-\item \textbf{UR-09}: As a user, I want to pick a music station and control
-playback (play, pause, next, and volume) so that I get background music that
-suits me.
-\item \textbf{UR-10}: As a user, I want music to keep playing while I move
-between screens or lock my phone, and to pause while I watch TV, so that
-sounds never overlap or stop unexpectedly.
-\item \textbf{UR-11}: As a user, I want to browse the latest news, filter by
-category, and refresh the list so that I can quickly find something to read.
-\item \textbf{UR-12}: As a user, I want to read an article inside the app so
-that I do not have to leave my session.
-\item \textbf{UR-13}: As a user, I want to open the full article on the
-source website so that I can read more when the summary is not enough.
-\item \textbf{UR-14}: As a user, I want to watch short videos by swiping
-vertically, with pause and mute, so that I can enjoy quick clips.
-\item \textbf{UR-15}: As a user, I want the video feed to be limited and to
-finish with a clear end card so that I am not pulled into endless scrolling.
-\item \textbf{UR-16}: As a user, I want a short summary when a session ends
-(time used, music, articles, and videos) so that I can see how I spent my
-break.
-\item \textbf{UR-17}: As a user, I want to see my current streak so that I
-feel rewarded for taking regular, controlled breaks.
-\item \textbf{UR-18}: As a user, I want to view a history of my past sessions
-so that I can review my habits.
-\item \textbf{UR-19}: As a user, I want to turn the one-minute notice on or
-off and see where the content comes from so that I control reminders and know
-the sources.
-\item \textbf{UR-20}: As a user, I want clear loading, offline, and error
-states with a retry option so that I always know what is happening and what
-to do next.
+  \item \textbf{UR-01:} As a user, I want to sign up, sign in, and sign out so
+        that my sessions and streak are saved to my account.
+  \item \textbf{UR-02:} As a user, I want to choose 10, 20, or 30 minutes so
+        that my break fits the free time I have.
+  \item \textbf{UR-03:} As a user, I want to start a session by tapping an
+        object in the Space so that I can begin in two taps.
+  \item \textbf{UR-04:} As a user, I want to see the remaining time on every
+        screen, and have it stay accurate when I switch apps or lock my phone,
+        so that I can trust the session length.
+  \item \textbf{UR-05:} As a user, I want a gentle notice when one minute is
+        left and an automatic end when time is up so that I never overrun my
+        break.
+  \item \textbf{UR-06:} As a user, I want to end a session early, with a
+        confirmation, so that I can stop when I no longer need the break.
+\end{itemize}
+
+\medskip\noindent\textbf{Space and Themes}\par\nopagebreak
+\begin{itemize}
+  \item \textbf{UR-07:} As a user, I want a calm illustrated Space as my home
+        screen, where the radio, newspaper, and TV open the services, so that
+        choosing entertainment feels simple and relaxing.
+  \item \textbf{UR-08:} As a user, I want to choose a theme (Cozy Room or
+        Garden) and have the app remember it so that the Space matches my mood
+        every time I return.
+\end{itemize}
+
+\medskip\noindent\textbf{Content Services: Music, News, and Short Videos}\par\nopagebreak
+\begin{itemize}
+  \item \textbf{UR-09:} As a user, I want to pick a music station and control
+        playback (play, pause, next, and volume) so that I get background
+        music that suits me.
+  \item \textbf{UR-10:} As a user, I want music to keep playing while I move
+        between screens or lock my phone, and to pause while I watch TV, so
+        that sounds never overlap or stop unexpectedly.
+  \item \textbf{UR-11:} As a user, I want to browse the latest news, filter by
+        category, and refresh the list so that I can quickly find something to
+        read.
+  \item \textbf{UR-12:} As a user, I want to read an article inside the app so
+        that I do not have to leave my session.
+  \item \textbf{UR-13:} As a user, I want to open the full article on the
+        source website so that I can read more when the summary is not enough.
+  \item \textbf{UR-14:} As a user, I want to watch short videos by swiping
+        vertically, with pause and mute, so that I can enjoy quick clips.
+  \item \textbf{UR-15:} As a user, I want the video feed to be limited and to
+        finish with a clear end card so that I am not pulled into endless
+        scrolling.
+\end{itemize}
+
+\medskip\noindent\textbf{Progress and History}\par\nopagebreak
+\begin{itemize}
+  \item \textbf{UR-16:} As a user, I want a short summary when a session ends
+        (time used, music, articles, and videos) so that I can see how I spent
+        my break.
+  \item \textbf{UR-17:} As a user, I want to see my current streak so that I
+        feel rewarded for taking regular, controlled breaks.
+  \item \textbf{UR-18:} As a user, I want to view a history of my past sessions
+        so that I can review my habits.
+\end{itemize}
+
+\medskip\noindent\textbf{Settings and Reliability}\par\nopagebreak
+\begin{itemize}
+  \item \textbf{UR-19:} As a user, I want to turn the one-minute notice on or
+        off and see where the content comes from so that I control reminders
+        and know the sources.
+  \item \textbf{UR-20:} As a user, I want clear loading, offline, and error
+        states with a retry option so that I always know what is happening and
+        what to do next.
 \end{itemize}
 
 \subsection{Functional Requirements}
@@ -70,101 +90,31 @@ MVP does not diagnose health conditions, monitor users continuously, or
 replace professional medical advice. The primary actor is the Breakly user;
 the operating system notification service is an external supporting actor.
 
-\subsubsection{Use Cases}
-\label{sec:use-cases}
 
-\begin{longtable}{|p{2cm}|p{4cm}|p{0.48\textwidth}|}
-\caption{Breakly MVP use cases}\label{tab:use-cases}\\
-\hline
-\textbf{ID} & \textbf{Use case} & \textbf{Goal} \\
-\hline
-\endfirsthead
-\multicolumn{3}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
-\textbf{ID} & \textbf{Use case} & \textbf{Goal} \\
-\hline
-\endhead
-\multicolumn{3}{r}{\textit{Continue on next page}}\\
-\endfoot
-\endlastfoot
-UC-01 & Configure preferences & Set break duration, reminder behaviour, and
-activity preferences. \\
-\hline
-UC-02 & Start a break & Select or accept an activity and begin a timed
-session. \\
-\hline
-UC-03 & Complete or skip a break & Finish, pause, skip, or cancel a session
-with an explicit result. \\
-\hline
-UC-04 & Browse activities & Discover suitable short break activities. \\
-\hline
-UC-05 & Review history & View completed and skipped break sessions. \\
-\hline
-UC-06 & Manage reminders & Enable, disable, and schedule local reminders. \\
-\hline
-\end{longtable}
+% \subsubsection{MoSCoW Prioritisation}
+% \label{sec:moscow}
 
-\subsubsection{User Stories and Acceptance Criteria}
-\label{sec:user-stories}
-
-\subsubsection{FR-01 -- Start a Timed Break}
-\textbf{User story:} As a user, I want to start a timed break quickly so
-that I can step away from my current task without configuring many options.
-
-\textbf{Acceptance criteria:}
-\begin{itemize}
-\item Given valid preferences, selecting ``Start break'' opens the active
-  session and displays the remaining time.
-\item The user can pause, resume, skip, or finish the session.
-\item The session result is saved exactly once when it ends.
-\end{itemize}
-
-\subsubsection{FR-02 -- Choose a Break Activity}
-\textbf{User story:} As a user, I want activity suggestions matched to the
-available time so that the break is easy to follow.
-
-\textbf{Acceptance criteria:}
-\begin{itemize}
-\item Suggestions show an estimated duration and a concise instruction.
-\item Activities longer than the configured break are not recommended by
-  default.
-\item An empty or unavailable activity list shows a useful fallback state.
-\end{itemize}
-
-\subsubsection{FR-03 -- Configure and Receive Reminders}
-\textbf{User story:} As a user, I want to control reminders so that Breakly
-supports my routine without becoming disruptive.
-
-\textbf{Acceptance criteria:}
-\begin{itemize}
-\item The user can enable or disable reminders and select a schedule.
-\item The app requests notification permission only when the feature needs it.
-\item Denying permission leaves the rest of the break flow usable.
-\end{itemize}
-
-\subsubsection{MoSCoW Prioritisation}
-\label{sec:moscow}
-
-\begin{longtable}{|p{2.2cm}|p{0.73\textwidth}|}
-\caption{MoSCoW prioritisation for the MVP}\label{tab:moscow}\\
-\hline
-\textbf{Priority} & \textbf{Requirements} \\
-\hline
-\endfirsthead
-\multicolumn{2}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
-\textbf{Priority} & \textbf{Requirements} \\
-\hline
-\endhead
-\multicolumn{2}{r}{\textit{Continue on next page}}\\
-\endfoot
-\endlastfoot
-Must & FR-01 start/complete a timed break, FR-02 activity suggestions,
-local preferences, and accessible core navigation. \\
-\hline
-Should & FR-03 reminders, pause/resume, history, and offline-first operation. \\
-\hline
-Could & Themes, richer personalisation, streaks, and additional activity packs. \\
-\hline
-Won't (MVP) & Social features, public leaderboards, clinical claims, and
-continuous sensor-based monitoring. \\
-\hline
-\end{longtable}
+% \begin{longtable}{|p{2.2cm}|p{0.73\textwidth}|}
+% \caption{MoSCoW prioritisation for the MVP}\label{tab:moscow}\\
+% \hline
+% \textbf{Priority} & \textbf{Requirements} \\
+% \hline
+% \endfirsthead
+% \multicolumn{2}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+% \textbf{Priority} & \textbf{Requirements} \\
+% \hline
+% \endhead
+% \multicolumn{2}{r}{\textit{Continue on next page}}\\
+% \endfoot
+% \endlastfoot
+% Must & FR-01 start/complete a timed break, FR-02 activity suggestions,
+% local preferences, and accessible core navigation. \\
+% \hline
+% Should & FR-03 reminders, pause/resume, history, and offline-first operation. \\
+% \hline
+% Could & Themes, richer personalisation, streaks, and additional activity packs. \\
+% \hline
+% Won't (MVP) & Social features, public leaderboards, clinical claims, and
+% continuous sensor-based monitoring. \\
+% \hline
+% \end{longtable}

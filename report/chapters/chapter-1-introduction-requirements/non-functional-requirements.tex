@@ -1,8 +1,13 @@
-\subsection{Non-Functional Requirements}
-\label{sec:quality-requirements}
+\subsubsection{Non-functional requirements}
 
-\begin{longtable}{|p{2cm}|p{3.2cm}|p{0.58\textwidth}|}
-\caption{Initial measurable non-functional requirements}\label{tab:nfr}\\
+The non-functional requirements of Breakly set measurable targets for how well
+the app must perform on a phone. Normal conditions means a Wi-Fi or 4G connection of at least 5 Mbps. The reference devices are one Android phone and
+one iPhone (iPhone 15, iOS 16).
+
+\begingroup
+\small
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2cm}|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{0.58\textwidth}|}
+\caption{Measurable non-functional requirements}\label{tab:nfr}\\
 \hline
 \textbf{ID} & \textbf{Category} & \textbf{Target and verification} \\
 \hline
@@ -14,40 +19,97 @@
 \multicolumn{3}{r}{\textit{Continue on next page}}\\
 \endfoot
 \endlastfoot
-NFR-01 & Performance & Cold start to usable home screen in at most 3 seconds
-on the reference device; measure over 10 runs. \\
+
+NFR-01 & Response time & Under normal conditions, the Home Space, News, Radio
+and TV screens show content or a loading state within 3 seconds, and taps give
+visible feedback within 100 ms; verify with the median of 10 runs on each
+reference device. \\
 \hline
-NFR-02 & Interaction & Local navigation and timer controls respond within
-100 ms under normal conditions. \\
+
+NFR-02 & Background behaviour & The countdown stays within $\pm$ 2 seconds of
+real time after the app is backgrounded or the device is locked, and music
+keeps playing with the screen locked until the session ends; verify with a
+3-minute background test and a 30-minute locked-screen session. \\
 \hline
-NFR-03 & Reliability & A running timer remains correct across backgrounding
-and foregrounding; verify with pause/resume scenarios. \\
+
+NFR-03 & Offline behaviour & When the connection is lost, an offline message
+with a retry option appears within 10 seconds, the countdown continues, and
+unsaved session records are uploaded after the connection returns; verify with
+airplane mode during a session. \\
 \hline
-NFR-04 & Accessibility & Core screens support text scaling, meaningful labels,
-minimum 44 dp touch targets, and non-colour-only status feedback. \\
+
+NFR-04 & Security & Sign-in tokens are kept in secure device storage, all
+traffic uses HTTPS, a user can access only their own records, and no secret key
+is committed to the repository; verify by inspecting the app storage, by
+trying to read a second test account's records (must be denied), and by a
+secret scan of the Git history. \\
 \hline
-NFR-05 & Security & Store only the minimum personal data locally; protect
-exported or synchronised data in transit and do not log sensitive content. \\
+
+NFR-05 & Permissions & The app requests no location, contacts, camera or
+microphone permission, and any notification permission is requested only in
+context, when the user turns on a reminder; verify by inspecting the declared
+permissions and by running all Must flows with notifications denied. \\
+\hline
+
+NFR-06 & Platform and OS versions & The app runs on Android 8.0 or later and iOS
+16 or later \textbf{[TODO: confirm against the chosen Expo SDK]}, in portrait,
+on screen widths from 360 to 430 dp; verify on the reference devices and on an
+emulator of the lowest supported version. \\
+\hline
+
+NFR-07 & Battery and network & A 20-minute session with music playing and the
+screen on uses at most 8 percent of the battery (initial target), and music is
+streamed at no more than 128 kbps; verify with the device battery and network
+statistics. \\
+\hline
+
+NFR-08 & Accessibility & Core screens support text scaling up to 130 percent,
+touch targets of at least 48 $\times$ 48 dp, text contrast of at least 4.5:1,
+and status that is never shown by colour alone; verify with an accessibility
+scanner and a manual test at the larger text size. \\
 \hline
 \end{longtable}
+\endgroup
 
-\paragraph{Offline, Synchronisation, and Failure Behaviour}
-\label{sec:offline-behaviour}
+These targets respond to the constraints of mobile devices, summarised in
+Table~\ref{tab:mobile-constraints}.
 
-The core break flow must work without an internet connection. Preferences,
-activity content bundled with the app, and session history are available
-locally. If optional remote content cannot be loaded, the app shows cached
-content and an explicit offline state rather than a blank screen. A future
-synchronisation layer must use conflict-safe updates and report failures
-without discarding local sessions.
+\begingroup
+\small
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{5.6cm}|>{\raggedright\arraybackslash}p{5.6cm}|}
+\caption{Mobile constraints and design responses}\label{tab:mobile-constraints}\\
+\hline
+\textbf{Constraint} & \textbf{Impact on Breakly} & \textbf{Design response} \\
+\hline
+\endfirsthead
+\multicolumn{3}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+\textbf{Constraint} & \textbf{Impact on Breakly} & \textbf{Design response} \\
+\hline
+\endhead
+\multicolumn{3}{r}{\textit{Continue on next page}}\\
+\endfoot
+\endlastfoot
 
-\paragraph{Permissions, Platforms, Battery, and Network}
-\label{sec:mobile-constraints}
+Background execution & The OS may suspend the app and stop the countdown or
+music. & Remaining time is computed from the stored end time, and music uses
+background audio (NFR-02). \\
+\hline
 
-The MVP targets Android and iOS versions supported by the selected Expo and
-React Native release. Notification permission is optional and requested in
-context. Location, contacts, microphone, and camera permissions are not
-required for the core experience. The timer uses timestamps rather than a
-busy polling loop, and background work is limited to scheduled notifications
-to reduce battery consumption. Network access is optional for the MVP and
-must tolerate latency, timeouts, and temporary disconnection.
+Unreliable network & Connections vary and may drop during a session. & Every
+content screen has loading, offline and error states (NFR-03). \\
+\hline
+
+Battery and data & Streaming drains battery and data. & Audio quality is
+capped (NFR-07). \\
+\hline
+
+Permissions and privacy & Sensitive permissions reduce user trust. & None are
+used; notifications are requested in context (NFR-04, NFR-05). \\
+\hline
+
+Device diversity & Phones differ in OS version, screen and text size. & Minimum
+OS versions are fixed and layouts are tested at both width limits (NFR-06,
+NFR-08). \\
+\hline
+\end{longtable}
+\endgroup
