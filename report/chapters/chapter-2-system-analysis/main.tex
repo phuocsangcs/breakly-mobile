@@ -3,29 +3,85 @@
 
 \section{Use Case Analysis}
 \label{sec:usecase-analysis}
-
-The main actor is the Breakly user. The operating-system notification service
-is an external supporting actor. The use cases are configuring preferences,
-starting a break, completing or skipping a break, browsing activities,
-reviewing history, and managing reminders.
-
-\subsection{Overall Usecase}
-
-\subsection{Usecase Descriptions}
+\input{chapters/chapter-2-system-analysis/use-case-analysis}
 
 \section{Technology Stack}
 \label{sec:technology-stack}
 
-\subsection{Front End}
+To fulfill the functional and non-functional requirements established in
+Chapter~\ref{chap:introduction-requirements}, the Breakly application is built
+upon a modern, cross-platform mobile architecture coupled with a secure cloud
+backend and external content distribution services.
+
+\subsection{Mobile Client Architecture and Core Libraries}
 \label{sec:frontend}
 
-The mobile client uses React Native with Expo and TypeScript. This stack
-supports Android and iOS delivery, shared UI components, platform-aware
-navigation, and type-safe application logic.
+The client is developed using \textbf{React Native} with the \textbf{Expo}
+framework and \textbf{TypeScript}. This stack ensures a single type-safe
+codebase that compiles to performant native code on both Android (API level~26+)
+and iOS (iOS~16+), meeting the platform standards in NFR-06. The mobile
+subsystem integrates the following specialized libraries:
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt,topsep=2pt]
+  \item \textbf{Navigation (\texttt{@react-navigation/native-stack}):} Manages
+        native screen transitions, header hierarchies, and deep linking across
+        the Home Space, service views, and account settings.
+  \item \textbf{Background Audio Playback (\texttt{expo-av} / \texttt{react-native-track-player}):}
+        Handles streaming playback across audio categories. It is specifically
+        configured with OS-level audio session permissions (e.g.,
+        \texttt{UIBackgroundModes: ["audio"]} on iOS and foreground media service
+        on Android) to ensure continuous playback when the device is locked or the
+        app transitions to the background (NFR-02, FR~4.4).
+  \item \textbf{Video Playback (\texttt{expo-video}):} Delivers low-latency,
+        full-screen vertical video rendering with gesture-driven swipe controls
+        and volume management for the short-video feed (FR~6.1, FR~6.2).
+  \item \textbf{Secure Storage (\texttt{expo-secure-store}):} Provides
+        hardware-backed keychain encryption (iOS Keychain and Android KeyStore)
+        for persisting authentication access tokens, strictly complying with NFR-04.
+  \item \textbf{Local Database and Cache (\texttt{expo-sqlite} / AsyncStorage):}
+        Persists user theme preferences, recent session history, and an offline
+        record queue, enabling immediate access to cached data even when connectivity
+        drops (NFR-03).
+  \item \textbf{News Processing (\texttt{fast-xml-parser}):} Parses syndicated
+        RSS/Atom news XML payloads into typed TypeScript article models.
+  \item \textbf{In-App Web Browser (\texttt{expo-web-browser}):} Renders full
+        publisher articles through an embedded native browser component
+        (Custom Tabs on Android, SFSafariViewController on iOS) without
+        disrupting the active session countdown (FR~5.5).
+\end{itemize}
 
-\subsection{Back End}
+\subsection{Cloud Backend and Synchronisation Services}
 \label{sec:backend}
 
-The optional backend provides authenticated synchronisation for activities,
-preferences, and session history. It is isolated behind an API adapter so the
-core offline-first experience does not depend on network availability.
+In contrast to fully offline standalone utilities, Breakly relies on a cloud
+backend service as a mandatory component for identity management and multi-device
+continuity (FR~1.1--1.3, FR~7.2). The backend architecture is implemented using a
+managed Backend-as-a-Service (BaaS) provider, specifically \textbf{Supabase}
+(PostgreSQL with Row Level Security) or \textbf{Firebase}:
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt,topsep=2pt]
+  \item \textbf{Authentication Service:} Verifies user credentials over HTTPS,
+        issues cryptographically signed JWT access tokens, and manages account
+        sessions without exposing user passwords to client memory. An active
+        internet connection is required for initial onboarding (sign-up and sign-in).
+  \item \textbf{Database and Synchronisation:} Stores structured session history
+        records (start timestamp, actual duration, content services used, and
+        completion status) and computes consecutive-day streaks.
+  \item \textbf{Offline-Tolerant Queueing:} While authentication requires an
+        online state, ongoing break sessions maintain resilience against network
+        instability. When a session terminates without internet connectivity, the
+        record is written immediately to the local database and automatically
+        synchronised once network connectivity is re-established (NFR-03).
+\end{itemize}
+
+\subsection{External Content Sources}
+\label{sec:content-sources}
+
+Breakly aggregates content from reputable, publicly available digital endpoints:
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt,topsep=2pt]
+  \item \textbf{Music Audio Endpoints:} Curated, royalty-free instrumental and
+        ambient audio streams categorized into Lo-fi, Piano, Acoustic, and Nature.
+  \item \textbf{News Feeds:} Real-time RSS/Atom syndication feeds from established
+        journalistic sources (e.g., VnExpress), filtered and sanitized on-the-fly.
+  \item \textbf{Short Videos:} Finite, curated packages of mindful short-form
+        clips served via CDN endpoints, strictly limited to at most ten clips
+        per break session to preserve finite consumption boundaries.
+\end{itemize}
