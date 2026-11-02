@@ -1,0 +1,351 @@
+
+\section{Technology Stack}
+\label{sec:technology-stack}
+% Requires: \usepackage{longtable}, \usepackage{array}
+
+Technology is chosen layer by layer. For each layer, two or three common
+options are compared on the criteria that matter most for Breakly: a team of
+two, a limited schedule, demonstration on real devices and the non-functional
+requirements. A decision and its justification follow each table, and the
+section ends with a summary of the final stack. The selected option in each
+table is shown in bold.
+
+% ---------------------------------------------------------------------
+\subsubsection{Mobile Client Framework}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|}
+\caption{Comparison of mobile client frameworks}\label{tab:tech-mobile}\\
+\hline
+\textbf{Option} & \textbf{Language and ecosystem} & \textbf{Development speed for two people} & \textbf{Testing and demo} & \textbf{Performance and native access} \\ \hline
+\textbf{React Native with Expo (selected)} & TypeScript; very large npm ecosystem &
+One codebase for Android and iOS; fast refresh; many ready-made modules &
+Runs on real phones through Expo Go; APK builds with EAS Build &
+Good for list and media screens; native features through Expo modules \\ \hline
+Flutter & Dart; smaller but growing ecosystem &
+One codebase; fast once Dart is learned &
+Needs an emulator or a full build; no Expo Go equivalent &
+Excellent rendering; native features through plugins \\ \hline
+Native (Kotlin and Swift) & Two languages and two toolchains &
+Two codebases; slowest for a team of two &
+Separate builds; iOS builds need macOS &
+Best performance and full platform access \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: React Native with Expo (TypeScript), with Expo Router for
+navigation.} Breakly is made of lists, audio and video screens, which React
+Native handles well, and a single TypeScript codebase suits a team of two.
+Expo Go lets both members test on real phones without store builds, and EAS
+Build produces an installable APK for the demonstration. Background audio and
+some native features need a development build rather than Expo Go
+\textbf{[TODO: verify]}, which the team accepts.
+
+% ---------------------------------------------------------------------
+\subsubsection{In-App Architecture and State Management}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|}
+\caption{Comparison of state management approaches}\label{tab:tech-state}\\
+\hline
+\textbf{Option} & \textbf{Boilerplate and learning curve} & \textbf{Fit for session, theme and player state} & \textbf{Server data handling} & \textbf{Testability} \\ \hline
+\textbf{Zustand with TanStack Query (selected)} & Very little boilerplate; small API &
+Simple stores that also work outside components, for example the timer &
+Query library handles caching, retries and refresh &
+Stores are plain functions; easy to unit test \\ \hline
+Redux Toolkit with RTK Query & More concepts and files &
+Strict structure and good DevTools &
+RTK Query covers caching and refresh &
+Very testable; heavier than this scope needs \\ \hline
+React Context with useReducer & No extra dependency &
+Frequent updates such as timer ticks re-render many components &
+Caching and retries written by hand &
+Testable but manual \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: Zustand for client state and TanStack Query for server
+data, organised as a layered MVVM architecture.} Views (Expo Router screens
+and presentational components) display state and send user actions.
+ViewModels (custom hooks backed by Zustand stores) hold screen state and
+logic such as the session countdown. Repositories (the API client, local
+storage and the audio player) hide the data sources from the rest of the app.
+Zustand needs the least code for a few small stores, and TanStack Query
+removes hand-written caching. A full Clean Architecture was not adopted
+because its extra layers would add effort without benefit at this scale.
+
+% ---------------------------------------------------------------------
+\subsubsection{Backend Framework}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|}
+\caption{Comparison of backend options}\label{tab:tech-backend}\\
+\hline
+\textbf{Option} & \textbf{Language and team fit} & \textbf{Development speed} & \textbf{Control over API and logic} & \textbf{Runtime and operations} \\ \hline
+\textbf{NestJS (Node.js, TypeScript) (selected)} & Same language as the app; types and validation rules can be shared &
+Fast; built-in modules, validation and Swagger support &
+Full control of RSS aggregation, streak logic and scheduled jobs &
+Light on memory; quick to start; easy in Docker \\ \hline
+Spring Boot (Java) & Java; mature, strongly typed, widely taught &
+Slower: more boilerplate and longer build cycles &
+Full control; strong security and data tooling &
+Heavier on memory and start-up time; runs well in Docker \\ \hline
+Backend-as-a-service (Supabase or Firebase) & No server code; vendor-specific rules and SDKs &
+Fastest for basic data and authentication &
+Limited for custom logic; API mostly generated &
+No servers to run; vendor lock-in and quotas \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: NestJS on Node.js with TypeScript.} The backend must do
+more than store rows: it aggregates and caches news feeds, proxies music and
+video sources, and calculates streaks, so a custom backend gives the control
+that a backend-as-a-service would limit. NestJS uses the same language as the
+mobile app, so the team switches context less and can share types, and its
+module and dependency-injection structure keeps a small codebase organised.
+It also uses less memory than a Java service, which keeps hosting cheap.
+
+% ---------------------------------------------------------------------
+\subsubsection{Database}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|}
+\caption{Comparison of database options}\label{tab:tech-db}\\
+\hline
+\textbf{Option} & \textbf{Fit with Breakly data} & \textbf{Query capabilities} & \textbf{Tooling and ORM support} & \textbf{Hosting and cost} \\ \hline
+\textbf{PostgreSQL (selected)} & Relational: users, sessions and preferences linked by foreign keys &
+Date aggregation and window functions for streaks; JSONB for flexible fields &
+Excellent (Prisma, TypeORM, migrations) &
+Open source; runs in Docker; free \\ \hline
+MySQL & Relational; fits the same data &
+Good; JSON support is less rich &
+Good &
+Open source; free \\ \hline
+MongoDB & Document store; relations handled in code &
+Aggregation pipeline; date logic is less natural &
+Good (Mongoose) &
+Free community edition; managed tiers have limits \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: PostgreSQL, accessed through the Prisma ORM.} The data is
+naturally relational (a user has many sessions and one set of preferences),
+and the streak is a date-based query that SQL expresses directly. JSONB lets
+a session record store the services used without extra tables, Prisma gives
+typed queries and migrations, and PostgreSQL runs free in a Docker container.
+
+% ---------------------------------------------------------------------
+\subsubsection{Authentication}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|}
+\caption{Comparison of authentication options}\label{tab:tech-auth}\\
+\hline
+\textbf{Option} & \textbf{Security effort} & \textbf{Control and data ownership} & \textbf{Setup effort} & \textbf{Fit for mobile} \\ \hline
+\textbf{Backend-issued JWT with refresh tokens (selected)} & The team must hash passwords and handle expiry and rotation correctly, using well-known libraries &
+Users stay in our own PostgreSQL database; no vendor dependency &
+Moderate: a few endpoints &
+Short-lived access token plus refresh token kept in secure storage \\ \hline
+Managed authentication (Firebase Auth, Supabase Auth, Auth0) & Handled by the provider &
+Users stored with the provider; vendor lock-in &
+Low &
+SDKs available; extra dependency \\ \hline
+Server-side session cookies & Simple and well understood &
+Server keeps session state &
+Low &
+Cookies are awkward in React Native; tokens are preferred \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: backend-issued JWT access tokens with rotating refresh
+tokens.} Breakly needs only email and password sign-in, so the scope is small
+enough to implement safely. Passwords are hashed with argon2id, access tokens
+are short-lived, refresh tokens rotate, and the app stores tokens in secure
+device storage (NFR-04). Keeping users in the same PostgreSQL database avoids
+a second system and a vendor dependency.
+
+% ---------------------------------------------------------------------
+\subsubsection{API Style}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|}
+\caption{Comparison of API styles}\label{tab:tech-api}\\
+\hline
+\textbf{Option} & \textbf{Simplicity} & \textbf{Contract and documentation} & \textbf{Mobile fit} & \textbf{Fit for a small API} \\ \hline
+\textbf{REST with JSON and OpenAPI (selected)} & Simple and familiar &
+OpenAPI gives endpoints, requests, responses and error codes &
+Standard HTTP caching; easy to test with Postman &
+Ideal for about a dozen endpoints \\ \hline
+GraphQL & Needs a schema and resolvers &
+Self-describing schema; no standard error-code table &
+Precise queries; caching is more complex &
+Overkill for a few fixed screens \\ \hline
+tRPC & Very low friction in TypeScript &
+Shared types, but no standard OpenAPI contract &
+Works with TanStack Query &
+Weak as a documented contract for evaluators \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: REST over HTTPS with JSON, documented with OpenAPI.} The
+API has few endpoints with fixed responses, so GraphQL would add complexity
+without benefit. OpenAPI documents each endpoint, its request and response and
+its error codes, which becomes the API contract in the data and API design.
+
+% ---------------------------------------------------------------------
+\subsubsection{External Content Sources}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{2.9cm}|>{\raggedright\arraybackslash}p{2.9cm}|>{\raggedright\arraybackslash}p{2.7cm}|>{\raggedright\arraybackslash}p{2.7cm}|}
+\caption{Comparison of news sources}\label{tab:tech-news}\\
+\hline
+\textbf{Option} & \textbf{Terms of use} & \textbf{Content provided} & \textbf{Cost and limits} & \textbf{Reliability} \\ \hline
+\textbf{Publisher RSS feeds, fetched and cached by the backend (selected)} & Published for syndication; terms checked per publisher \textbf{[TODO]} &
+Title, summary, image and link &
+Free; no key &
+Depends on each publisher; caching reduces load \\ \hline
+News aggregation API (for example NewsAPI or GNews) & Provider terms; free tiers are often limited to development &
+Titles, snippets and links &
+Free tier with request caps &
+Stable, but quotas apply \\ \hline
+Scraping article pages & Often against site terms &
+Full text possible &
+Free but fragile &
+Breaks when layouts change \\ \hline
+\end{longtable}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{2.9cm}|>{\raggedright\arraybackslash}p{2.9cm}|>{\raggedright\arraybackslash}p{2.7cm}|>{\raggedright\arraybackslash}p{2.7cm}|}
+\caption{Comparison of music sources}\label{tab:tech-music}\\
+\hline
+\textbf{Option} & \textbf{Licence} & \textbf{Catalogue and categories} & \textbf{Streaming effort} & \textbf{Reliability} \\ \hline
+\textbf{Jamendo API, with a small stored fallback set (selected)} & Creative Commons music; API terms to be verified \textbf{[TODO]} &
+Large catalogue with tags such as lo-fi, piano and acoustic &
+Streaming URLs and artwork provided &
+Depends on an external API; fallback tracks keep demos safe \\ \hline
+Audius API & Artist-uploaded; terms vary \textbf{[TODO]} &
+Large; relaxing categories less certain &
+Streaming URLs provided &
+Decentralised network; variable availability \\ \hline
+Self-hosted royalty-free tracks & Each licence checked by the team &
+Small and fully curated &
+The team stores and serves the files &
+Fully under our control; most manual work \\ \hline
+\end{longtable}
+
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{2.9cm}|>{\raggedright\arraybackslash}p{2.9cm}|>{\raggedright\arraybackslash}p{2.7cm}|>{\raggedright\arraybackslash}p{2.7cm}|}
+\caption{Comparison of video sources}\label{tab:tech-video}\\
+\hline
+\textbf{Option} & \textbf{Licence} & \textbf{Content fit} & \textbf{Playback in the app} & \textbf{Reliability and limits} \\ \hline
+\textbf{Pexels Videos API (selected)} & Free licence; attribution required \textbf{[TODO: verify]} &
+Stock clips (nature, city, travel) that suit a calm theme &
+Direct MP4 files play with expo-video &
+API key and rate limit; backend caching \\ \hline
+YouTube Shorts embed & Embedding allowed under the player terms; controls cannot be altered &
+Rich and entertaining, but recommendations can lead to endless content &
+WebView embed; limited control; background playback restricted &
+Depends on YouTube \\ \hline
+Self-hosted clips & Own or licensed clips &
+Fully curated &
+The team hosts and streams the files &
+Under our control; storage and bandwidth cost \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: publisher RSS feeds for news, the Jamendo API for music and
+the Pexels Videos API for short videos, all accessed through the backend.}
+Routing every source through the backend lets it cache responses, hide API
+keys from the app and keep each feed finite. RSS provides headlines,
+summaries and links to the source, which matches the Article screen and the
+``Read full article'' action. Jamendo provides licensed music with ready-made
+categories, artwork and streaming URLs, and a few stored tracks keep the
+demonstration working if the API is unavailable. Pexels provides licensed
+clips that play directly in the app and fit the calm style of Breakly, at the
+cost of being stock footage rather than creator content. The credits screen
+lists all three sources.
+
+% ---------------------------------------------------------------------
+\subsubsection{Hosting and Deployment}
+
+\begingroup
+\footnotesize
+\begin{longtable}{|>{\raggedright\arraybackslash}p{2.6cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|>{\raggedright\arraybackslash}p{2.95cm}|}
+\caption{Comparison of hosting options}\label{tab:tech-hosting}\\
+\hline
+\textbf{Option} & \textbf{Cost} & \textbf{Setup and operation effort} & \textbf{Control and learning value} & \textbf{Demo reliability} \\ \hline
+\textbf{Single VPS with Docker Compose (selected)} & Low, fixed monthly price &
+Moderate: one Compose file for the API, PostgreSQL and a reverse proxy &
+Full control; easy to reproduce locally &
+Always on; one machine is a single point of failure \\ \hline
+AWS (EC2 or ECS with RDS) & Higher; free tier is limited &
+High: networking, access roles and managed services &
+Industry-standard skills &
+Highly available when configured; more to configure \\ \hline
+Platform-as-a-service (Render, Railway, Fly.io) & Low to medium; free tiers may sleep &
+Low: deploy from Git &
+Less control &
+Cold starts on free tiers can hurt demos \\ \hline
+\end{longtable}
+\endgroup
+
+\noindent\textbf{Decision: a single VPS running Docker Compose.} One Compose file
+starts the API, PostgreSQL and a Caddy reverse proxy that provides HTTPS
+certificates automatically. GitHub Actions builds and deploys the stack, and a
+nightly database dump provides a backup. A VPS is cheap, always on for
+demonstrations, and the same Compose stack can be moved to AWS later if
+needed.
+
+% ---------------------------------------------------------------------
+\subsubsection{Final Stack Summary}
+
+\begingroup
+\small
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.2cm}|>{\raggedright\arraybackslash}p{5.2cm}|>{\raggedright\arraybackslash}p{6cm}|}
+\caption{Final technology stack}\label{tab:tech-summary}\\
+\hline
+\textbf{Layer} & \textbf{Technology} & \textbf{Main reason} \\ \hline
+\endfirsthead
+\multicolumn{3}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
+\textbf{Layer} & \textbf{Technology} & \textbf{Main reason} \\ \hline
+\endhead
+\multicolumn{3}{r}{\textit{Continue on next page}}\\
+\endfoot
+\endlastfoot
+
+Mobile client & React Native with Expo (TypeScript), Expo Router &
+One codebase, testing on real phones with Expo Go \\ \hline
+State and data fetching & Zustand, TanStack Query &
+Low boilerplate; built-in caching and retries \\ \hline
+Local storage & expo-secure-store (tokens), AsyncStorage (preferences, session
+end time, upload queue) &
+Secure token storage and simple persistence for the offline behaviour in NFR-03 \\ \hline
+Media playback & expo-audio, expo-video &
+Maintained Expo modules for audio and video \\ \hline
+Backend & NestJS (Node.js, TypeScript) &
+Same language as the app; full control of custom logic \\ \hline
+API & REST over HTTPS, JSON, OpenAPI &
+Simple, and the OpenAPI document serves as the API contract \\ \hline
+Database & PostgreSQL with Prisma &
+Relational data, date queries for streaks, typed access \\ \hline
+Authentication & JWT access and refresh tokens, argon2id hashing &
+Users stay in our database; no vendor dependency \\ \hline
+News & Publisher RSS feeds via the backend &
+Headlines and links within syndication terms \\ \hline
+Music & Jamendo API with fallback tracks &
+Licensed music with ready-made categories \\ \hline
+Short videos & Pexels Videos API &
+Licensed clips that play directly in the app \\ \hline
+Hosting & VPS, Docker Compose, Caddy &
+Low cost, full control, reliable demos \\ \hline
+CI/CD and builds & GitHub Actions, EAS Build (APK) &
+Automated deployment and an installable build \\ \hline
+Testing & Jest, React Native Testing Library, Supertest &
+One test toolchain for app and API in TypeScript \\ \hline
+\end{longtable}
+\endgroup
