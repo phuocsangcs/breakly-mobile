@@ -1,0 +1,21 @@
+# GitHub Actions workflow skeleton building production container images and executing Ansible deployment playbooks.
+name: Deploy
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - "src/backend/**"
+      - "src/infra/**"
+      - ".github/workflows/deploy.yml"
+
+jobs:
+  deploy-production:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v4
+
+      # TODO: Configure Docker Buildx, push container images to GitHub Container Registry (ghcr.io), and invoke Ansible playbooks.
+
