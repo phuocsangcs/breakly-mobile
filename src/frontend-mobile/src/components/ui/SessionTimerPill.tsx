@@ -1,18 +1,32 @@
-// Compact SessionTimerPill component displaying current countdown and play/pause status.
+// Compact SessionTimerPill displaying remaining session time and early-end action (FR 2.3, FR 2.5).
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
+import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 import { Colors, Spacing } from "@/constants/theme";
 
-export function SessionTimerPill({ time = "05:00" }: { time?: string }) {
+interface SessionTimerPillProps {
+  time?: string;
+  highlighted?: boolean;
+  onEndPress?: () => void;
+}
+
+export function SessionTimerPill({ time = "20:00", highlighted, onEndPress }: SessionTimerPillProps) {
   return (
-    <View style={styles.pill}>
-      <Text style={styles.text}>{time}</Text>
+    <View style={[styles.pill, highlighted && styles.pillUrgent]}>
+      <Text style={[styles.text, highlighted && styles.textUrgent]}>⏱ {time}</Text>
+      {onEndPress && (
+        <TouchableOpacity onPress={onEndPress}>
+          <Text style={styles.endBtn}>End</Text>
+        </TouchableOpacity>
+      )}
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   pill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: Spacing.sm,
     backgroundColor: Colors.dark.surface,
     paddingHorizontal: Spacing.md,
     paddingVertical: Spacing.xs,
@@ -20,9 +34,8 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: Colors.dark.border,
   },
-  text: {
-    color: Colors.dark.primary,
-    fontWeight: "700",
-  },
+  pillUrgent: { borderColor: "#F59E0B" },
+  text: { color: Colors.dark.primary, fontWeight: "700" },
+  textUrgent: { color: "#F59E0B" },
+  endBtn: { color: "#F87171", fontWeight: "600", fontSize: 12 },
 });
-
