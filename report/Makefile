@@ -11,7 +11,7 @@ build:
 	cp $(BUILD_DIR)/report.synctex.gz report.synctex.gz
 
 view: build
-	open $(BUILD_DIR)/report.pdf
+	powershell.exe -NoProfile -Command "Start-Process -FilePath '$(BUILD_DIR)/report.pdf'"
 
 clean:
 	latexmk -C -outdir=$(BUILD_DIR) $(REPORT)

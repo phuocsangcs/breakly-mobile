@@ -40,3 +40,17 @@ breakly-mobile/
 - **Gateway & SSL**: Caddy reverse proxy with automatic TLS
 - **Automation**: Ansible playbooks (`provision.yml`, `deploy.yml`) and roles (`docker`, `app`, `backup`)
 
+## Quick Start
+
+```cmd
+# 1. Start PostgreSQL Database
+docker compose -f src/infra/docker/compose.dev.yml up -d postgres
+
+# 2. Run Backend (Spring Boot - Port 8080)
+cd src/backend && mvnw spring-boot:run
+
+# 3. Run Frontend (Expo)
+cd src/frontend-mobile && npm start
+```
+
+
