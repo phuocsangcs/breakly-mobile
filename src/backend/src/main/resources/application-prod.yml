@@ -11,3 +11,8 @@ spring:
   flyway:
     enabled: true
 
+# No fallback defaults in production: startup fails fast if secrets are missing.
+breakly:
+  jwt:
+    secret: ${JWT_SECRET}
+

@@ -1,6 +1,6 @@
 package com.breakly.common;
 
-// Base application runtime exception placeholder carrying standardized error codes.
+// Base application runtime exception carrying standardized error codes.
 public class AppException extends RuntimeException {
     private final ErrorCode errorCode;
 
@@ -9,8 +9,12 @@ public class AppException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    public AppException(ErrorCode errorCode, String message, Throwable cause) {
+        super(message, cause);
+        this.errorCode = errorCode;
+    }
+
     public ErrorCode getErrorCode() {
         return errorCode;
     }
 }
-

@@ -1,9 +1,9 @@
 # Development profile configuration using local or containerized PostgreSQL datasource.
 spring:
   datasource:
-    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/breakly_dev}
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://localhost:5432/breakly_db}
     username: ${SPRING_DATASOURCE_USERNAME:breakly}
-    password: ${SPRING_DATASOURCE_PASSWORD:breakly_dev_secret}
+    password: ${SPRING_DATASOURCE_PASSWORD:breakly}
   jpa:
     hibernate:
       ddl-auto: validate
