@@ -1,5 +1,6 @@
 // Imperative singleton around `expo-audio`'s `createAudioPlayer` so playback survives screen navigation
 // (e.g. listening to music while reading news inside a WebView).
+import { Platform } from "react-native";
 import { createAudioPlayer, setAudioModeAsync, type AudioPlayer, type AudioStatus } from "expo-audio";
 
 type StatusListener = (status: AudioStatus) => void;
@@ -14,13 +15,26 @@ async function ensureMode() {
   await setAudioModeAsync({ playsInSilentMode: true, interruptionMode: "mixWithOthers" }).catch(() => undefined);
 }
 
-function getPlayer(): AudioPlayer {
+function canUseAudio(): boolean {
+  if (Platform.OS === "web") {
+    // Avoid running inside Node.js during SSR / Expo Router bundling
+    return typeof window !== "undefined" && typeof Audio !== "undefined";
+  }
+  return true;
+}
+
+function getPlayer(): AudioPlayer | null {
+  if (!canUseAudio()) return null;
   if (!player) {
     void ensureMode();
-    player = createAudioPlayer(null, { updateInterval: 500 });
-    player.addListener("playbackStatusUpdate", (status) => {
-      listeners.forEach((l) => l(status));
-    });
+    try {
+      player = createAudioPlayer(null, { updateInterval: 500 });
+      player.addListener("playbackStatusUpdate", (status) => {
+        listeners.forEach((l) => l(status));
+      });
+    } catch {
+      return null;
+    }
   }
   return player;
 }
@@ -28,12 +42,13 @@ function getPlayer(): AudioPlayer {
 export const musicPlayer = {
   loadAndPlay(uri: string, volume0to1: number) {
     const p = getPlayer();
+    if (!p) return;
     p.volume = Math.max(0, Math.min(1, volume0to1));
     p.replace({ uri });
     p.play();
   },
   play() {
-    getPlayer().play();
+    getPlayer()?.play();
   },
   pause() {
     player?.pause();
@@ -52,4 +67,3 @@ export const musicPlayer = {
     return () => listeners.delete(listener);
   },
 };
-

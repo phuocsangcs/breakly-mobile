@@ -1,8 +1,21 @@
-// Barrel export for atomic UI primitive components.
+// Barrel file re-exporting all atomic UI primitives from the Figma Breakly Design System.
+export * from "./BottomBar";
 export * from "./Button";
-export * from "./Input";
 export * from "./Card";
+export * from "./Chip";
 export * from "./Dropdown";
-export * from "./Toast";
+export * from "./DurationSelector";
+export * from "./IconButton";
+export * from "./Input";
+export * from "./PageIndicator";
+export * from "./ProgressBar";
+export * from "./RoomLabel";
+export * from "./SessionRow";
 export * from "./SessionTimerPill";
-
+export * from "./SettingRow";
+export * from "./StreakChip";
+export * from "./ThemeSwitch";
+export * from "./Toast";
+export * from "./Toggle";
+export * from "./TrackRow";
+export * from "./WebViewHeader";

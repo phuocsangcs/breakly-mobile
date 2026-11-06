@@ -1,32 +1,72 @@
-// Reusable Dropdown component for selecting options from a list.
+// Atomic select/dropdown trigger component styled with Figma Breakly surface & typography tokens.
 import React from "react";
-import { View, Text, StyleSheet } from "react-native";
-import { Colors, Spacing } from "@/constants/theme";
+import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { BreaklyThemeId, getThemeColors, Radius, Spacing, ThemeMode, Typography } from "@/constants/theme";
 
-interface DropdownProps {
-  label: string;
-  value?: string;
-  onSelect?: (value: string) => void;
+export interface DropdownProps {
+  label?: string;
+  value: string;
+  onPress?: () => void;
+  theme?: ThemeMode | BreaklyThemeId;
+  style?: StyleProp<ViewStyle>;
 }
 
-export function Dropdown({ label }: DropdownProps) {
+export function Dropdown({
+  label,
+  value,
+  onPress,
+  theme = "dark",
+  style,
+}: DropdownProps) {
+  const palette = getThemeColors(theme);
+
   return (
-    <View style={styles.container}>
-      <Text style={styles.text}>{label}</Text>
+    <View style={[styles.container, style]}>
+      {label ? (
+        <Text style={[styles.label, { color: palette.textSecondary }]}>{label}</Text>
+      ) : null}
+      <TouchableOpacity
+        style={[
+          styles.trigger,
+          {
+            backgroundColor: palette.surface,
+            borderColor: palette.line,
+          },
+        ]}
+        onPress={onPress}
+        activeOpacity={0.8}
+      >
+        <Text style={[styles.value, { color: palette.text }]}>{value}</Text>
+        <Text style={[styles.chevron, { color: palette.textSecondary }]}>▾</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: Colors.dark.surface,
-    padding: Spacing.sm,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: Colors.dark.border,
+    gap: Spacing.xs,
   },
-  text: {
-    color: Colors.dark.text,
+  label: {
+    fontSize: Typography.sizes.caption,
+    lineHeight: Typography.lineHeights.caption,
+    fontWeight: Typography.weights.semibold,
+  },
+  trigger: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    minHeight: 52,
+    borderWidth: 1,
+    borderRadius: Radius.md,
+    paddingHorizontal: Spacing.md,
+  },
+  value: {
+    fontSize: Typography.sizes.label,
+    lineHeight: Typography.lineHeights.sm,
+    fontWeight: Typography.weights.medium,
+  },
+  chevron: {
+    fontSize: Typography.sizes.sm,
   },
 });
-

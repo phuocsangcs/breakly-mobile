@@ -1,53 +1,145 @@
-// Reusable pressable Button component supporting primary, secondary, and ghost variants.
+// Atomic button component synchronized from Figma "Button" (node 47:296).
+// Supports Primary, Secondary, and Ghost variants across Dark (Cozy) and Light (Normal) themes.
 import React from "react";
-import { TouchableOpacity, Text, StyleSheet, ViewStyle, TextStyle } from "react-native";
-import { Colors, Spacing } from "@/constants/theme";
+import {
+  ActivityIndicator,
+  StyleProp,
+  StyleSheet,
+  Text,
+  TextStyle,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+} from "react-native";
+import { BreaklyThemeId, getThemeColors, Radius, Spacing, ThemeMode, Typography } from "@/constants/theme";
 
-interface ButtonProps {
+export type ButtonVariant = "primary" | "secondary" | "ghost";
+export type ButtonSize = "md" | "lg";
+
+export interface ButtonProps {
   label: string;
   onPress?: () => void;
-  variant?: "primary" | "secondary" | "ghost";
-  style?: ViewStyle;
-  textStyle?: TextStyle;
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  disabled?: boolean;
+  loading?: boolean;
+  theme?: ThemeMode | BreaklyThemeId;
+  leftIcon?: React.ReactNode;
+  rightIcon?: React.ReactNode;
+  fullWidth?: boolean;
+  style?: StyleProp<ViewStyle>;
+  textStyle?: StyleProp<TextStyle>;
 }
 
-export function Button({ label, onPress, variant = "primary", style, textStyle }: ButtonProps) {
+export function Button({
+  label,
+  onPress,
+  variant = "primary",
+  size = "lg",
+  disabled = false,
+  loading = false,
+  theme = "dark",
+  leftIcon,
+  rightIcon,
+  fullWidth = false,
+  style,
+  textStyle,
+}: ButtonProps) {
+  const palette = getThemeColors(theme);
+  const isDisabled = disabled || loading;
+
+  const getContainerStyle = (): ViewStyle => {
+    if (variant === "primary") {
+      return {
+        backgroundColor: isDisabled ? palette.surface2 : palette.accent,
+      };
+    }
+    if (variant === "secondary") {
+      return {
+        backgroundColor: "transparent",
+        borderWidth: 1.5,
+        borderColor: palette.line,
+        opacity: isDisabled ? 0.45 : 1,
+      };
+    }
+    return {
+      backgroundColor: "transparent",
+      opacity: isDisabled ? 0.45 : 1,
+    };
+  };
+
+  const getLabelColor = (): string => {
+    if (variant === "primary") {
+      return isDisabled ? palette.textSecondary : palette.onAccent;
+    }
+    if (variant === "secondary") {
+      return palette.text;
+    }
+    return palette.accent;
+  };
+
+  const labelColor = getLabelColor();
+
   return (
     <TouchableOpacity
-      onPress={onPress}
       style={[
         styles.base,
-        variant === "primary" && styles.primary,
-        variant === "secondary" && styles.secondary,
-        variant === "ghost" && styles.ghost,
+        size === "lg" ? styles.sizeLg : styles.sizeMd,
+        fullWidth && styles.fullWidth,
+        getContainerStyle(),
         style,
       ]}
+      onPress={onPress}
+      disabled={isDisabled}
+      activeOpacity={0.82}
     >
-      <Text style={[styles.text, textStyle]}>{label}</Text>
+      {loading ? (
+        <ActivityIndicator size="small" color={labelColor} />
+      ) : (
+        <View style={styles.contentRow}>
+          {leftIcon}
+          <Text style={[styles.label, size === "md" && styles.labelMd, { color: labelColor }, textStyle]}>
+            {label}
+          </Text>
+          {rightIcon}
+        </View>
+      )}
     </TouchableOpacity>
   );
 }
 
 const styles = StyleSheet.create({
   base: {
-    paddingVertical: Spacing.sm,
-    paddingHorizontal: Spacing.md,
-    borderRadius: 8,
+    borderRadius: Radius.pill,
     alignItems: "center",
     justifyContent: "center",
+    paddingHorizontal: Spacing.lg,
   },
-  primary: {
-    backgroundColor: Colors.dark.primary,
+  sizeLg: {
+    minHeight: 52,
+    paddingVertical: 14,
   },
-  secondary: {
-    backgroundColor: Colors.dark.surface,
+  sizeMd: {
+    minHeight: 40,
+    paddingVertical: 9,
+    paddingHorizontal: Spacing.md,
   },
-  ghost: {
-    backgroundColor: "transparent",
+  fullWidth: {
+    width: "100%",
   },
-  text: {
-    color: "#FFFFFF",
-    fontWeight: "600",
+  contentRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: 10,
+  },
+  label: {
+    fontSize: Typography.sizes.md,
+    lineHeight: Typography.lineHeights.md,
+    fontWeight: Typography.weights.semibold,
+  },
+  labelMd: {
+    fontSize: Typography.sizes.sm,
+    lineHeight: Typography.lineHeights.sm,
   },
 });
-
