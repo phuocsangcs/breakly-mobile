@@ -1,6 +1,7 @@
 // Atomic select/dropdown trigger component styled with Figma Breakly surface & typography tokens.
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, Radius, Spacing, ThemeMode, Typography } from "@/constants/theme";
 
 export interface DropdownProps {

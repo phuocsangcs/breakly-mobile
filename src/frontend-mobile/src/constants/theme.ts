@@ -1,3 +1,5 @@
+
+
 // Global theme tokens synchronized from Figma "Breakly – UI" (Foundations & Components, node 47:2).
 // Includes Cozy chill room (Dark) and Normal (Light) palettes, typography scale (Fraunces & DM Sans),
 // spacing, border radii, and backward-compatible aliases for all existing screens.
@@ -121,10 +123,15 @@ export const Radius = {
   full: 9999,
 };
 
+export const FontFamilies = {
+  display: "Fraunces-SemiBold",
+  sans: "DMSans-Regular",
+};
+
 export const Typography = {
   fonts: {
-    display: "Fraunces",
-    sans: "DM Sans",
+    display: FontFamilies.display,
+    sans: FontFamilies.sans,
   },
   sizes: {
     xxs: 10,
@@ -156,21 +163,25 @@ export const Typography = {
   },
   presets: {
     display: {
+      fontFamily: FontFamilies.display,
       fontSize: 38,
       lineHeight: 46,
       fontWeight: "600" as const,
     },
     h1: {
+      fontFamily: FontFamilies.display,
       fontSize: 32,
       lineHeight: 40,
       fontWeight: "600" as const,
     },
     h2: {
+      fontFamily: FontFamilies.display,
       fontSize: 28,
       lineHeight: 34,
       fontWeight: "600" as const,
     },
     title: {
+      fontFamily: FontFamilies.display,
       fontSize: 20,
       lineHeight: 26,
       fontWeight: "600" as const,

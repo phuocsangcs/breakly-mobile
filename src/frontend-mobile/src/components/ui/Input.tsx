@@ -1,10 +1,10 @@
 // Atomic text input component synchronized from Figma "Input" (node 47:366).
 // Supports Default, Focused, Filled, and Error states across Dark (Cozy) and Light (Normal) themes.
 import React, { useState } from "react";
+import { AppText as Text } from "@/components/ui/AppText";
 import {
   StyleProp,
   StyleSheet,
-  Text,
   TextInput,
   TextInputProps,
   View,
@@ -105,7 +105,8 @@ const styles = StyleSheet.create({
   },
   input: {
     flex: 1,
-    fontSize: Typography.sizes. label,
+    fontFamily: Typography.fonts.sans,
+    fontSize: 16,
     lineHeight: Typography.lineHeights.sm,
     fontWeight: Typography.weights.regular,
     paddingVertical: 14,

@@ -20,6 +20,8 @@ interface MusicState {
   togglePlay: () => Promise<void>;
   pause: () => void;
   next: () => void;
+  previous: () => void;
+  playTrackAt: (index: number) => void;
   stop: () => void;
   setVolume: (volume: number) => void;
 }
@@ -118,6 +120,19 @@ export const useMusicStore = create<MusicState>((set, get) => {
       const { queue, currentIndex } = get();
       if (queue.length === 0) return;
       startIndex((currentIndex + 1) % queue.length);
+    },
+
+    previous: () => {
+      const { queue, currentIndex } = get();
+      if (queue.length === 0) return;
+      startIndex((currentIndex - 1 + queue.length) % queue.length);
+    },
+
+    playTrackAt: (index: number) => {
+      const { queue } = get();
+      if (index < 0 || index >= queue.length) return;
+      mediaFocus.clearVideoHold();
+      startIndex(index);
     },
 
     stop: () => {

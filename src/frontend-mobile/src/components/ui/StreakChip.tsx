@@ -1,6 +1,8 @@
+import { FigmaImage } from "./FigmaImage";
 // Daily streak pill synchronized from Figma "StreakChip" (node 47:1084).
 import React from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 
 export interface StreakChipProps {
@@ -20,12 +22,8 @@ export function StreakChip({
   const displayLabel = label ?? `${days} ${days === 1 ? "day" : "days"}`;
 
   return (
-    <View style={[styles.chip, { backgroundColor: palette.surface2 }, style]}>
-      {/* Flame Icon */}
-      <View style={styles.flameIcon}>
-        <View style={[styles.flameOuter, { backgroundColor: palette.accent }]} />
-        <View style={[styles.flameInner, { backgroundColor: palette.surface2 }]} />
-      </View>
+    <View style={[styles.chip, { backgroundColor: theme === "garden" || theme === "light" ? "#FFFFFF" : "rgba(255,246,232,0.12)" }, style]}>
+      <FigmaImage name={theme === "garden" || theme === "light" ? "2-195-imgIconFlame" : "2-2-imgIconFlame"} />
       <Text style={[styles.label, { color: palette.text }]}>{displayLabel}</Text>
     </View>
   );

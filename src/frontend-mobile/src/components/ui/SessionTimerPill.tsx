@@ -1,7 +1,9 @@
+import { FigmaImage } from "./FigmaImage";
 // Floating pill-shaped countdown indicator synchronized from Figma "TimerChip" (node 47:418).
 // Supports Normal and Warning (highlighted / 1-minute left) states across Dark and Light themes.
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 
 export interface SessionTimerPillProps {
@@ -29,44 +31,15 @@ export function SessionTimerPill({
   const palette = getThemeColors(theme);
 
   const bgColor = highlighted ? palette.accent : palette.surface2;
-  const iconColor = highlighted ? palette.onAccent : palette.accent;
   const textColor = highlighted ? palette.onAccent : palette.text;
 
   return (
-    <View style={[styles.pill, { backgroundColor: bgColor }, style]}>
-      {/* Timer Clock Icon (14x14 matching Figma Vector) */}
-      <View style={[styles.clockCircle, { borderColor: iconColor }]}>
-        <View style={[styles.clockHandVertical, { backgroundColor: iconColor }]} />
-        <View style={[styles.clockHandHorizontal, { backgroundColor: iconColor }]} />
-      </View>
-
+    <TouchableOpacity style={[styles.pill, { backgroundColor: bgColor }, style]}
+      onPress={onEndPress} disabled={!onEndPress} activeOpacity={0.8}
+      accessibilityRole="button" accessibilityLabel={`${time} remaining. ${endLabel} break`}>
+      <FigmaImage name={theme === "light" || theme === "garden" ? "12-541-imgIconTimer" : "8-2-imgIconTimer"} />
       <Text style={[styles.time, { color: textColor }]}>{time}</Text>
-
-      {onEndPress ? (
-        <TouchableOpacity
-          onPress={onEndPress}
-          activeOpacity={0.75}
-          hitSlop={{ top: 8, bottom: 8, left: 6, right: 8 }}
-          style={[
-            styles.endBtn,
-            {
-              borderLeftColor: highlighted
-                ? "rgba(43, 34, 56, 0.25)"
-                : palette.line,
-            },
-          ]}
-        >
-          <Text
-            style={[
-              styles.endText,
-              { color: highlighted ? palette.onAccent : palette.danger },
-            ]}
-          >
-            {endLabel}
-          </Text>
-        </TouchableOpacity>
-      ) : null}
-    </View>
+    </TouchableOpacity>
   );
 }
 

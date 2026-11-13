@@ -1,7 +1,9 @@
+import { FigmaImage } from "./FigmaImage";
 // Floating pill bottom navigation bar synchronized from Figma "BottomBar" (node 47:840).
 // Supports "room", "history", and "profile" tabs across Dark (Cozy) and Light (Normal) themes.
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 
 export type BottomBarTabKey = "room" | "history" | "profile";
@@ -32,6 +34,8 @@ export function BottomBar({
 }: BottomBarProps) {
   const palette = getThemeColors(theme);
 
+  const light = theme === "light" || theme === "garden";
+  const frame = activeTab === "room" ? (light ? "2-195" : "2-2") : activeTab === "history" ? (light ? "12-1326" : "10-159") : (light ? "12-1409" : "10-242");
   return (
     <View
       style={[
@@ -56,23 +60,7 @@ export function BottomBar({
             accessibilityState={{ selected: isActive }}
             style={styles.tab}
           >
-            {/* Minimal geometric icon matching Figma 22x22 tab icons */}
-            <View style={styles.iconContainer}>
-              {item.key === "room" && (
-                <View style={[styles.houseIcon, { borderColor: tintColor }]} />
-              )}
-              {item.key === "history" && (
-                <View style={[styles.clockIcon, { borderColor: tintColor }]}>
-                  <View style={[styles.clockHand, { backgroundColor: tintColor }]} />
-                </View>
-              )}
-              {item.key === "profile" && (
-                <View style={styles.profileIconWrap}>
-                  <View style={[styles.profileHead, { borderColor: tintColor }]} />
-                  <View style={[styles.profileShoulders, { borderColor: tintColor }]} />
-                </View>
-              )}
-            </View>
+            <FigmaImage name={`${frame}-${item.key === "room" ? "imgIconHome" : item.key === "history" ? "imgIconHistory" : "imgIconUser"}`} />
             <Text style={[styles.label, { color: tintColor }]}>{item.label}</Text>
           </TouchableOpacity>
         );

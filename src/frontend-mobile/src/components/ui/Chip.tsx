@@ -1,7 +1,8 @@
 // Category filter pill synchronized from Figma "Chip" (node 47:434).
 // Supports Selected and Default states across Dark (Cozy) and Light (Normal) themes.
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 
 export interface ChipProps {

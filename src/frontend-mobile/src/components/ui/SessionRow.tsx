@@ -1,7 +1,8 @@
 // History session row synchronized from Figma "SessionRow" (node 47:864).
 // Displays a 48x48 duration badge on the left, time range + used services in the middle, and a chevron on the right.
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, Radius, ThemeMode, Typography } from "@/constants/theme";
 
 export interface SessionRowProps {

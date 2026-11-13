@@ -1,7 +1,9 @@
+import { FigmaImage } from "./FigmaImage";
 // Settings & Profile row synchronized from Figma "SettingRow" (node 47:904).
 // Supports "value" (with right value + chevron), "toggle" (with embedded Toggle), and "danger" (destructive action).
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, Radius, ThemeMode, Typography } from "@/constants/theme";
 import { Toggle } from "./Toggle";
 
@@ -67,6 +69,7 @@ export function SettingRow({
         style,
       ]}
     >
+      {isDanger && <FigmaImage name={theme === "light" || theme === "garden" ? "12-1409-imgIconLogout" : "10-242-imgIconLogout"} />}
       <Text
         style={[
           styles.label,
@@ -84,7 +87,7 @@ export function SettingRow({
               {value}
             </Text>
           ) : null}
-          <Text style={[styles.chevron, { color: palette.textSecondary }]}>›</Text>
+          <FigmaImage name={theme === "light" || theme === "garden" ? "12-1409-imgIconChev" : "10-242-imgIconChev"} />
         </View>
       ) : null}
     </TouchableOpacity>

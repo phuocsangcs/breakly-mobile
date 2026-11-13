@@ -1,7 +1,8 @@
 // Composed news item card previewing title, source, publication time and thumbnail (FR 5.1).
 // Synchronized with Figma "05 · News List" card tokens.
 import React from "react";
-import { Image, StyleSheet, Text, TouchableOpacity, View } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { Image, StyleSheet, TouchableOpacity, View } from "react-native";
 import { BreaklyThemeId, getThemeColors, Radius, Spacing, ThemeMode, Typography } from "@/constants/theme";
 import { usePreferencesStore } from "@/features/preferences";
 import { Card } from "./ui/Card";

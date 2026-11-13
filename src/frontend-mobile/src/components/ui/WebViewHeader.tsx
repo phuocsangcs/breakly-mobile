@@ -1,7 +1,9 @@
+import { FigmaImage } from "./FigmaImage";
 // In-app browser header bar synchronized from Figma "WebViewHeader" (node 47:704).
 // Includes a 40x40 back button, page title + SSL lock domain, SessionTimerPill, and optional loading progress bar.
 import React from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 import { IconButton } from "./IconButton";
 import { ProgressBar } from "./ProgressBar";
@@ -51,7 +53,7 @@ export function WebViewHeader({
           </Text>
           {domain ? (
             <View style={styles.domainRow}>
-              <View style={[styles.lockBody, { borderColor: palette.textSecondary }]} />
+              <FigmaImage name={theme === "light" || theme === "garden" ? "12-768-imgIconLock" : "8-229-imgIconLock"} />
               <Text
                 style={[styles.domain, { color: palette.textSecondary }]}
                 numberOfLines={1}
@@ -88,7 +90,7 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 64,
+    height: 54,
     paddingHorizontal: 20,
     gap: 12,
   },

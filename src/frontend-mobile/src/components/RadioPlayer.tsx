@@ -1,6 +1,7 @@
 // Composed ambient audio player component synchronized with Figma "Music Radio" & UI Kit tokens (FR 4.1–4.3).
 import React from "react";
-import { ActivityIndicator, Image, StyleSheet, Text, View } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { ActivityIndicator, Image, StyleSheet, View } from "react-native";
 import { getThemeColors, Radius, Spacing, Typography } from "@/constants/theme";
 import { useMusicCategories, useMusicPlayer } from "@/features/music";
 import { usePreferencesStore } from "@/features/preferences";

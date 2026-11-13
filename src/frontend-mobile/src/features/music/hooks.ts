@@ -43,6 +43,8 @@ export function useMusicPlayer() {
       togglePlay: s.togglePlay,
       pause: s.pause,
       next: s.next,
+      previous: s.previous,
+      playTrackAt: s.playTrackAt,
       stop: s.stop,
       setVolume: s.setVolume,
     })),

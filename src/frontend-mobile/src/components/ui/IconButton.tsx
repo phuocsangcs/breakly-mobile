@@ -1,7 +1,9 @@
+import { FigmaImage } from "./FigmaImage";
 // Circular 44x44 icon button synchronized from Figma "IconButton" (node 47:386).
 // Supports "back" (←), "collapse" (⌄), and "close" (✕) icons across Dark and Light themes.
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode } from "@/constants/theme";
 
 export type IconButtonType = "back" | "collapse" | "close";
@@ -48,16 +50,10 @@ export function IconButton({
         style,
       ]}
     >
-      <Text
-        style={[
-          styles.glyph,
-          icon === "back" && styles.glyphBack,
-          icon === "collapse" && styles.glyphCollapse,
-          { color: palette.text },
-        ]}
-      >
-        {ICON_GLYPHS[icon]}
-      </Text>
+      {icon === "close" ? <Text style={[styles.glyph, { color: palette.text }]}>{ICON_GLYPHS.close}</Text> :
+        <FigmaImage name={icon === "back" ? (theme === "light" || theme === "garden" ? "12-541-imgIconBack" : "8-2-imgIconBack") :
+          (theme === "light" || theme === "garden" ? "12-673-imgIconDown" : "8-134-imgIconDown")} />}
+
     </TouchableOpacity>
   );
 }

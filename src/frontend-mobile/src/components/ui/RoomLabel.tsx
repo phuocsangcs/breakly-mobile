@@ -1,7 +1,9 @@
+import { FigmaImage } from "./FigmaImage";
 // Interactive room hotspot pill synchronized from Figma "RoomLabel" (node 47:1030).
 // Supports "music", "news", and "videos" hotspot types across Dark and Light themes.
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 
 export type RoomLabelKind = "music" | "news" | "videos";
@@ -46,37 +48,7 @@ export function RoomLabel({
         style,
       ]}
     >
-      {/* Kind Icon */}
-      <View style={styles.iconBox}>
-        {kind === "music" && (
-          <Text style={[styles.iconGlyph, { color: palette.roomLabelIcon }]}>♫</Text>
-        )}
-        {kind === "news" && (
-          <View
-            style={[
-              styles.newsIconRect,
-              { borderColor: palette.roomLabelIcon },
-            ]}
-          >
-            <View
-              style={[
-                styles.newsIconLine,
-                { backgroundColor: palette.roomLabelIcon },
-              ]}
-            />
-          </View>
-        )}
-        {kind === "videos" && (
-          <View
-            style={[
-              styles.videoIconRect,
-              { borderColor: palette.roomLabelIcon },
-            ]}
-          >
-            <Text style={[styles.playGlyph, { color: palette.roomLabelIcon }]}>▸</Text>
-          </View>
-        )}
-      </View>
+      <FigmaImage name={`${theme === "light" || theme === "garden" ? "2-195" : "2-2"}-${kind === "music" ? "imgIconMusic" : kind === "news" ? "imgIconNews" : "imgIconTv"}`} />
 
       <Text style={[styles.label, { color: palette.roomLabelText }]}>
         {displayLabel}
@@ -96,9 +68,9 @@ const styles = StyleSheet.create({
     borderRadius: 18,
     gap: 6,
     shadowColor: "#000000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.2,
-    shadowRadius: 8,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.18,
+    shadowRadius: 6,
     elevation: 4,
   },
   iconBox: {

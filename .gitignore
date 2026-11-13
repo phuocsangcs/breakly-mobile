@@ -115,3 +115,4 @@ local-ref/
 example/
 
 infra/
+!src/infra/

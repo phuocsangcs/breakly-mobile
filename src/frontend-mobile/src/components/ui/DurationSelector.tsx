@@ -1,6 +1,7 @@
 // Break duration selector pills (10 / 20 / 30 min) synchronized from Figma "DurationSelector" (node 47:486).
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 
 export interface DurationSelectorProps {
@@ -35,8 +36,8 @@ export function DurationSelector({
             style={[
               styles.pill,
               {
-                backgroundColor: selected ? palette.accent : palette.surface,
-                borderColor: selected ? palette.accent : palette.line,
+                backgroundColor: selected ? palette.accent : theme === "light" || theme === "garden" ? "#FFFFFF" : "rgba(255,246,232,0.08)",
+                borderColor: selected ? palette.accent : theme === "light" || theme === "garden" ? palette.line : "rgba(255,246,232,0.28)",
                 opacity: disabled && !selected ? 0.5 : 1,
               },
             ]}
@@ -63,11 +64,12 @@ const styles = StyleSheet.create({
     gap: 8,
   },
   pill: {
-    minWidth: 96,
+    flex: 1,
+    minWidth: 0,
     height: 48,
     borderRadius: 24,
     borderWidth: 1.5,
-    paddingHorizontal: 18,
+    paddingHorizontal: 8,
     alignItems: "center",
     justifyContent: "center",
   },

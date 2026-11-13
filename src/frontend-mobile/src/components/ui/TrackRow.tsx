@@ -1,11 +1,12 @@
+import { FigmaImage } from "./FigmaImage";
 // Audio track list row synchronized from Figma "Track row" (node 47:550).
 // Supports Default and Playing states across Dark (Cozy) and Light (Normal) themes.
 import React from "react";
+import { AppText as Text } from "@/components/ui/AppText";
 import {
   Image,
   StyleProp,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -52,7 +53,7 @@ export function TrackRow({
         {artworkUrl ? (
           <Image source={{ uri: artworkUrl }} style={styles.artworkImage} />
         ) : (
-          <View style={[styles.artworkDot, { backgroundColor: palette.accent }]} />
+          <FigmaImage name="8-2-imgArt" />
         )}
       </View>
 
@@ -77,14 +78,10 @@ export function TrackRow({
 
       {/* Right Action: Equalizer bars when playing, or 36x36 Play button when idle */}
       {playing ? (
-        <View style={styles.eqWrap}>
-          <View style={[styles.eqBar, styles.eqBarShort, { backgroundColor: palette.accent }]} />
-          <View style={[styles.eqBar, styles.eqBarTall, { backgroundColor: palette.accent }]} />
-          <View style={[styles.eqBar, styles.eqBarMid, { backgroundColor: palette.accent }]} />
-        </View>
+        <View style={styles.eqWrap}><FigmaImage name={theme === "light" || theme === "garden" ? "12-541-imgGroup" : "8-2-imgGroup"} /></View>
       ) : (
         <View style={[styles.playCircle, { borderColor: palette.line }]}>
-          <Text style={[styles.playIcon, { color: palette.text }]}>▸</Text>
+          <FigmaImage name={theme === "light" || theme === "garden" ? "12-541-imgIconPlay" : "8-2-imgIconPlay"} />
         </View>
       )}
     </TouchableOpacity>

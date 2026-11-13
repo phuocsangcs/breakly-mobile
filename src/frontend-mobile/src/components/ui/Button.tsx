@@ -1,11 +1,11 @@
 // Atomic button component synchronized from Figma "Button" (node 47:296).
 // Supports Primary, Secondary, and Ghost variants across Dark (Cozy) and Light (Normal) themes.
 import React from "react";
+import { AppText as Text } from "@/components/ui/AppText";
 import {
   ActivityIndicator,
   StyleProp,
   StyleSheet,
-  Text,
   TextStyle,
   TouchableOpacity,
   View,

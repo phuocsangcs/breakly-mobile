@@ -1,0 +1,22 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="390" height="740" viewBox="0 0 390 740" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Video frame" clip-path="url(#clip0_0_47)">
+<path id="Vector" d="M390 0H0V740H390V0Z" fill="url(#paint0_linear_0_47)"/>
+<path id="Vector_2" d="M195 454C224.823 454 249 429.823 249 400C249 370.177 224.823 346 195 346C165.177 346 141 370.177 141 400C141 429.823 165.177 454 195 454Z" fill="#F6D98E"/>
+<path id="Vector_3" d="M0 470C66.6667 423.333 133.333 416.667 200 450C266.667 483.333 330 476.667 390 430V740H0V470Z" fill="#4F5B7A"/>
+<path id="Vector_4" d="M0 560C80 520 160 515 240 545C320 575 370 570 390 530V740H0V560Z" fill="#2E2F46"/>
+<path id="Vector_5" d="M390 0H0V740H390V0Z" fill="url(#paint1_linear_0_47)"/>
+</g>
+<defs>
+<linearGradient id="paint0_linear_0_47" x1="0" y1="0" x2="0" y2="740" gradientUnits="userSpaceOnUse">
+<stop stop-color="#2C4A63"/>
+<stop offset="0.62" stop-color="#E9A066"/>
+</linearGradient>
+<linearGradient id="paint1_linear_0_47" x1="0" y1="0" x2="0" y2="740" gradientUnits="userSpaceOnUse">
+<stop offset="0.6" stop-opacity="0"/>
+<stop offset="1" stop-opacity="0.55"/>
+</linearGradient>
+<clipPath id="clip0_0_47">
+<rect width="390" height="740" fill="white"/>
+</clipPath>
+</defs>
+</svg>

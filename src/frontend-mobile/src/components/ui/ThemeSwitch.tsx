@@ -1,6 +1,7 @@
+import { FigmaImage } from "./FigmaImage";
 // Cozy (Moon) / Normal (Sun) theme toggle pill synchronized from Figma "ThemeSwitch" (node 47:1070).
 import React from "react";
-import { StyleProp, StyleSheet, Text, TouchableOpacity, View, ViewStyle } from "react-native";
+import { StyleProp, StyleSheet, TouchableOpacity, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode } from "@/constants/theme";
 
 export interface ThemeSwitchProps {
@@ -19,7 +20,7 @@ export function ThemeSwitch({
   const palette = getThemeColors(value);
 
   return (
-    <View style={[styles.container, { backgroundColor: palette.surface2 }, style]}>
+    <View style={[styles.container, { backgroundColor: isLight ? "#FFFFFF" : "rgba(255,246,232,0.12)" }, style]}>
       {/* Cozy (Moon) Button */}
       <TouchableOpacity
         activeOpacity={0.85}
@@ -31,14 +32,7 @@ export function ThemeSwitch({
           !isLight && { backgroundColor: palette.accent },
         ]}
       >
-        <Text
-          style={[
-            styles.glyph,
-            { color: !isLight ? palette.onAccent : palette.textSecondary },
-          ]}
-        >
-          ☾
-        </Text>
+        <FigmaImage name={`${isLight ? "2-195" : "2-2"}-imgIconMoon`} />
       </TouchableOpacity>
 
       {/* Normal (Sun) Button */}
@@ -52,14 +46,7 @@ export function ThemeSwitch({
           isLight && { backgroundColor: palette.accent },
         ]}
       >
-        <Text
-          style={[
-            styles.glyph,
-            { color: isLight ? palette.onAccent : palette.textSecondary },
-          ]}
-        >
-          ☀
-        </Text>
+        <FigmaImage name={`${isLight ? "2-195" : "2-2"}-imgIconSun`} />
       </TouchableOpacity>
     </View>
   );

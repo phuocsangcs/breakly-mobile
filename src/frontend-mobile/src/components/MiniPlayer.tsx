@@ -1,11 +1,12 @@
+import { FigmaImage } from "./ui/FigmaImage";
 // Compact floating mini-player bar synchronized from Figma "Mini-player" (node 47:624).
 // Shown on non-Radio screens while a music track is active (FR 4.3).
 import React from "react";
+import { AppText as Text } from "@/components/ui/AppText";
 import {
   Image,
   StyleProp,
   StyleSheet,
-  Text,
   TouchableOpacity,
   View,
   ViewStyle,
@@ -17,10 +18,11 @@ import { usePreferencesStore } from "@/features/preferences";
 
 export interface MiniPlayerProps {
   theme?: ThemeMode | BreaklyThemeId;
+  onPress?: () => void;
   style?: StyleProp<ViewStyle>;
 }
 
-export function MiniPlayer({ theme, style }: MiniPlayerProps) {
+export function MiniPlayer({ theme, onPress, style }: MiniPlayerProps) {
   const { currentTrack, isPlaying, positionSec, durationSec, togglePlay, next } =
     useMusicPlayer();
   const storedThemeId = usePreferencesStore((s) => s.themeId);
@@ -29,6 +31,8 @@ export function MiniPlayer({ theme, style }: MiniPlayerProps) {
   const isLight = resolvedTheme === "light" || resolvedTheme === "garden";
 
   if (!currentTrack) return null;
+
+  const handleOpen = onPress ?? (() => router.push("/radio"));
 
   const progressRatio =
     durationSec > 0 ? Math.max(0, Math.min(1, positionSec / durationSec)) : 0.35;
@@ -50,7 +54,7 @@ export function MiniPlayer({ theme, style }: MiniPlayerProps) {
       {/* 44x44 Artwork */}
       <TouchableOpacity
         activeOpacity={0.85}
-        onPress={() => router.push("/radio")}
+        onPress={handleOpen}
         style={[styles.artworkBox, { backgroundColor: palette.artworkBg }]}
       >
         {currentTrack.artworkUrl ? (
@@ -59,7 +63,7 @@ export function MiniPlayer({ theme, style }: MiniPlayerProps) {
             style={styles.artworkImage}
           />
         ) : (
-          <View style={[styles.artworkDot, { backgroundColor: palette.accent }]} />
+          <FigmaImage name="8-229-imgArt" />
         )}
       </TouchableOpacity>
 
@@ -67,7 +71,7 @@ export function MiniPlayer({ theme, style }: MiniPlayerProps) {
       <TouchableOpacity
         activeOpacity={0.85}
         style={styles.info}
-        onPress={() => router.push("/radio")}
+        onPress={handleOpen}
       >
         <Text style={[styles.title, { color: palette.text }]} numberOfLines={1}>
           {currentTrack.title}
@@ -88,14 +92,7 @@ export function MiniPlayer({ theme, style }: MiniPlayerProps) {
         accessibilityRole="button"
         accessibilityLabel={isPlaying ? "Pause" : "Play"}
       >
-        {isPlaying ? (
-          <View style={styles.pauseBars}>
-            <View style={[styles.pauseBar, { backgroundColor: palette.text }]} />
-            <View style={[styles.pauseBar, { backgroundColor: palette.text }]} />
-          </View>
-        ) : (
-          <Text style={[styles.playGlyph, { color: palette.text }]}>▸</Text>
-        )}
+        <FigmaImage name={`${isLight ? "12-541" : "8-2"}-${isPlaying ? "imgIconPause" : "imgIconPlay"}`} />
       </TouchableOpacity>
 
       {/* Next Button */}
@@ -106,15 +103,7 @@ export function MiniPlayer({ theme, style }: MiniPlayerProps) {
         accessibilityRole="button"
         accessibilityLabel="Next track"
       >
-        <View style={styles.nextGlyphWrap}>
-          <Text style={[styles.nextGlyph, { color: palette.textSecondary }]}>▸</Text>
-          <View
-            style={[
-              styles.nextEndBar,
-              { backgroundColor: palette.textSecondary },
-            ]}
-          />
-        </View>
+        <FigmaImage name={isLight ? "12-541-imgIconNext" : "8-2-imgIconNext"} />
       </TouchableOpacity>
 
       {/* Bottom 3px Progress Bar */}
@@ -146,8 +135,8 @@ const styles = StyleSheet.create({
   bar: {
     flexDirection: "row",
     alignItems: "center",
-    minHeight: 64,
-    paddingVertical: 10,
+    height: 64,
+    paddingVertical: 9,
     paddingLeft: 10,
     paddingRight: 18,
     borderRadius: Radius.xxl,
@@ -192,8 +181,8 @@ const styles = StyleSheet.create({
     fontWeight: Typography.weights.regular,
   },
   iconBtn: {
-    width: 30,
-    height: 30,
+    width: 22,
+    height: 44,
     alignItems: "center",
     justifyContent: "center",
   },

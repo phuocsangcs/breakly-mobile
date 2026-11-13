@@ -1,7 +1,8 @@
 // Non-blocking notification banner synchronized from Figma "Toast" (node 47:728).
 // Features a 36x36 circular accent icon badge, bold title, and muted subtitle.
 import React from "react";
-import { StyleProp, StyleSheet, Text, View, ViewStyle } from "react-native";
+import { AppText as Text } from "@/components/ui/AppText";
+import { StyleProp, StyleSheet, View, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, Radius, ThemeMode, Typography } from "@/constants/theme";
 
 export interface ToastProps {

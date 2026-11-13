@@ -1,0 +1,9 @@
+<svg preserveAspectRatio="none" overflow="visible" style="display: block;" width="150" height="150" viewBox="0 0 150 150" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="Clock">
+<path id="Vector" d="M75 146.25C114.35 146.25 146.25 114.35 146.25 75C146.25 35.6497 114.35 3.75 75 3.75C35.6497 3.75 3.75 35.6497 3.75 75C3.75 114.35 35.6497 146.25 75 146.25Z" fill="#C8945A"/>
+<path id="Vector_2" d="M75 133.125C107.102 133.125 133.125 107.102 133.125 75C133.125 42.8984 107.102 16.875 75 16.875C42.8984 16.875 16.875 42.8984 16.875 75C16.875 107.102 42.8984 133.125 75 133.125Z" fill="#F3E6CC"/>
+<path id="Vector_3" d="M75 75V33.75" stroke-width="7.5" stroke-linecap="round" stroke="#2E2F46"/>
+<path id="Vector_4" d="M75 75L105 91.875" stroke-width="7.5" stroke-linecap="round" stroke="#2E2F46"/>
+<path id="Vector_5" d="M75 82.5C79.1421 82.5 82.5 79.1421 82.5 75C82.5 70.8579 79.1421 67.5 75 67.5C70.8579 67.5 67.5 70.8579 67.5 75C67.5 79.1421 70.8579 82.5 75 82.5Z" fill="#E9B44C"/>
+</g>
+</svg>
