@@ -28,6 +28,7 @@ const SERVICE_LABEL: Record<ServiceType, string> = {
   MUSIC: "Music",
   NEWS: "News",
   VIDEO: "Videos",
+  GAME: "Games",
 };
 
 function formatDurationTotal(totalMinutes: number): string {

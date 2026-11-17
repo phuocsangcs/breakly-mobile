@@ -27,6 +27,7 @@ public final class SessionDto {
             @Min(0) int musicSeconds,
             @Min(0) int articlesOpened,
             @Min(0) int videosWatched,
+            @Min(0) Integer gamesPlayed, // optional: older clients and queued offline sessions omit it
             Set<ServiceType> servicesUsed) {
     }
 
@@ -41,12 +42,13 @@ public final class SessionDto {
             int musicSeconds,
             int articlesOpened,
             int videosWatched,
+            int gamesPlayed,
             Set<ServiceType> servicesUsed) {
 
         public static SessionResponse from(BreakSession s) {
             return new SessionResponse(s.getId(), s.getClientId(), s.getStartedAt(), s.getEndedAt(),
                     s.getPlannedSeconds(), s.getActualSeconds(), s.getEndReason(), s.getMusicSeconds(),
-                    s.getArticlesOpened(), s.getVideosWatched(), s.getServicesUsed());
+                    s.getArticlesOpened(), s.getVideosWatched(), s.getGamesPlayed(), s.getServicesUsed());
         }
     }
 

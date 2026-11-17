@@ -7,5 +7,7 @@ export const queryKeys = {
   sessions: ["sessions"] as const,
   sessionStats: ["sessions", "stats"] as const,
   preferences: ["preferences"] as const,
+  gamesRoot: ["games"] as const,
+  games: (scope: "user" | "guest") => ["games", scope] as const,
 };
 

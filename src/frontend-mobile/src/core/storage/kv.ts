@@ -12,6 +12,7 @@ export const StorageKeys = {
   sessionSyncQueue: "session:syncQueue",
   musicState: "music:state",
   authUser: "auth:user",
+  gamePlays: "games:plays",
 } as const;
 
 export const kv = {

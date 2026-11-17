@@ -1,6 +1,7 @@
 package com.breakly.service;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 import java.time.Duration;
@@ -15,7 +16,7 @@ import org.springframework.web.client.RestClient;
 import com.breakly.client.RssClient;
 import com.breakly.common.TtlCache;
 
-// Fast unit tests covering RSS parsing, daily streak calculation, token hashing and TTL cache fallback.
+// Fast unit tests covering RSS parsing, daily streak calculation, game play-date validation, token hashing and TTL cache fallback.
 class CoreLogicUnitTests {
 
     @Test
@@ -31,6 +32,17 @@ class CoreLogicUnitTests {
 
         assertEquals(2, SessionService.computeCurrentStreak(days, today));
         assertEquals(4, SessionService.computeLongestStreak(days));
+    }
+
+    @Test
+    void acceptsOnlyPlausibleLocalPlayDates() {
+        LocalDate utcToday = LocalDate.of(2026, 11, 17);
+        assertTrue(GameService.isPlausibleLocalDate(utcToday, utcToday));
+        assertTrue(GameService.isPlausibleLocalDate(utcToday.minusDays(1), utcToday)); // e.g. UTC-10
+        assertTrue(GameService.isPlausibleLocalDate(utcToday.plusDays(1), utcToday)); // e.g. UTC+14
+        assertFalse(GameService.isPlausibleLocalDate(utcToday.minusDays(2), utcToday));
+        assertFalse(GameService.isPlausibleLocalDate(utcToday.plusDays(2), utcToday));
+        assertFalse(GameService.isPlausibleLocalDate(null, utcToday));
     }
 
     @Test

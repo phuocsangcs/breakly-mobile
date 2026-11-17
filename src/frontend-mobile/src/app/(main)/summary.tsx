@@ -114,6 +114,21 @@ export default function SummaryScreen() {
               </View>
               <FigmaImage name={themeId === "garden" ? "12-1167-imgIconCheck" : "10-2-imgIconCheck"} />
             </View>
+
+            <View style={styles.teardownRow}>
+              <View style={[styles.teardownIconCircle, { backgroundColor: palette.surface2 }]}>
+                <Text style={styles.gameGlyph}>🧩</Text>
+              </View>
+              <View style={styles.teardownMeta}>
+                <Text style={[styles.teardownItemTitle, { color: palette.text }]}>
+                  Game Corner closed
+                </Text>
+                <Text style={[styles.teardownItemSub, { color: palette.textSecondary }]}>
+                  nytimes.com · {lastCompleted.gamesPlayed ?? 0} played
+                </Text>
+              </View>
+              <FigmaImage name={themeId === "garden" ? "12-1167-imgIconCheck" : "10-2-imgIconCheck"} />
+            </View>
           </Card>
         </View>
 
@@ -239,6 +254,24 @@ export default function SummaryScreen() {
                   {lastCompleted.videosWatched}
                 </Text>
               </View>
+
+              <View style={styles.breakdownRow}>
+                <View style={[styles.badgeCircle, { backgroundColor: "#5E8C61" }]}>
+                  <Text style={styles.gameGlyph}>🧩</Text>
+                </View>
+                <View style={styles.breakdownMeta}>
+                  <Text style={[styles.rowTitle, { color: palette.text }]}>
+                    Games
+                  </Text>
+                  <Text style={[styles.rowSub, { color: palette.textSecondary }]}>
+                    {lastCompleted.gamesPlayed ?? 0}{" "}
+                    {(lastCompleted.gamesPlayed ?? 0) === 1 ? "puzzle" : "puzzles"} played
+                  </Text>
+                </View>
+                <Text style={[styles.rowMetric, { color: palette.text }]}>
+                  {lastCompleted.gamesPlayed ?? 0}
+                </Text>
+              </View>
             </View>
           </Card>
         ) : (
@@ -317,6 +350,7 @@ export default function SummaryScreen() {
 }
 
 const styles = StyleSheet.create({
+  gameGlyph: { fontSize: 18, lineHeight: 22 },
   root: {
     flex: 1,
   },

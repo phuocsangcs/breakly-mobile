@@ -30,6 +30,7 @@ export function useSessionTimer() {
       dismissOneMinuteBanner: st.dismissOneMinuteBanner,
       recordArticleOpened: st.recordArticleOpened,
       recordVideoWatched: st.recordVideoWatched,
+      recordGamePlayed: st.recordGamePlayed,
     })),
   );
   return { ...s, formattedRemaining: formatMmSs(s.remainingSeconds) };

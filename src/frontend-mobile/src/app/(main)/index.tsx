@@ -58,6 +58,7 @@ export default function HomeSpaceScreen() {
     if (service === "MUSIC") router.push("/radio");
     if (service === "NEWS") router.push("/news");
     if (service === "VIDEO") router.push("/tv");
+    if (service === "GAME") router.push("/games");
   };
 
   const confirmEndEarly = () => {
@@ -160,7 +161,7 @@ export default function HomeSpaceScreen() {
               />
 
               <Text style={[styles.cardSub, { color: palette.textSecondary }]}>
-                left of {selectedMinutes} min. Tap the radio, newspaper or TV to switch.
+                left of {selectedMinutes} min. Tap the radio, newspaper, TV or games to switch.
               </Text>
             </View>
           ) : (

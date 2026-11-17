@@ -69,6 +69,9 @@ public class BreakSession {
     @Column(name = "videos_watched", nullable = false)
     private int videosWatched;
 
+    @Column(name = "games_played", nullable = false)
+    private int gamesPlayed;
+
     @Convert(converter = ServiceTypeSetConverter.class)
     @Column(name = "services_used", nullable = false)
     private Set<ServiceType> servicesUsed = EnumSet.noneOf(ServiceType.class);

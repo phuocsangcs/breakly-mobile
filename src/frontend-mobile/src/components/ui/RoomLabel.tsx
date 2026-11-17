@@ -1,12 +1,19 @@
+import { Image } from "expo-image";
 import { FigmaImage } from "./FigmaImage";
 // Interactive room hotspot pill synchronized from Figma "RoomLabel" (node 47:1030).
-// Supports "music", "news", and "videos" hotspot types across Dark and Light themes.
+// Supports "music", "news", "videos" and "games" hotspot types across Dark and Light themes.
 import React from "react";
 import { AppText as Text } from "@/components/ui/AppText";
 import { StyleProp, StyleSheet, TouchableOpacity, ViewStyle } from "react-native";
 import { BreaklyThemeId, getThemeColors, ThemeMode, Typography } from "@/constants/theme";
 
-export type RoomLabelKind = "music" | "news" | "videos";
+export type RoomLabelKind = "music" | "news" | "videos" | "games";
+
+// Not in the Figma file: drawn to match the 16px line icons above (stroke 1.47, same colours per theme).
+const GAMEPAD_ICON = {
+  dark: require("../../../assets/room/icon-gamepad-cozy.svg"),
+  light: require("../../../assets/room/icon-gamepad-garden.svg"),
+};
 
 export interface RoomLabelProps {
   kind?: RoomLabelKind;
@@ -21,6 +28,7 @@ const DEFAULT_LABELS: Record<RoomLabelKind, string> = {
   music: "Music",
   news: "News",
   videos: "Videos",
+  games: "Games",
 };
 
 export function RoomLabel({
@@ -32,6 +40,7 @@ export function RoomLabel({
   style,
 }: RoomLabelProps) {
   const palette = getThemeColors(theme);
+  const isLight = theme === "light" || theme === "garden";
   const displayLabel = label ?? DEFAULT_LABELS[kind];
 
   return (
@@ -48,7 +57,11 @@ export function RoomLabel({
         style,
       ]}
     >
-      <FigmaImage name={`${theme === "light" || theme === "garden" ? "2-195" : "2-2"}-${kind === "music" ? "imgIconMusic" : kind === "news" ? "imgIconNews" : "imgIconTv"}`} />
+      {kind === "games" ? (
+        <Image source={isLight ? GAMEPAD_ICON.light : GAMEPAD_ICON.dark} style={styles.icon} contentFit="contain" />
+      ) : (
+        <FigmaImage name={`${isLight ? "2-195" : "2-2"}-${kind === "music" ? "imgIconMusic" : kind === "news" ? "imgIconNews" : "imgIconTv"}`} />
+      )}
 
       <Text style={[styles.label, { color: palette.roomLabelText }]}>
         {displayLabel}
@@ -108,6 +121,10 @@ const styles = StyleSheet.create({
   playGlyph: {
     fontSize: 9,
     lineHeight: 10,
+  },
+  icon: {
+    width: 16,
+    height: 16,
   },
   label: {
     fontSize: Typography.sizes.sm,

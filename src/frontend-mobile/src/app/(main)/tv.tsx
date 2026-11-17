@@ -1,13 +1,17 @@
 import { FigmaImage } from "@/components/ui/FigmaImage";
 import { ScreenGlow } from "@/components/ui/ScreenGlow";
 import { WebViewHeader } from "@/components/ui/WebViewHeader";
-// TV screen synchronized with Figma "06 · Videos Player" (Shorts vertical feed + End Card + Long Videos).
-// Automatically pauses music on enter and resumes on exit (FR 4.5), displaying the paused notice pill & MiniPlayer.
-import React, { useState } from "react";
+// TV screen. On phones it is the real m.youtube.com in a WebView with Breakly guard rails (YouTubeTvScreen):
+// at most MAX_YOUTUBE_VIDEOS distinct videos, then an end card (FR 6.3); the WebView is torn down when the
+// break ends. On web, youtube.com cannot be framed, so the curated embed feed is used (CuratedTvScreen,
+// synchronized with Figma "06 · Videos Player": Shorts vertical feed + End Card + Long Videos).
+// Both pause music on enter and resume it on exit (FR 4.5).
+import React, { useEffect, useRef, useState } from "react";
 import { AppText as Text } from "@/components/ui/AppText";
 import {
   Alert,
   FlatList,
+  Platform,
   StyleSheet,
   TouchableOpacity,
   useWindowDimensions,
@@ -34,12 +38,109 @@ import {
   useShortsPager,
   useVideoFeed,
   useVideoMediaFocus,
+  YouTubeBrowser,
   YouTubePlayerView,
+  type YouTubeBrowserHandle,
   type VideoFormat,
   type VideoItem,
 } from "@/features/video";
 
+const MAX_YOUTUBE_VIDEOS = 10;
+
 export default function TvScreen() {
+  return Platform.OS === "web" ? <CuratedTvScreen /> : <YouTubeTvScreen />;
+}
+
+function YouTubeTvScreen() {
+  useVideoMediaFocus();
+  const insets = useSafeAreaInsets();
+  const { themeId } = usePreferences();
+  const palette = getThemeColors(themeId);
+  const { isActive, formattedRemaining, isFinalMinute, endSession, recordVideoWatched } = useSessionTimer();
+  const browser = useRef<YouTubeBrowserHandle>(null);
+  const watched = useRef(0);
+  const [watchedCount, setWatchedCount] = useState(0);
+  const [limitReached, setLimitReached] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const [progress, setProgress] = useState(0.3);
+
+  // Hard tear-down: if the break ends while this screen is still mounted, unmount the WebView so nothing keeps playing.
+  const wasActive = useRef(isActive);
+  const [breakOver, setBreakOver] = useState(false);
+  useEffect(() => {
+    if (wasActive.current && !isActive) setBreakOver(true);
+    wasActive.current = isActive;
+  }, [isActive]);
+
+  const handleVideoOpened = () => {
+    if (watched.current >= MAX_YOUTUBE_VIDEOS) {
+      browser.current?.pause();
+      setLimitReached(true);
+      return;
+    }
+    watched.current += 1;
+    setWatchedCount(watched.current);
+    recordVideoWatched();
+  };
+
+  const confirmEndEarly = () => {
+    Alert.alert("End break early?", "Your break progress up to now will be saved.", [
+      { text: "Cancel", style: "cancel" },
+      { text: "End break", style: "destructive", onPress: () => void endSession("ENDED_EARLY") },
+    ]);
+  };
+
+  const showEndCard = limitReached || breakOver;
+
+  return (
+    <View style={[styles.container, { backgroundColor: palette.background, paddingTop: Math.max(insets.top, 47) }]}>
+      <WebViewHeader title="Videos" domain="m.youtube.com" theme={themeId}
+        timerText={formattedRemaining} timerHighlighted={isFinalMinute}
+        onBackPress={() => router.back()} onEndSessionPress={isActive ? confirmEndEarly : undefined}
+        loading={loading && !showEndCard} loadingProgress={progress} />
+
+      <View style={styles.ytStatusRow}>
+        <Text style={[styles.sub, { color: palette.textSecondary }]}>
+          {watchedCount === 0
+            ? `Pick up to ${MAX_YOUTUBE_VIDEOS} videos for this break`
+            : `Video ${watchedCount} of ${MAX_YOUTUBE_VIDEOS}`}
+        </Text>
+        <View style={styles.ytProgress}>
+          <ProgressBar type="loading" progress={watchedCount / MAX_YOUTUBE_VIDEOS} theme={themeId} />
+        </View>
+      </View>
+
+      {showEndCard ? (
+        <View style={styles.ytEndWrap}>
+          <Card theme={themeId} style={styles.endCard}>
+            <Text style={[styles.endCardTitle, { color: palette.text }]}>
+              {breakOver ? "Time's up ✨" : "You've reached the end ✨"}
+            </Text>
+            <Text style={[styles.sub, { color: palette.textSecondary, textAlign: "center" }]}>
+              {breakOver
+                ? "Your break is over, so the TV is off."
+                : `That was ${MAX_YOUTUBE_VIDEOS} videos. Take a deep breath, listen to music, or return to your space.`}
+            </Text>
+            <Button label="Return to Home Space" theme={themeId} fullWidth onPress={() => router.replace("/")} />
+          </Card>
+        </View>
+      ) : (
+        <View style={[styles.ytWebWrap, { paddingBottom: insets.bottom }]}>
+          <YouTubeBrowser
+            ref={browser}
+            onVideoOpened={handleVideoOpened}
+            onLoadStart={() => setLoading(true)}
+            onLoadProgress={(p) => setProgress(Math.max(0.2, p))}
+            onLoadEnd={() => setLoading(false)}
+            onError={() => setLoading(false)}
+          />
+        </View>
+      )}
+    </View>
+  );
+}
+
+function CuratedTvScreen() {
   useVideoMediaFocus();
   const insets = useSafeAreaInsets();
   const { width } = useWindowDimensions();
@@ -335,6 +436,10 @@ export default function TvScreen() {
 }
 
 const styles = StyleSheet.create({
+  ytStatusRow: { paddingHorizontal: 20, paddingBottom: 10, gap: 6 },
+  ytProgress: { width: "100%" },
+  ytWebWrap: { flex: 1 },
+  ytEndWrap: { flex: 1, justifyContent: "center", paddingHorizontal: Spacing.md },
   loadingState: { flex: 1, alignItems: "center", paddingTop: 80, gap: 18 },
   loadingTitle: { ...Typography.presets.h2, fontSize: 26, marginTop: 32 },
   loadingSub: { fontSize: 15, lineHeight: 22, textAlign: "center", maxWidth: 300 },

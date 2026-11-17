@@ -1,10 +1,40 @@
-// Original Figma scene layers with interactive native hotspots.
+// Original Figma scene layers with interactive native hotspots: radio, newspaper, TV and gamepad on the cabinet.
+// The gamepad (Game Corner) is not part of the Figma file; it is drawn in the same flat style (assets/room).
+// Coordinates are in the 390x844 Figma frame, which is scaled to fit the screen.
 import React, { useState } from "react";
+import { Image } from "expo-image";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { FigmaImage } from "./ui/FigmaImage";
-import { RoomLabel } from "./ui/RoomLabel";
+import { RoomLabel, type RoomLabelKind } from "./ui/RoomLabel";
+import type { FigmaAssetName } from "@/constants/figma-assets";
 import type { ThemeId } from "@/features/preferences";
 import type { ServiceType } from "@/features/session";
+
+const GAMEPAD = {
+  cozy: require("../../assets/room/gamepad-cozy.svg"),
+  garden: require("../../assets/room/gamepad-garden.svg"),
+};
+
+// Four equal label pills across the cabinet front; each object is centred above its pill.
+const LABEL_WIDTH = 84;
+const LABEL_TOP = 566;
+const TABLE_TOP = 542; // objects stand on this line
+
+type RoomObject = {
+  service: ServiceType;
+  kind: RoomLabelKind;
+  asset: "imgObjectRadioMusic" | "imgObjectNewspaperNews" | "imgObjectTvShortVideos" | "gamepad";
+  labelX: number;
+  width: number;
+  height: number;
+};
+
+const OBJECTS: RoomObject[] = [
+  { service: "MUSIC", kind: "music", asset: "imgObjectRadioMusic", labelX: 18, width: 92, height: 76 },
+  { service: "NEWS", kind: "news", asset: "imgObjectNewspaperNews", labelX: 108, width: 76, height: 82 },
+  { service: "VIDEO", kind: "videos", asset: "imgObjectTvShortVideos", labelX: 198, width: 100, height: 100 },
+  { service: "GAME", kind: "games", asset: "gamepad", labelX: 288, width: 72, height: 56 },
+];
 
 export interface SpaceViewProps {
   themeId?: ThemeId;
@@ -16,26 +46,42 @@ export function SpaceView({ themeId = "cozy-room", musicPlaying, onSelectObject 
   const scale = Math.min(size.width / 390, size.height / 844);
   const left = (size.width - 390 * scale) / 2;
   const top = (size.height - 844 * scale) / 2;
-  const prefix = themeId === "garden" ? "2-195" : "2-2";
-  return <View style={[styles.scene, { backgroundColor: themeId === "garden" ? "#CFA77C" : "#4B3529" }]}
+  const garden = themeId === "garden";
+  const prefix = garden ? "2-195" : "2-2";
+  return <View style={[styles.scene, { backgroundColor: garden ? "#CFA77C" : "#4B3529" }]}
     onLayout={({ nativeEvent: { layout } }) => setSize({ width: layout.width, height: layout.height })}>
     <View style={{ position: "absolute", left, top, width: 390, height: 844,
       transform: [{ scale }], transformOrigin: "top left" }}>
       <FigmaImage name={`${prefix}-imgRoomBackground`} />
-      {([
-        ["MUSIC", "music", "imgObjectRadioMusic", 24, 446, 116, 96, 30],
-        ["NEWS", "news", "imgObjectNewspaperNews", 148, 438, 96, 104, 150],
-        ["VIDEO", "videos", "imgObjectTvShortVideos", 250, 418, 124, 124, 266],
-      ] as const).map(([service, kind, asset, x, y, width, height, labelX]) => <React.Fragment key={service}>
-        <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Open ${kind}`} activeOpacity={0.8}
-          onPress={() => onSelectObject?.(service)} style={{ position: "absolute", left: x, top: y, width, height }}>
-          <FigmaImage name={`${prefix}-${asset}`} width={width} height={height} />
-        </TouchableOpacity>
-        <RoomLabel kind={kind} theme={themeId} onPress={() => onSelectObject?.(service)}
-          style={{ position: "absolute", left: labelX, top: 566, width: 96 }} />
-      </React.Fragment>)}
-      {musicPlaying && <FigmaImage name="8-630-imgGroup" style={{ position: "absolute", left: 99, top: 402 }} />}
+      {OBJECTS.map(({ service, kind, asset, labelX, width, height }) => {
+        const x = labelX + (LABEL_WIDTH - width) / 2;
+        const open = () => onSelectObject?.(service);
+        return <React.Fragment key={service}>
+          <TouchableOpacity accessibilityRole="button" accessibilityLabel={`Open ${kind}`} activeOpacity={0.8}
+            onPress={open} style={{ position: "absolute", left: x, top: TABLE_TOP - height, width, height }}>
+            {asset === "gamepad" ? (
+              <Image source={garden ? GAMEPAD.garden : GAMEPAD.cozy} contentFit="contain" style={{ width, height }} />
+            ) : (
+              <FigmaImage name={`${prefix}-${asset}` as FigmaAssetName} width={width} height={height} />
+            )}
+          </TouchableOpacity>
+          <RoomLabel kind={kind} theme={themeId} onPress={open}
+            style={[styles.label, { left: labelX }]} />
+        </React.Fragment>;
+      })}
+      {/* Music notes float just above the radio's top-right corner. */}
+      {musicPlaying && <FigmaImage name="8-630-imgGroup" style={{ position: "absolute", left: 65, top: 424 }} />}
     </View>
   </View>;
 }
-const styles = StyleSheet.create({ scene: { flex: 1, overflow: "hidden" } });
+const styles = StyleSheet.create({
+  scene: { flex: 1, overflow: "hidden" },
+  label: {
+    position: "absolute",
+    top: LABEL_TOP,
+    width: LABEL_WIDTH,
+    minWidth: 0,
+    paddingHorizontal: 8,
+    gap: 4,
+  },
+});

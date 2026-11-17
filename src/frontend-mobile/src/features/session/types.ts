@@ -1,5 +1,5 @@
 // Domain types for break sessions, usage metrics, paginated history and streak statistics.
-export type ServiceType = "MUSIC" | "NEWS" | "VIDEO";
+export type ServiceType = "MUSIC" | "NEWS" | "VIDEO" | "GAME";
 export type EndReason = "COMPLETED" | "ENDED_EARLY";
 
 export interface SessionRecord {
@@ -13,6 +13,8 @@ export interface SessionRecord {
   musicSeconds: number;
   articlesOpened: number;
   videosWatched: number;
+  /** Optional: records saved before the Game Corner existed do not have it. */
+  gamesPlayed?: number;
   servicesUsed: ServiceType[];
 }
 

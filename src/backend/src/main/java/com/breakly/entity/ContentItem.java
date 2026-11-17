@@ -18,7 +18,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-// Entity representing hand-picked content: Jamendo music categories, RSS news sources and YouTube videos.
+// Entity representing hand-picked content: Jamendo music categories, RSS news sources, YouTube videos and web games.
 @Entity
 @Table(name = "content_items")
 @Getter
@@ -26,7 +26,7 @@ import lombok.Setter;
 @NoArgsConstructor
 public class ContentItem {
 
-    public enum Type { MUSIC_CATEGORY, NEWS_SOURCE, VIDEO }
+    public enum Type { MUSIC_CATEGORY, NEWS_SOURCE, VIDEO, GAME }
 
     public enum VideoFormat { SHORT, LONG }
 

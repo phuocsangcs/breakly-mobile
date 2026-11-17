@@ -55,6 +55,7 @@ public class SessionService {
                     s.setMusicSeconds(req.musicSeconds());
                     s.setArticlesOpened(req.articlesOpened());
                     s.setVideosWatched(req.videosWatched());
+                    s.setGamesPlayed(req.gamesPlayed() == null ? 0 : req.gamesPlayed());
                     s.setServicesUsed(req.servicesUsed() == null || req.servicesUsed().isEmpty()
                             ? EnumSet.noneOf(ServiceType.class)
                             : EnumSet.copyOf(req.servicesUsed()));
@@ -109,7 +110,7 @@ public class SessionService {
         return longest;
     }
 
-    private static ZoneId parseZone(String tz) {
+    static ZoneId parseZone(String tz) {
         try {
             return tz == null || tz.isBlank() ? ZoneId.of("UTC") : ZoneId.of(tz);
         } catch (Exception e) {

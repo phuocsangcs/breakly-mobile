@@ -26,7 +26,7 @@ breakly-mobile/
 ### 1. Frontend Mobile (`src/frontend-mobile`)
 - **Framework**: Expo SDK (React Native 0.88+, React 19)
 - **Routing**: Expo Router (`src/app/` with `(auth)` and `(main)` route groups)
-- **Architecture**: Feature-driven (`src/features/{auth, session, radio, news, tv, history, settings, space}`) with ViewModel hooks and repositories
+- **Architecture**: Feature-driven (`src/features/{auth, session, music, news, video, games, preferences}`) with ViewModel hooks and repositories
 - **Type Checking**: TypeScript (`npx tsc --noEmit`)
 
 ### 2. Backend Service (`src/backend`)

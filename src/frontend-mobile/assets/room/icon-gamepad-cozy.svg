@@ -1,0 +1,8 @@
+<svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+<g id="icon/gamepad">
+<path d="M5.2 4.4H10.8C12.37 4.4 13.73 5.47 14.1 7L14.95 10.5C15.25 11.74 14.31 12.93 13.04 12.93C12.43 12.93 11.86 12.65 11.49 12.17L10.6 11H5.4L4.51 12.17C4.14 12.65 3.57 12.93 2.96 12.93C1.69 12.93 0.75 11.74 1.05 10.5L1.9 7C2.27 5.47 3.63 4.4 5.2 4.4Z" stroke="#9C4F2C" stroke-width="1.46667" stroke-linejoin="round"/>
+<path d="M4.8 6.9V9.5M3.5 8.2H6.1" stroke="#9C4F2C" stroke-width="1.46667" stroke-linecap="round"/>
+<circle cx="10.6" cy="7.6" r="0.85" fill="#9C4F2C"/>
+<circle cx="12" cy="9.1" r="0.85" fill="#9C4F2C"/>
+</g>
+</svg>

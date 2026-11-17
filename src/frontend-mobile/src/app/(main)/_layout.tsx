@@ -10,7 +10,7 @@ import { Toast } from "@/components/ui/Toast";
 import { usePreferences } from "@/features/preferences";
 import { useSessionStore, useSessionTimer } from "@/features/session";
 
-const ROUTES_WITH_INLINE_TIMER = new Set(["/", "/radio", "/news", "/tv"]);
+const ROUTES_WITH_INLINE_TIMER = new Set(["/", "/radio", "/news", "/tv", "/games"]);
 
 export default function MainLayout() {
   const pathname = usePathname();
@@ -64,7 +64,7 @@ export default function MainLayout() {
   };
 
   const hasInlineTimer =
-    ROUTES_WITH_INLINE_TIMER.has(pathname) || pathname.startsWith("/news/");
+    ROUTES_WITH_INLINE_TIMER.has(pathname) || pathname.startsWith("/news/") || pathname.startsWith("/games/");
 
   return (
     <View style={styles.root}>

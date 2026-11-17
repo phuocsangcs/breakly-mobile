@@ -1,5 +1,5 @@
 // Session lifecycle store: timestamp-based countdown (accurate across backgrounding, FR 2.4),
-// one-minute notice (FR 2.5), usage tracker, local history & offline upload queue (FR 7.2).
+// one-minute notice (FR 2.5), usage tracker (music, news, videos, games), local history & offline upload queue (FR 7.2).
 import { create } from "zustand";
 import { queryClient, queryKeys } from "@/core/query";
 import { kv, StorageKeys } from "@/core/storage/kv";
@@ -26,6 +26,7 @@ interface SessionState {
   musicSeconds: number;
   articlesOpened: number;
   videosWatched: number;
+  gameIdsPlayed: string[];
   servicesUsed: ServiceType[];
   lastCompleted: SessionRecord | null;
   localHistory: SessionRecord[];
@@ -37,6 +38,7 @@ interface SessionState {
   markServiceUsed: (service: ServiceType) => void;
   recordArticleOpened: () => void;
   recordVideoWatched: () => void;
+  recordGamePlayed: (gameId: string) => void;
   hydrate: () => Promise<void>;
   flushSyncQueue: () => Promise<void>;
 }
@@ -72,6 +74,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
     musicSeconds: 0,
     articlesOpened: 0,
     videosWatched: 0,
+    gameIdsPlayed: [],
     servicesUsed: [],
     lastCompleted: null,
     localHistory: [],
@@ -98,6 +101,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         musicSeconds: 0,
         articlesOpened: 0,
         videosWatched: 0,
+        gameIdsPlayed: [],
         servicesUsed: initialService ? [initialService] : [],
       });
     },
@@ -134,6 +138,7 @@ export const useSessionStore = create<SessionState>((set, get) => {
         musicSeconds: s.musicSeconds,
         articlesOpened: s.articlesOpened,
         videosWatched: s.videosWatched,
+        gamesPlayed: s.gameIdsPlayed.length,
         servicesUsed: s.servicesUsed,
       };
       set({
@@ -164,6 +169,13 @@ export const useSessionStore = create<SessionState>((set, get) => {
       if (!get().isActive) return;
       get().markServiceUsed("VIDEO");
       set({ videosWatched: get().videosWatched + 1 });
+    },
+
+    // Counts distinct games per session, so reopening the same puzzle is not double-counted.
+    recordGamePlayed: (gameId) => {
+      if (!get().isActive) return;
+      get().markServiceUsed("GAME");
+      if (!get().gameIdsPlayed.includes(gameId)) set({ gameIdsPlayed: [...get().gameIdsPlayed, gameId] });
     },
 
     hydrate: async () => {
