@@ -19,6 +19,8 @@ export interface TrackRowProps {
   durationText?: string;
   artworkUrl?: string | null;
   playing?: boolean;
+  /** Extra control shown before the play button (e.g. download). */
+  accessory?: React.ReactNode;
   onPress?: () => void;
   theme?: ThemeMode | BreaklyThemeId;
   style?: StyleProp<ViewStyle>;
@@ -30,6 +32,7 @@ export function TrackRow({
   durationText,
   artworkUrl,
   playing = false,
+  accessory,
   onPress,
   theme = "dark",
   style,
@@ -75,6 +78,8 @@ export function TrackRow({
           {subtitle}
         </Text>
       </View>
+
+      {accessory}
 
       {/* Right Action: Equalizer bars when playing, or 36x36 Play button when idle */}
       {playing ? (

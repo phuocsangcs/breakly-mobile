@@ -4,6 +4,10 @@ spring:
     name: breakly-be
   profiles:
     active: ${SPRING_PROFILES_ACTIVE:dev}
+  # Local secrets (JAMENDO_CLIENT_ID, YOUTUBE_API_KEY, ...) from an optional git-ignored .env next to pom.xml.
+  # Real environment variables still win over values in the file.
+  config:
+    import: optional:file:.env[.properties]
   flyway:
     enabled: true
     locations: classpath:db/migration
