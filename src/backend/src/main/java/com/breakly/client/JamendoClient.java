@@ -26,7 +26,16 @@ public class JamendoClient {
             String image,
             String audio,
             String shareurl,
-            @JsonProperty("license_ccurl") String licenseUrl) {
+            @JsonProperty("license_ccurl") String licenseUrl,
+            @JsonProperty("audiodownload") String audioDownload,
+            @JsonProperty("audiodownload_allowed") Boolean audioDownloadAllowed) {
+
+        /** MP3 download link, only when the artist allows downloads for this track. */
+        public String downloadUrl() {
+            return Boolean.TRUE.equals(audioDownloadAllowed) && audioDownload != null && !audioDownload.isBlank()
+                    ? audioDownload
+                    : null;
+        }
     }
 
     @JsonIgnoreProperties(ignoreUnknown = true)
@@ -49,10 +58,22 @@ public class JamendoClient {
         if (cfg.clientId() == null || cfg.clientId().isBlank()) {
             throw new AppException(ErrorCode.UPSTREAM_UNAVAILABLE, "Music provider is not configured");
         }
+        // Jamendo sometimes answers "success" with zero results for a tag that normally has hundreds of
+        // tracks; an immediate retry usually returns the full list.
+        List<Track> tracks = List.of();
+        for (int attempt = 0; attempt < EMPTY_RESULT_ATTEMPTS && tracks.isEmpty(); attempt++) {
+            tracks = fetch(tag, limit);
+        }
+        return tracks;
+    }
+
+    private static final int EMPTY_RESULT_ATTEMPTS = 3;
+
+    private List<Track> fetch(String tag, int limit) {
         try {
             TracksResponse res = http.get()
                     .uri(cfg.baseUrl() + "/tracks/?client_id={cid}&format=json&limit={limit}&fuzzytags={tag}"
-                            + "&audioformat=mp32&imagesize=300&order=popularity_month",
+                            + "&audioformat=mp32&audiodlformat=mp32&imagesize=300&order=popularity_total",
                             cfg.clientId(), limit, tag)
                     .retrieve()
                     .body(TracksResponse.class);

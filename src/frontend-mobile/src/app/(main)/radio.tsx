@@ -9,6 +9,7 @@ import {
   Alert,
   FlatList,
   Image,
+  Linking,
   ScrollView,
   StyleSheet,
   TouchableOpacity,
@@ -30,7 +31,15 @@ import {
   Spacing,
   Typography,
 } from "@/constants/theme";
-import { useMusicCategories, useMusicPlayer } from "@/features/music";
+import {
+  DownloadActionButton,
+  DownloadIconButton,
+  licenseLabel,
+  SeekBar,
+  useDownloadsStore,
+  useMusicCategories,
+  useMusicPlayer,
+} from "@/features/music";
 import { usePreferences } from "@/features/preferences";
 import { formatMmSs, useSessionTimer } from "@/features/session";
 
@@ -62,9 +71,15 @@ export default function RadioScreen() {
     previous,
     playTrackAt,
     setVolume,
+    seek,
   } = useMusicPlayer();
+  const [scrubSec, setScrubSec] = useState<number | null>(null);
 
   const [expanded, setExpanded] = useState(false);
+
+  useEffect(() => {
+    void useDownloadsStore.getState().hydrate();
+  }, []);
 
   // Auto-load initial station queue if empty (without auto-playing until tapped)
   useEffect(() => {
@@ -86,8 +101,6 @@ export default function RadioScreen() {
 
   const activeCategoryTitle =
     categories.find((c) => c.category === category)?.title ?? "Lo-fi";
-  const trackProgress =
-    durationSec > 0 ? Math.max(0, Math.min(1, positionSec / durationSec)) : 0;
 
   // --- EXPANDED FULL PLAYER VIEW (Figma 04b) ---
   if (expanded && currentTrack) {
@@ -171,12 +184,32 @@ export default function RadioScreen() {
             />
           </View>
 
-          {/* Scrubber Bar */}
+          <View style={styles.downloadRow}>
+            <DownloadActionButton track={currentTrack} theme={themeId} />
+            {licenseLabel(currentTrack.licenseUrl) ? (
+              <Text
+                accessibilityRole="link"
+                onPress={() => currentTrack.licenseUrl && void Linking.openURL(currentTrack.licenseUrl)}
+                style={[styles.licenseText, { color: palette.textSecondary }]}
+                numberOfLines={1}
+              >
+                {currentTrack.artist} · {licenseLabel(currentTrack.licenseUrl)} ↗
+              </Text>
+            ) : null}
+          </View>
+
+          {/* Scrubber Bar: tap or drag to seek */}
           <View style={styles.scrubberBlock}>
-            <ProgressBar type="track" progress={trackProgress} theme={themeId} />
+            <SeekBar
+              positionSec={positionSec}
+              durationSec={durationSec || currentTrack.durationSeconds}
+              onSeek={seek}
+              onScrub={setScrubSec}
+              theme={themeId}
+            />
             <View style={styles.timeRow}>
               <Text style={[styles.timeText, { color: palette.textSecondary }]}>
-                {formatMmSs(Math.floor(positionSec))}
+                {formatMmSs(Math.floor(scrubSec ?? positionSec))}
               </Text>
               <Text style={[styles.timeText, { color: palette.textSecondary }]}>
                 {formatMmSs(Math.floor(durationSec || currentTrack.durationSeconds))}
@@ -366,6 +399,7 @@ export default function RadioScreen() {
                     : undefined
                 }
                 artworkUrl={item.artworkUrl}
+                accessory={<DownloadIconButton track={item} theme={themeId} />}
                 playing={isCurrent && isPlaying}
                 theme={themeId}
                 onPress={() => {
@@ -397,6 +431,18 @@ export default function RadioScreen() {
 }
 
 const styles = StyleSheet.create({
+  downloadRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
+    gap: 8,
+    marginTop: -4,
+  },
+  licenseText: {
+    flexShrink: 1,
+    fontSize: Typography.sizes.caption,
+    textDecorationLine: "underline",
+  },
   root: {
     flex: 1,
   },

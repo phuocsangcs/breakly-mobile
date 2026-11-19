@@ -25,27 +25,27 @@ import com.breakly.dto.ContentDto.TrackResponse;
 import com.breakly.entity.ContentItem;
 import com.breakly.repository.ContentItemRepository;
 
-// Service managing curated content, Jamendo music proxy, VnExpress RSS aggregation and YouTube metadata enrichment.
+// Service managing curated content, Jamendo music proxy (demo tracks when it is not configured), VnExpress RSS aggregation and YouTube metadata enrichment.
 @Service
 public class ContentService {
 
     private static final Logger log = LoggerFactory.getLogger(ContentService.class);
 
-    // Fallback public-domain tracks used in local dev when JAMENDO_CLIENT_ID is not
-    // set.
+    // Demo tracks used when JAMENDO_CLIENT_ID is not set or Jamendo is unreachable (e.g. offline dev).
+    // Not downloadable: their licence is not verified.
     private static final List<TrackResponse> FALLBACK_TRACKS = List.of(
             new TrackResponse("demo-1", "Snowfall Lo-Fi", "Breakly Studio", "Calm Sessions", 120,
                     "https://picsum.photos/seed/lofi1/300/300",
                     "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-                    "https://creativecommons.org/licenses/by/4.0/"),
+                    "https://creativecommons.org/licenses/by/4.0/", null),
             new TrackResponse("demo-2", "Soft Rain Piano", "Breakly Studio", "Calm Sessions", 150,
                     "https://picsum.photos/seed/piano2/300/300",
                     "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-                    "https://creativecommons.org/licenses/by/4.0/"),
+                    "https://creativecommons.org/licenses/by/4.0/", null),
             new TrackResponse("demo-3", "Morning Acoustic", "Breakly Studio", "Calm Sessions", 140,
                     "https://picsum.photos/seed/acoustic3/300/300",
                     "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-                    "https://creativecommons.org/licenses/by/4.0/"));
+                    "https://creativecommons.org/licenses/by/4.0/", null));
 
     private final ContentItemRepository repo;
     private final JamendoClient jamendo;
@@ -85,10 +85,22 @@ public class ContentService {
         if (props.jamendo().clientId() == null || props.jamendo().clientId().isBlank()) {
             return FALLBACK_TRACKS;
         }
-        return trackCache.get(tag + ":" + clamped, () -> jamendo.tracksByTag(tag, clamped).stream()
-                .filter(t -> t.audio() != null && !t.audio().isBlank())
-                .map(TrackResponse::from)
-                .toList());
+        try {
+            return trackCache.get(tag + ":" + clamped, () -> {
+                List<TrackResponse> tracks = jamendo.tracksByTag(tag, clamped).stream()
+                        .filter(t -> t.audio() != null && !t.audio().isBlank())
+                        .map(TrackResponse::from)
+                        .toList();
+                // Never cache an empty station for the whole TTL; fall back (stale list or demo tracks) instead.
+                if (tracks.isEmpty()) {
+                    throw new AppException(ErrorCode.UPSTREAM_UNAVAILABLE, "Jamendo returned no tracks");
+                }
+                return tracks;
+            });
+        } catch (AppException e) {
+            log.warn("Jamendo failed for tag '{}', serving demo tracks: {}", tag, e.getMessage());
+            return FALLBACK_TRACKS;
+        }
     }
 
     public List<ArticleResponse> news(UUID sourceId) {

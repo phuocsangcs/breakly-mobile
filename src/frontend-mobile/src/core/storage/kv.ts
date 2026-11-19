@@ -13,6 +13,7 @@ export const StorageKeys = {
   musicState: "music:state",
   authUser: "auth:user",
   gamePlays: "games:plays",
+  musicDownloads: "music:downloads",
 } as const;
 
 export const kv = {
