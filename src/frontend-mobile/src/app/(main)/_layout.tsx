@@ -77,11 +77,13 @@ export default function MainLayout() {
         >
           {!hasInlineTimer ? (
             <View style={styles.pillRow} pointerEvents="box-none">
+              {/* The pill defaults to alignSelf: flex-start; pin it right so it never covers a screen title. */}
               <SessionTimerPill
                 time={formattedRemaining}
                 highlighted={isFinalMinute}
                 onEndPress={confirmEndEarly}
                 theme={themeId}
+                style={styles.floatingPill}
               />
             </View>
           ) : null}
@@ -112,6 +114,9 @@ const styles = StyleSheet.create({
   },
   pillRow: {
     alignItems: "flex-end",
+  },
+  floatingPill: {
+    alignSelf: "flex-end",
   },
   toastWrap: {
     width: "100%",

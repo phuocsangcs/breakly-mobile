@@ -7,6 +7,12 @@
     "icon": "./assets/images/icon.png",
     "scheme": "breakly",
     "userInterfaceStyle": "automatic",
+    "ios": {
+      "infoPlist": {
+        "UIFileSharingEnabled": true,
+        "LSSupportsOpeningDocumentsInPlace": true
+      }
+    },
     "android": {
       "adaptiveIcon": {
         "backgroundColor": "#232437",

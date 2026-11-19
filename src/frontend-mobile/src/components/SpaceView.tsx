@@ -1,11 +1,15 @@
 // Original Figma scene layers with interactive native hotspots: radio, newspaper, TV and gamepad on the cabinet.
 // The gamepad (Game Corner) is not part of the Figma file; it is drawn in the same flat style (assets/room).
+// The wall clock shows the real time and the window sky is animated (components/room).
 // Coordinates are in the 390x844 Figma frame, which is scaled to fit the screen.
 import React, { useState } from "react";
 import { Image } from "expo-image";
 import { StyleSheet, TouchableOpacity, View } from "react-native";
 import { FigmaImage } from "./ui/FigmaImage";
 import { RoomLabel, type RoomLabelKind } from "./ui/RoomLabel";
+import { MusicNotes } from "./room/MusicNotes";
+import { WallClock } from "./room/WallClock";
+import { WindowSky } from "./room/WindowSky";
 import type { FigmaAssetName } from "@/constants/figma-assets";
 import type { ThemeId } from "@/features/preferences";
 import type { ServiceType } from "@/features/session";
@@ -53,6 +57,8 @@ export function SpaceView({ themeId = "cozy-room", musicPlaying, onSelectObject 
     <View style={{ position: "absolute", left, top, width: 390, height: 844,
       transform: [{ scale }], transformOrigin: "top left" }}>
       <FigmaImage name={`${prefix}-imgRoomBackground`} />
+      <WindowSky garden={garden} />
+      <WallClock garden={garden} />
       {OBJECTS.map(({ service, kind, asset, labelX, width, height }) => {
         const x = labelX + (LABEL_WIDTH - width) / 2;
         const open = () => onSelectObject?.(service);
@@ -69,8 +75,8 @@ export function SpaceView({ themeId = "cozy-room", musicPlaying, onSelectObject 
             style={[styles.label, { left: labelX }]} />
         </React.Fragment>;
       })}
-      {/* Music notes float just above the radio's top-right corner. */}
-      {musicPlaying && <FigmaImage name="8-630-imgGroup" style={{ position: "absolute", left: 65, top: 424 }} />}
+      {/* Notes rise from the radio while music plays. */}
+      <MusicNotes playing={!!musicPlaying} />
     </View>
   </View>;
 }

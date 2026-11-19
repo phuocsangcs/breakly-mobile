@@ -100,11 +100,11 @@ function YouTubeTvScreen() {
         loading={loading && !showEndCard} loadingProgress={progress} />
 
       <View style={styles.ytStatusRow}>
-        <Text style={[styles.sub, { color: palette.textSecondary }]}>
-          {watchedCount === 0
-            ? `Pick up to ${MAX_YOUTUBE_VIDEOS} videos for this break`
-            : `Video ${watchedCount} of ${MAX_YOUTUBE_VIDEOS}`}
-        </Text>
+        {watchedCount > 0 && (
+          <Text style={[styles.sub, { color: palette.textSecondary }]}>
+            {`Video ${watchedCount} of ${MAX_YOUTUBE_VIDEOS}`}
+          </Text>
+        )}
         <View style={styles.ytProgress}>
           <ProgressBar type="loading" progress={watchedCount / MAX_YOUTUBE_VIDEOS} theme={themeId} />
         </View>
