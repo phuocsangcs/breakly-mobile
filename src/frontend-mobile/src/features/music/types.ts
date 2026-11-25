@@ -15,5 +15,7 @@ export interface Track {
   artworkUrl: string | null;
   streamUrl: string;
   licenseUrl: string | null;
+  /** MP3 the licence allows saving; null/absent when downloads are not allowed. */
+  downloadUrl?: string | null;
 }
 

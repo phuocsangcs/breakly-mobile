@@ -44,11 +44,13 @@ public final class ContentDto {
             int durationSeconds,
             String artworkUrl,
             String streamUrl,
-            String licenseUrl) {
+            String licenseUrl,
+            /** MP3 the user may save to the device; null when the licence or artist does not allow it. */
+            String downloadUrl) {
 
         public static TrackResponse from(JamendoClient.Track t) {
             return new TrackResponse(t.id(), t.name(), t.artistName(), t.albumName(),
-                    t.duration(), t.image(), t.audio(), t.licenseUrl());
+                    t.duration(), t.image(), t.audio(), t.licenseUrl(), t.downloadUrl());
         }
     }
 
