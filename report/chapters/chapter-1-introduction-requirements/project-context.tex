@@ -44,9 +44,9 @@ Breakly addresses this gap through four core ideas that recur throughout this
 document. A time-boxed session is a period of 10, 20 or 30 minutes chosen by
 the user, with a visible countdown and an automatic end. Finite content means
 that every feed has an end, for example a limited list of short videos
-followed by an end card. The Space is a calm illustrated scene whose objects
-(a radio, a newspaper and a television) open the music, news and video
-services, and the scene can be switched between themes. Finally, a streak is
+followed by an end card. The Space is a calm illustrated room whose objects
+(a radio, a newspaper, a television and a gamepad) open the music, news, video
+and game services, and the room can be switched between themes. Finally, a streak is
 the number of consecutive days with at least one completed session.
 
 
@@ -246,7 +246,7 @@ and so on) in the system overview.
 \noindent\textbf{Table: SWOT analysis of Breakly}\label{tab:swot-breakly}\par
   \swotbox
     {\item \textbf{S1} Finite by design: every session and video feed has a clear end
-     \item \textbf{S2} Music, news and short video in one calm Space, reachable in two taps
+     \item \textbf{S2} Music, news, videos and daily games in one calm Space, reachable in two taps
      \item \textbf{S3} Swappable themes add emotional appeal without changing the interface
      \item \textbf{S4} Achievable scope for a two-person team using one cross-platform codebase}
     {\item \textbf{W1} Content depends on third-party sources whose terms may limit usage
@@ -265,25 +265,27 @@ and so on) in the system overview.
 
 Breakly is a mobile application that turns a short entertainment break into
 a time-boxed session. The user states how much free time they have (10, 20
-or 30 minutes) and enters a calm illustrated Space. Three objects in the
-Space open the services: a radio for background music, a newspaper for news
-and a television for a finite feed of short videos. A countdown stays
-visible while the user enjoys the content. When time is up, the session ends
-automatically, a short summary is shown and the user's daily streak is
-updated.
+or 30 minutes) and enters a calm illustrated Space. Four objects in the
+Space open the services: a radio for background music, a newspaper for news,
+a television for a limited number of YouTube videos and a gamepad for short
+daily puzzle games. A countdown stays visible while the user enjoys the
+content. When time is up, the session ends automatically, a short summary is
+shown and the user's daily streak is updated.
 
 The system is made of four parts. The first is a cross-platform mobile client
 built with React Native and Expo, which contains the session engine (timer
-and session state), the Space and theme layer, and the screens for music,
-news, video, history and settings. The second is a managed backend
-\textbf{[TODO: Supabase or Firebase]} that provides authentication and stores
-session history, streaks and preferences. The third is a set of external
-content services: news from RSS feeds, music from an openly licensed
-catalogue and short videos from a video API \textbf{[TODO: select the sources
-and verify their terms]}. The fourth is local storage on the device for
-preferences, cached content and session state, so that the countdown stays
-correct and recent history can still be shown when the connection drops,
-although playing music, news and video requires a network connection.
+and session state), the Space and theme layer, the media players, the in-app
+browsers and the screens for music, news, videos, games, history and
+settings. The second is a Spring Boot backend with a PostgreSQL database that
+provides accounts, session history, streaks, preferences and the curated
+content catalogue, and that fetches and caches music and news on behalf of the
+app. The third is a set of external content services: Creative Commons music
+from the Jamendo API, news from VnExpress RSS feeds, videos from the mobile
+YouTube website and daily games from NYT Games. The fourth is local storage on
+the device for preferences, guest history, the session state, an upload queue
+and downloaded MP3 files, so that the countdown stays correct, recent history
+can still be shown and downloaded music can be played when the connection
+drops.
 
 The design follows three pillars, each responding to the SWOT analysis in
 Table~\ref{tab:swot-breakly}.
@@ -293,17 +295,17 @@ Home Space, the countdown is visible on every screen and stays accurate when
 the app is in the background, and video feeds are finite and end with a clear
 end card. Themes change the look of the Space but never its layout or
 behaviour, and the main screens are targeted to load within three seconds
-under normal network conditions \textbf{[TODO: confirm the figure in the
-non-functional requirements]}. This pillar preserves the strengths S1 to S3
+under normal network conditions (NFR-01). This pillar preserves the strengths S1 to S3
 and is the main answer to the threats T1 and T2: Breakly cannot win on
 content volume, so it must win on experience.
 
-The second pillar is Security \& Privacy. Sign-in is handled by a managed
-authentication service and access tokens are kept in secure device storage.
-The app collects only account details, session history and preferences, does
-not request location or contacts, and includes no advertising trackers. The
-notification permission is requested only after a short explanation, when
-the user turns on a reminder. Using official feeds and APIs with clear terms,
+The second pillar is Security \& Privacy. Accounts are optional; when the
+user signs in, the backend issues short-lived JWT access tokens and rotating
+refresh tokens, passwords are stored only as BCrypt hashes, and the refresh
+token is kept in secure device storage. The app collects only account
+details, session history, game plays and preferences, requests no sensitive
+permission, and includes no advertising trackers. API keys of the content
+providers stay on the server. Using official feeds and APIs with clear terms,
 and showing content credits, reduces the weakness W1 and the threat T3.
 
 The third pillar is Business Goals. Retention comes from streaks and session
@@ -362,9 +364,8 @@ technical quality & Traceable evidence and reproducible demonstrations. \\
 \label{sec:personas}
 
 The three personas below are provisional. Values marked ``assumed'' reflect
-the team's expectations and will be validated or corrected with the survey
-and interview results \textbf{[TODO: add a reference to the elicitation
-section]}.
+the team's expectations and should be validated with intended users in a
+later study.
 
 \subsubsection{Linh -- The Overloaded Student}
 

@@ -1,22 +1,69 @@
 \chapter{Demonstration}
 \label{chap:demonstration}
 
-\section{Basic Flow}
+The demonstration uses the development build on an iPhone, connected to the
+backend on the same Wi-Fi network. Each flow lists the steps and the
+requirements it shows.
+
+\section{Basic Flow: A Complete Break}
 \label{sec:basic-flow}
 
-The basic demonstration flow is: open Breakly, review the suggested activity,
-start a break, follow the timer, complete or skip the break, and view the
-result.
+This flow shows the core promise of Breakly: an enjoyable break with a clear
+end (UC-04, UC-07, UC-09).
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item Open the app and select \textit{Continue as guest}. The Home Space
+        shows the Cozy chill room with the wall clock at the current time and
+        clouds drifting past the window.
+  \item Select 10 minutes and tap the radio. The countdown starts and the
+        Radio screen opens.
+  \item Choose the Jazz station. The track starts with its artwork and
+        licence; drag the seek bar and change the volume. Back on the Home
+        Space, music notes float above the radio and the mini-player is shown.
+  \item Lock the phone: the music continues and the lock screen shows the
+        track. Unlock, open the newspaper and read an article in the in-app
+        reader while the timer keeps running.
+  \item At one minute left, the ``One minute left'' toast appears. At 00:00
+        the music stops, the reader closes, and the Time's Up screen and the
+        Session Summary show the time used, the music time and one article
+        opened.
+\end{enumerate}
 
 \section{Break Configuration Flow}
 \label{sec:break-configuration-flow}
 
-This flow demonstrates changing the duration and activity preferences,
-starting a customised break, and confirming that the selected configuration
-is used by the timer.
+This flow shows that the user's settings shape the next break and are kept
+(UC-01, UC-06, UC-14, UC-13).
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item Open Profile, select \textit{Sign in / Create account} and create an
+        account. The guest break from the basic flow is uploaded to the new
+        account.
+  \item Change the default break length to 20 minutes, turn the one-minute
+        warning off and set the radio volume to 60 percent.
+  \item Switch the theme to Normal garden with the switch in the Home Space
+        header: the room, the sky (now sunny) and the colours change while the
+        objects stay in place.
+  \item Close and reopen the app: the account, the theme and the settings are
+        kept, and the duration selector shows 20 minutes.
+  \item Start a break and end it early with \textit{End break}. The summary
+        appears, and History lists both breaks with the current streak.
+\end{enumerate}
 
-\section{Additional Flow}
+\section{Additional Flow: Videos, Games and Offline Music}
 \label{sec:additional-flow}
 
-This section is reserved for the third demonstration flow and will be filled
-in later.
+This flow shows the features that keep a break finite and the offline
+behaviour (UC-08, UC-11, UC-12).
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item Start a break by tapping the TV. The music pauses and the mobile
+        YouTube website opens inside the app. Open several videos; the counter
+        shows ``Video $n$ of 10''. After the tenth video the end card appears;
+        back on the Home Space the music resumes.
+  \item Tap the gamepad, open Wordle, play and go back. Wordle is marked as
+        played today and its streak increases; opening it again does not
+        record a second play.
+  \item On the Radio, download two tracks. Turn on airplane mode and play the
+        \textit{Downloaded} station: the tracks play without a connection.
+        Save one track to the Files app with \textit{Save to phone}.
+  \item End the break: the summary counts the videos watched and the game
+        played.
+\end{enumerate}

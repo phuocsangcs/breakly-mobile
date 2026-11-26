@@ -43,7 +43,7 @@ Best performance and full platform access \\ \hline
 
 \endgroup
 
-\noindent\textbf{Decision: React Native with Expo (TypeScript) and Expo Router.} A single codebase speeds up development, while Expo Go supports testing on real phones. EAS Build can produce an installable APK. Some native features, such as background audio, may require a development build.
+\noindent\textbf{Decision: React Native with Expo (TypeScript) and Expo Router.} The app uses Expo SDK 58 with React Native 0.88 and React 19. A single codebase speeds up development, and Expo Go supports quick testing on real phones. The team tests mainly on iPhone; background audio, the lock-screen controls and the sharing of downloaded files with the Files app need a development build (\texttt{npx expo run:ios} or an EAS development build), because Expo Go uses its own native configuration.
 
 % ---------------------------------------------------------------------
 
@@ -127,7 +127,7 @@ No servers to run; vendor lock-in and quotas \\ \hline
 \end{longtable}
 \endgroup
 
-\noindent\textbf{Decision: Spring Boot (Java).} Breakly needs custom services for content aggregation, caching, media-source integration and streak calculation. Spring Boot provides a mature modular framework, dependency injection and strong integration with PostgreSQL and security libraries.
+\noindent\textbf{Decision: Spring Boot 4 (Java 21).} Breakly needs custom services for content aggregation, caching, media-source integration and streak calculation. Spring Boot provides a mature modular framework, dependency injection and strong integration with PostgreSQL and security libraries.
 
 % ---------------------------------------------------------------------
 
@@ -173,7 +173,7 @@ Free community edition; managed tiers have limits \\ \hline
 
 \endgroup
 
-\noindent\textbf{Decision: PostgreSQL with Spring Data JPA (Hibernate).} Its relational model fits users, sessions and preferences, while SQL supports date-based streak queries. JSONB accommodates flexible session data, and PostgreSQL runs locally or in Docker.
+\noindent\textbf{Decision: PostgreSQL with Spring Data JPA (Hibernate).} Its relational model fits users, sessions, preferences, content and game plays. Unique constraints make offline uploads and daily game plays idempotent, Flyway versions the schema, and PostgreSQL runs locally in Docker and in the Testcontainers integration tests.
 
 % ---------------------------------------------------------------------
 
@@ -219,7 +219,7 @@ Cookies are awkward in React Native; tokens are preferred \\ \hline
 
 \endgroup
 
-\noindent\textbf{Decision: backend-issued JWT access and rotating refresh tokens.} Passwords are hashed with Argon2id, access tokens are short-lived, and refresh tokens are rotated. The app stores tokens in secure device storage (NFR-04), while user data remains in PostgreSQL.
+\noindent\textbf{Decision: backend-issued JWT access and rotating refresh tokens.} Passwords are hashed with BCrypt (Spring Security's \texttt{BCryptPasswordEncoder}). Access tokens are signed JWTs valid for 15 minutes; refresh tokens are random values valid for 30 days, stored on the server only as SHA-256 hashes and replaced on every refresh. The app keeps the refresh token in secure device storage (\texttt{expo-secure-store}, NFR-04), while user data remains in PostgreSQL.
 
 % ---------------------------------------------------------------------
 
@@ -265,7 +265,7 @@ Weak as a documented contract for evaluators \\ \hline
 
 \endgroup
 
-\noindent\textbf{Decision: REST over HTTPS with JSON and OpenAPI.} REST suits the app\textquotesingle s small set of fixed endpoints, while OpenAPI documents requests, responses and error codes as the API contract.
+\noindent\textbf{Decision: REST over HTTPS with JSON and OpenAPI.} REST suits the app\textquotesingle s small set of fixed endpoints (Section~\ref{sec:api-contract}), while springdoc-openapi generates the OpenAPI document and a Swagger UI from the controllers.
 
 % ---------------------------------------------------------------------
 
@@ -283,7 +283,7 @@ Weak as a documented contract for evaluators \\ \hline
 
 \textbf{Option} & \textbf{Terms of use} & \textbf{Content provided} & \textbf{Cost and limits} & \textbf{Reliability} \\ \hline
 
-\textbf{Publisher RSS feeds, fetched and cached by the backend (selected)} & Published for syndication; terms checked per publisher \textbf{[TODO]} &
+\textbf{Publisher RSS feeds, fetched and cached by the backend (selected)} & Published for syndication; the app shows the headline, summary and image and opens the original page for the full text &
 
 Title, summary, image and link &
 
@@ -317,7 +317,7 @@ Breaks when layouts change \\ \hline
 
 \textbf{Option} & \textbf{Licence} & \textbf{Catalogue and categories} & \textbf{Streaming effort} & \textbf{Reliability} \\ \hline
 
-\textbf{Jamendo API, with a small stored fallback set (selected)} & Creative Commons music; API terms to be verified \textbf{[TODO]} &
+\textbf{Jamendo API, with a small stored fallback set (selected)} & Creative Commons music; free client ID for non-commercial use; the licence of each track is shown &
 
 Large catalogue with tags such as lo-fi, piano and acoustic &
 
@@ -325,7 +325,7 @@ Streaming URLs and artwork provided &
 
 Depends on an external API; fallback tracks keep demos safe \\ \hline
 
-Audius API & Artist-uploaded; terms vary \textbf{[TODO]} &
+Audius API & Artist-uploaded; terms vary by artist &
 
 Large; relaxing categories less certain &
 
@@ -351,35 +351,35 @@ Fully under our control; most manual work \\ \hline
 
 \textbf{Option} & \textbf{Licence} & \textbf{Content fit} & \textbf{Playback in the app} & \textbf{Reliability and limits} \\ \hline
 
-\textbf{Pexels Videos API (selected)} & Free licence; attribution required \textbf{[TODO: verify]} &
+\textbf{Mobile YouTube website in an in-app browser (selected)} & YouTube's own pages and player; nothing is copied or re-hosted &
 
-Stock clips (nature, city, travel) that suit a calm theme &
+Everything the user already watches; the user chooses the videos &
 
-Direct MP4 files play with expo-video &
+WebView with guard rails: stays on YouTube, counts videos, stops at the limit &
 
-API key and rate limit; backend caching \\ \hline
+No API key or quota; depends on the page structure of YouTube \\ \hline
 
-YouTube Shorts embed & Embedding allowed under the player terms; controls cannot be altered &
+YouTube IFrame Player with curated video IDs & Embedding allowed under the YouTube terms &
 
-Rich and entertaining, but recommendations can lead to endless content &
+Small, fixed list chosen by the team; quickly feels repetitive &
 
-WebView embed; limited control; background playback restricted &
+Official embedded player (used as the web fallback) &
 
-Depends on YouTube \\ \hline
+Stable; the list must be maintained by hand \\ \hline
 
-Self-hosted clips & Own or licensed clips &
+Pexels Videos API & Free licence; attribution required &
 
-Fully curated &
+Stock clips (nature, city, travel); calm but not entertaining &
 
-The team hosts and streams the files &
+Direct MP4 files &
 
-Under our control; storage and bandwidth cost \\ \hline
+API key and rate limit \\ \hline
 
 \end{longtable}
 
 \endgroup
 
-\noindent\textbf{Decision: publisher RSS, Jamendo API and Pexels Videos API.} The backend fetches and caches all external content, protects API keys and keeps feeds finite. RSS supplies article summaries and links; Jamendo provides music and fallback tracks; Pexels supplies short stock clips. All sources are listed on the credits screen.
+\noindent\textbf{Decision: VnExpress RSS, the Jamendo API, the mobile YouTube website and NYT Games.} The backend fetches and caches news (5 minutes) and Jamendo track lists (10 minutes), keeps the Jamendo client ID on the server and serves a small set of demo tracks when Jamendo cannot be reached. The first prototype used a short curated list of YouTube videos; it felt too limited, so the TV now opens the real mobile YouTube website and limits the number of videos instead of the choice of videos. The Game Corner opens the free daily games of The New York Times (Wordle, Connections, Strands and Pips) in an in-app browser; The Mini was removed because it needs a subscription. All sources are named in the content credits.
 
 % ---------------------------------------------------------------------
 
@@ -425,17 +425,14 @@ Cold starts on free tiers can hurt demos \\ \hline
 
 \endgroup
 
-\noindent\textbf{Decision: a single VPS with Docker Compose.} One Compose file
-
-starts the API, PostgreSQL and a Caddy reverse proxy that provides HTTPS
-
-certificates automatically. GitHub Actions builds and deploys the stack, and a
-
-nightly database dump provides a backup. A VPS is cheap, always on for
-
-demonstrations, and the same Compose stack can be moved to AWS later if
-
-needed.
+\noindent\textbf{Decision: a single VPS with Docker Compose (planned).} The
+backend already ships with a multi-stage Dockerfile (Maven build on JDK 21,
+runtime on a JRE 21 Alpine image under a non-root user), and GitHub Actions
+builds the backend and type-checks the app on every push. The deployment
+workflow is prepared but does not yet push to a server; the target is one
+Compose file that starts the API, PostgreSQL and a Caddy reverse proxy for
+HTTPS. For the demonstrations the backend and PostgreSQL run locally in
+Docker.
 
 % ---------------------------------------------------------------------
 
@@ -477,13 +474,13 @@ Low boilerplate; built-in caching and retries \\ \hline
 
 Local storage & expo-secure-store (tokens), AsyncStorage (preferences, session
 
-end time, upload queue) &
+state, guest history, upload queue), expo-file-system (downloaded MP3 files) &
 
 Secure token storage and simple persistence for the offline behaviour in NFR-03 \\ \hline
 
-Media playback & expo-audio, expo-video &
+Media and web content & expo-audio (background audio, lock-screen controls), react-native-webview (YouTube, articles, games), react-native-youtube-iframe (web fallback), expo-sharing &
 
-Maintained Expo modules for audio and video \\ \hline
+Maintained modules; the in-app browsers keep the user inside the session \\ \hline
 
 Backend & Spring Boot (Java) &
 
@@ -509,21 +506,25 @@ Music & Jamendo API with fallback tracks &
 
 Licensed music with ready-made categories \\ \hline
 
-Short videos & Pexels Videos API &
+Videos & Mobile YouTube website in an in-app browser &
 
-Licensed clips that play directly in the app \\ \hline
+The user's own choice of videos, limited to 10 per break \\ \hline
 
-Hosting & VPS, Docker Compose, Caddy &
+Games & NYT Games (Wordle, Connections, Strands, Pips) &
+
+Free daily puzzles that are finished in a few minutes \\ \hline
+
+Hosting & Docker (multi-stage image); planned VPS with Docker Compose and Caddy &
 
 Low cost, full control, reliable demos \\ \hline
 
-CI/CD and builds & GitHub Actions, EAS Build (APK) &
+CI/CD and builds & GitHub Actions, Expo development build (iOS), EAS Build &
 
-Automated deployment and an installable build \\ \hline
+Automatic build and type checks; installable builds \\ \hline
 
-Testing & JUnit 5, Mockito, Spring Boot Test, React Native Testing Library &
+Testing & JUnit 5, Spring Boot Test with MockMvc, Testcontainers (PostgreSQL); TypeScript and ESLint checks for the app &
 
-Tests for the Java backend and React Native client \\ \hline
+Integration tests against a real database; static checks for the client \\ \hline
 
 \end{longtable}
 

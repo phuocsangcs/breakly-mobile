@@ -45,10 +45,11 @@ trying to read a second test account's records (must be denied), and by a
 secret scan of the Git history. \\
 \hline
 
-NFR-05 & Permissions & The app requests no location, contacts, camera or
-microphone permission, and any notification permission is requested only in
-context, when the user turns on a reminder; verify by inspecting the declared
-permissions and by running all Must flows with notifications denied. \\
+NFR-05 & Permissions & The app requests no location, contacts, camera,
+microphone or notification permission; the only declared capability is
+background audio playback, and saving an MP3 file to the phone uses the
+system share sheet or folder picker chosen by the user; verify by inspecting
+the generated \texttt{Info.plist} and Android manifest. \\
 \hline
 
 NFR-06 & Platform and OS versions & The app runs on Android 8.0 or later and iOS
@@ -58,9 +59,11 @@ emulator of the lowest supported version. \\
 \hline
 
 NFR-07 & Battery and network & A 20-minute session with music playing and the
-screen on uses at most 8 percent of the battery (initial target), and music is
-streamed at no more than 128 kbps; verify with the device battery and network
-statistics. \\
+screen on uses at most 8 percent of the battery (initial target); station
+track lists are cached by the backend for 10 minutes and news feeds for 5
+minutes, so repeated visits do not reload them from the providers, and
+downloaded tracks play without network traffic; verify with the device battery
+and network statistics. \\
 \hline
 
 NFR-08 & Accessibility & Core screens support text scaling up to 130 percent,
@@ -99,12 +102,14 @@ Unreliable network & Connections vary and may drop during a session. & Every
 content screen has loading, offline and error states (NFR-03). \\
 \hline
 
-Battery and data & Streaming drains battery and data. & Audio quality is
-capped (NFR-07). \\
+Battery and data & Streaming drains battery and data. & Server-side caching
+of track lists and feeds, and offline playback of downloaded tracks
+(NFR-07). \\
 \hline
 
-Permissions and privacy & Sensitive permissions reduce user trust. & None are
-used; notifications are requested in context (NFR-04, NFR-05). \\
+Permissions and privacy & Sensitive permissions reduce user trust. & No
+sensitive permission is requested; tokens are kept in secure storage
+(NFR-04, NFR-05). \\
 \hline
 
 Device diversity & Phones differ in OS version, screen and text size. & Minimum

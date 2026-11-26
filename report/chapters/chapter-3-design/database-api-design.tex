@@ -1,59 +1,78 @@
 \subsection{Data Model}
 \label{sec:data-model}
 
-\begin{longtable}{|p{3cm}|p{0.68\textwidth}|}
-\caption{Initial Breakly data model}\label{tab:data-model}\\
-\hline
-\textbf{Entity} & \textbf{Main attributes} \\
-\hline
-\endfirsthead
-\multicolumn{2}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
-\textbf{Entity} & \textbf{Main attributes} \\
-\hline
-\endhead
-\multicolumn{2}{r}{\textit{Continue on next page}}\\
-\endfoot
-\endlastfoot
-UserPreferences & userId, defaultDuration, reminderEnabled, reminderSchedule,
-accessibilityPreferences \\
-\hline
-Activity & id, title, description, estimatedDuration, category, instructions \\
-\hline
-BreakSession & id, activityId, startedAt, endedAt, plannedDuration, status \\
-\hline
-Reminder & id, schedule, enabled, notificationPermissionState \\
-\hline
-\end{longtable}
+The backend stores its data in PostgreSQL. The schema is created by six Flyway
+migrations: V1 creates the tables, V2 seeds the curated content, V3 adds the
+Game Corner, V4 sets the game icons, V5 replaces The Mini with Pips and V6
+adds four music stations. Applied migrations are never edited; every change is
+a new version. All primary keys are UUIDs and all timestamps are stored with a
+time zone. Figure~\ref{fig:erd} shows the entities and their relationships.
 
-The ERD will define that a user has one preference set and many sessions;
-each session references one activity, while reminders belong to the user's
-notification configuration. Timestamps are stored in a consistent format,
-and deleted or reset data follows an explicit retention policy.
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\scriptsize,
+  ent/.style={draw, rectangle split, rectangle split parts=2, align=left, text width=4.2cm, fill=white,
+              rectangle split part fill={black!8,white}},
+  rel/.style={thick}
+]
+  \node[ent] (users) {\textbf{users}
+    \nodepart{second}\underline{id} UUID\\ email (unique)\\ password\_hash (BCrypt)\\ display\_name\\ created\_at, updated\_at};
+  \node[ent, left=1.5cm of users] (tokens) {\textbf{refresh\_tokens}
+    \nodepart{second}\underline{id} UUID\\ user\_id $\rightarrow$ users\\ token\_hash (SHA-256, unique)\\ expires\_at, revoked\_at};
+  \node[ent, right=1.5cm of users] (prefs) {\textbf{user\_preferences}
+    \nodepart{second}\underline{user\_id} $\rightarrow$ users\\ theme\_id\\ one\_minute\_notice\_enabled\\ default\_duration\_minutes\\ music\_volume};
+  \node[ent, below=1.3cm of tokens] (sessions) {\textbf{sessions}
+    \nodepart{second}\underline{id} UUID\\ user\_id $\rightarrow$ users\\ client\_id (unique per user)\\ started\_at, ended\_at\\ planned\_seconds, actual\_seconds\\ end\_reason\\ music\_seconds, articles\_opened,\\ videos\_watched, games\_played\\ services\_used};
+  \node[ent, below=1.3cm of users] (plays) {\textbf{game\_plays}
+    \nodepart{second}\underline{id} UUID\\ user\_id $\rightarrow$ users\\ game\_id $\rightarrow$ content\_items\\ play\_date\\ unique (user\_id, game\_id, play\_date)};
+  \node[ent, below=1.3cm of prefs] (content) {\textbf{content\_items}
+    \nodepart{second}\underline{id} UUID\\ type (MUSIC\_CATEGORY, NEWS\_SOURCE,\\ \quad VIDEO, GAME)\\ external\_ref, title, description\\ category, thumbnail\_url, author\\ sort\_order, active};
+
+  \draw[rel] (users) -- node[above, pos=0.15]{1} node[above, pos=0.85]{*} (tokens);
+  \draw[rel] (users) -- node[above, pos=0.15]{1} node[above, pos=0.85]{0..1} (prefs);
+  \draw[rel] (users.south west) -- node[left, pos=0.1]{1} node[above, pos=0.85]{*} (sessions.north east);
+  \draw[rel] (users) -- node[right, pos=0.15]{1} node[right, pos=0.8]{*} (plays);
+  \draw[rel] (content) -- node[above, pos=0.15]{1} node[above, pos=0.8]{*} (plays);
+\end{tikzpicture}
+\caption{Entity--relationship diagram of the Breakly database}
+\label{fig:erd}
+\end{figure}
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{11.3cm}|}
+\caption{Tables of the Breakly database}\label{tab:data-model}\\ \hline
+\textbf{Table} & \textbf{Purpose and rules} \\ \hline
+\endfirsthead
+\multicolumn{2}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\ \hline
+\textbf{Table} & \textbf{Purpose and rules} \\ \hline
+\endhead
+\texttt{users} & One row per account. The email is unique and the password is stored only as a BCrypt hash. \\ \hline
+\texttt{refresh\_tokens} & One row per issued refresh token. Only the SHA-256 hash is stored, so a leaked database does not reveal usable tokens. A token is revoked when it is used for a refresh or at sign-out. \\ \hline
+\texttt{user\_preferences} & At most one row per user: theme, one-minute notice, default duration (1--120 minutes, the app offers 10, 20 or 30) and music volume (0--100). \\ \hline
+\texttt{sessions} & One row per finished break. \texttt{client\_id} is generated on the device; the unique key (\texttt{user\_id}, \texttt{client\_id}) makes uploads from the offline queue idempotent. \texttt{end\_reason} is \texttt{COMPLETED} or \texttt{ENDED\_EARLY}. \texttt{games\_played} was added in V3. \\ \hline
+\texttt{content\_items} & The curated catalogue. Only identifiers and metadata are stored, never media: a Jamendo tag for each music station, an RSS URL for each news source, a YouTube video ID for the web fallback videos, and a page URL for each game. Retired items are set inactive instead of deleted, so that game plays keep their history. \\ \hline
+\texttt{game\_plays} & One row per user, game and local calendar day. The unique key makes ``mark as played'' safe to repeat; the per-game streak is calculated from these dates. \\ \hline
+\end{longtable}
+\endgroup
 
 \subsection{Local Storage Strategy}
 \label{sec:local-storage}
 
-Preferences and session history are persisted locally so the main experience
-works offline. The timer derives remaining time from a stored start timestamp
-and planned duration rather than relying only on elapsed foreground ticks.
-Repositories hide the storage implementation from the domain layer. The
-report will document schema migrations, reset behaviour, and corruption
-recovery.
-
-\subsection{API Contract}
-\label{sec:api-contract}
-
-Optional synchronisation endpoints will follow a versioned JSON contract:
-\begin{itemize}
-\item \texttt{GET /v1/activities} returns available activities and metadata.
-\item \texttt{GET /v1/preferences} and \texttt{PUT /v1/preferences} read and
-  update user preferences.
-\item \texttt{POST /v1/sessions} records a completed session.
-\item \texttt{GET /v1/sessions} returns paginated session history.
+The app keeps on the device only what it needs to work during a break and
+without a connection:
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt]
+  \item \textbf{Secure storage} (\texttt{expo-secure-store}): the refresh
+        token. The access token is kept in memory only.
+  \item \textbf{AsyncStorage}: the active session (start time, planned end
+        time, usage counters), the guest history, the upload queue of finished
+        sessions, the preferences, the per-game local play log and the list of
+        downloaded tracks.
+  \item \textbf{File system} (\texttt{expo-file-system}): downloaded MP3
+        files in the app's document folder, which the Files app shows on iOS.
 \end{itemize}
-
-Successful responses will define explicit schemas, while errors use a
-consistent object containing \texttt{code}, \texttt{message}, and optional
-\texttt{details}. The contract must document 400 validation errors, 401
-authentication errors, 404 missing resources, 409 conflicts, and 429/5xx
-temporary failures, together with retry and offline fallback behaviour.
+The countdown is always derived from the stored end time rather than from
+counted ticks, so it survives the app being suspended or restarted. When the
+list of downloads is loaded, entries whose file no longer exists are removed.

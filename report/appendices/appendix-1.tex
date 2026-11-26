@@ -1,5 +1,44 @@
 \chapter{Supporting Technical Material}
 \label{app:technical-material}
 
-Place detailed schemas, extended algorithms, configuration, or other supporting
-technical material here when it would interrupt the main report.
+\section{Database Migration History}
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{4.8cm}|>{\raggedright\arraybackslash}p{9.4cm}|}
+\caption{Flyway migrations of the Breakly database}\label{tab:migrations}\\ \hline
+\textbf{Migration} & \textbf{Change} \\ \hline
+\endfirsthead
+\multicolumn{2}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\ \hline
+\textbf{Migration} & \textbf{Change} \\ \hline
+\endhead
+\texttt{V1\_\_init} & Tables \texttt{users}, \texttt{refresh\_tokens}, \texttt{sessions}, \texttt{user\_preferences} and \texttt{content\_items} with their keys and indexes \\ \hline
+\texttt{V2\_\_seed\_content} & Initial music stations, news sources and curated videos \\ \hline
+\texttt{V3\_\_game\_corner} & Four NYT games, table \texttt{game\_plays} with a unique key per user, game and day, column \texttt{sessions.games\_played} \\ \hline
+\texttt{V4\_\_game\_icons} & Official game icons as thumbnails \\ \hline
+\texttt{V5\_\_replace\_mini\_with\_pips} & The Mini (subscription only) set inactive, Pips added \\ \hline
+\texttt{V6\_\_more\_music\_categories} & Stations Jazz, Chill, Classical and Guitar \\ \hline
+\end{longtable}
+\endgroup
+
+\section{Music Stations}
+
+Each station is a \texttt{content\_items} row whose \texttt{external\_ref} is the
+Jamendo tag used for the track search.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|p{3.4cm}|p{3.4cm}|p{3.4cm}|p{3.4cm}|}
+\caption{Music stations and Jamendo tags}\label{tab:stations}\\ \hline
+\textbf{Station} & \textbf{Jamendo tag} & \textbf{Station} & \textbf{Jamendo tag} \\ \hline
+\endfirsthead
+\hline
+\endhead
+Lo-fi & \texttt{lounge} & Jazz & \texttt{jazz} \\ \hline
+Piano & \texttt{piano} & Chill & \texttt{downtempo} \\ \hline
+Acoustic & \texttt{acoustic} & Classical & \texttt{classical} \\ \hline
+Nature & \texttt{ambient} & Guitar & \texttt{guitar} \\ \hline
+\end{longtable}
+\endgroup

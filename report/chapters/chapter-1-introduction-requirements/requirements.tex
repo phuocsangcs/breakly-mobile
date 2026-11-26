@@ -5,12 +5,13 @@
 \label{sec:user-requirements}
 
 The following user requirements describe the expected user-facing behaviour of
-Breakly. They are grouped into five areas.
+Breakly. They are grouped into six areas.
 
 \medskip\noindent\textbf{Account and Session Management}\par\nopagebreak
 \begin{itemize}
-  \item \textbf{UR-01:} As a user, I want to sign up, sign in, and sign out so
-        that my sessions and streak are saved to my account.
+  \item \textbf{UR-01:} As a user, I want to use the app as a guest or to sign
+        up, sign in and sign out, so that I can start right away and, when I
+        want, keep my sessions and streak in an account.
   \item \textbf{UR-02:} As a user, I want to choose 10, 20, or 30 minutes so
         that my break fits the free time I have.
   \item \textbf{UR-03:} As a user, I want to start a session by tapping an
@@ -28,40 +29,51 @@ Breakly. They are grouped into five areas.
 \medskip\noindent\textbf{Space and Themes}\par\nopagebreak
 \begin{itemize}
   \item \textbf{UR-07:} As a user, I want a calm illustrated Space as my home
-        screen, where the radio, newspaper, and TV open the services, so that
-        choosing entertainment feels simple and relaxing.
-  \item \textbf{UR-08:} As a user, I want to choose a theme (Cozy Room or
-        Garden) and have the app remember it so that the Space matches my mood
-        every time I return.
+        screen, where the radio, newspaper, TV and gamepad open the services,
+        so that choosing entertainment feels simple and relaxing.
+  \item \textbf{UR-08:} As a user, I want to choose a theme (Cozy chill room or
+        Normal garden) and have the app remember it so that the Space matches
+        my mood every time I return.
 \end{itemize}
 
-\medskip\noindent\textbf{Content Services: Music, News, and Short Videos}\par\nopagebreak
+\medskip\noindent\textbf{Content Services: Music, News and Videos}\par\nopagebreak
 \begin{itemize}
   \item \textbf{UR-09:} As a user, I want to pick a music station and control
-        playback (play, pause, next, and volume) so that I get background
-        music that suits me.
+        playback (play, pause, previous, next, seek and volume) so that I get
+        background music that suits me.
   \item \textbf{UR-10:} As a user, I want music to keep playing while I move
-        between screens or lock my phone, and to pause while I watch TV, so
+        between screens or lock my phone, and to pause while I watch videos, so
         that sounds never overlap or stop unexpectedly.
   \item \textbf{UR-11:} As a user, I want to browse the latest news, filter by
         category, and refresh the list so that I can quickly find something to
         read.
   \item \textbf{UR-12:} As a user, I want to read an article inside the app so
         that I do not have to leave my session.
-  \item \textbf{UR-13:} As a user, I want to open the full article on the
-        source website so that I can read more when the summary is not enough.
-  \item \textbf{UR-14:} As a user, I want to watch short videos by swiping
-        vertically, with pause and mute, so that I can enjoy quick clips.
-  \item \textbf{UR-15:} As a user, I want the video feed to be limited and to
-        finish with a clear end card so that I am not pulled into endless
-        scrolling.
+  \item \textbf{UR-13:} As a user, I want to open the article on the source
+        website when it cannot be shown in the app, so that I can still read
+        it.
+  \item \textbf{UR-14:} As a user, I want to watch videos I choose myself on
+        YouTube without leaving the app, so that I can enjoy familiar content
+        during a break.
+  \item \textbf{UR-15:} As a user, I want the number of videos in one break to
+        be limited and to finish with a clear end card so that I am not pulled
+        into endless watching.
+  \item \textbf{UR-21:} As a user, I want to save music as MP3 files so that I
+        can listen without a connection and keep the files on my phone.
+\end{itemize}
+
+\medskip\noindent\textbf{Game Corner}\par\nopagebreak
+\begin{itemize}
+  \item \textbf{UR-22:} As a user, I want to play a short daily puzzle, such
+        as Wordle, inside the app and see whether I have already played it
+        today, so that a break can include a small mental challenge.
 \end{itemize}
 
 \medskip\noindent\textbf{Progress and History}\par\nopagebreak
 \begin{itemize}
   \item \textbf{UR-16:} As a user, I want a short summary when a session ends
-        (time used, music, articles, and videos) so that I can see how I spent
-        my break.
+        (time used, music, articles, videos and games) so that I can see how I
+        spent my break.
   \item \textbf{UR-17:} As a user, I want to see my current streak so that I
         feel rewarded for taking regular, controlled breaks.
   \item \textbf{UR-18:} As a user, I want to view a history of my past sessions
@@ -70,13 +82,18 @@ Breakly. They are grouped into five areas.
 
 \medskip\noindent\textbf{Settings and Reliability}\par\nopagebreak
 \begin{itemize}
-  \item \textbf{UR-19:} As a user, I want to turn the one-minute notice on or
-        off and see where the content comes from so that I control reminders
-        and know the sources.
+  \item \textbf{UR-19:} As a user, I want to set my default break length,
+        turn the one-minute notice on or off, set the music volume and see
+        where the content comes from, so that the app fits my habits and I
+        know the sources.
   \item \textbf{UR-20:} As a user, I want clear loading, offline, and error
         states with a retry option so that I always know what is happening and
         what to do next.
 \end{itemize}
+
+UR-21 and UR-22 were added during development, when the music download and
+the Game Corner features were introduced; the earlier identifiers are kept
+unchanged so that existing references remain valid.
 
 \subsection{Functional Requirements}
 \label{sec:functional-requirements}
@@ -84,39 +101,18 @@ Breakly. They are grouped into five areas.
 \subsubsection{System Boundary and Actors}
 \label{sec:system-boundary}
 
-The Breakly MVP includes the mobile client, local user preferences and break
-history, the break-session engine, and cloud authentication and synchronisation
-services. The MVP does not diagnose health conditions, monitor users continuously, or
-replace professional medical advice. The primary actor is the Breakly user. Three
-external supporting actors are involved: the mobile operating system (Mobile OS),
-the authentication and synchronisation service, and the content providers (supplying
-music, news and short-video feeds).
+The Breakly system consists of the mobile client and the Breakly backend. The
+mobile client contains the Space, the break-session engine, the media players,
+the in-app browsers and the local storage for preferences, guest history and
+the upload queue. The backend (Spring Boot with PostgreSQL) provides accounts,
+session history, streaks, preferences, the curated content catalogue and a
+caching proxy for music and news. The system does not diagnose health
+conditions, monitor users continuously, or replace professional advice.
 
-
-% \subsubsection{MoSCoW Prioritisation}
-% \label{sec:moscow}
-
-% \begin{longtable}{|p{2.2cm}|p{0.73\textwidth}|}
-% \caption{MoSCoW prioritisation for the MVP}\label{tab:moscow}\\
-% \hline
-% \textbf{Priority} & \textbf{Requirements} \\
-% \hline
-% \endfirsthead
-% \multicolumn{2}{r}{\textit{Continued from previous page}}\\[-2pt]\hline
-% \textbf{Priority} & \textbf{Requirements} \\
-% \hline
-% \endhead
-% \multicolumn{2}{r}{\textit{Continue on next page}}\\
-% \endfoot
-% \endlastfoot
-% Must & FR-01 start/complete a timed break, FR-02 activity suggestions,
-% local preferences, and accessible core navigation. \\
-% \hline
-% Should & FR-03 reminders, pause/resume, history, and offline-first operation. \\
-% \hline
-% Could & Themes, richer personalisation, streaks, and additional activity packs. \\
-% \hline
-% Won't (MVP) & Social features, public leaderboards, clinical claims, and
-% continuous sensor-based monitoring. \\
-% \hline
-% \end{longtable}
+The primary actor is the Breakly user, who may work as a guest or with an
+account. Four external systems take part: \textbf{Jamendo} (Creative Commons
+music), \textbf{VnExpress RSS} (news feeds and the publisher website),
+\textbf{YouTube} (the mobile website used by the video service) and
+\textbf{NYT Games} (daily puzzle games). The mobile operating system provides
+background audio, the lock-screen media controls and secure storage, and is
+treated as part of the runtime platform rather than as an actor.

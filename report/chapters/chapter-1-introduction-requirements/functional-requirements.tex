@@ -11,10 +11,10 @@
 
 The functional requirements of Breakly specify the concrete system behaviours
 and user interactions that the application must support. They are organised
-into seven functional modules and traced to the User Requirements
-(UR-01 to UR-20), and every user requirement is covered by at least one
-functional requirement. The catalogue contains 34 Functional Requirements,
-20 with Must priority and 14 with Should priority. Each requirement is
+into eight functional modules and traced to the User Requirements
+(UR-01 to UR-22), and every user requirement is covered by at least one
+functional requirement. The catalogue contains 40 Functional Requirements,
+20 with Must priority and 20 with Should priority. Each requirement is
 accompanied by acceptance criteria that can be turned directly into test
 cases.
 
@@ -43,12 +43,12 @@ cases.
 \multicolumn{5}{|c|}{\textbf{Module 1 --- Authentication \& Account Management}} \\ \hline
 
 \frfirst{FR 1.1}
-  {The system shall allow a new user to create an account with an email address and a password.}
+  {The system shall allow a new user to create an account with a display name, an email address and a password.}
   {UR-01}
   {Given a valid, unused email and a password of at least 8 characters, when the user submits the sign-up form, then the account is created and the user is signed in.}
   {Must}
 \acnext{Given an email that is already registered, when the user submits the form, then an error message is shown and no second account is created.}
-\acend{Given an invalid email format or a password shorter than 8 characters, then an inline error is shown and the form is not submitted.}
+\acend{Given an invalid email format or a password shorter than 8 characters, then an error is shown and the form is not submitted.}
 
 \frfirst{FR 1.2}
   {The system shall allow a registered user to sign in with email and password and remain signed in until the user signs out.}
@@ -56,14 +56,22 @@ cases.
   {Given valid credentials, when the user submits the sign-in form, then the Home Space is shown.}
   {Must}
 \acnext{Given incorrect credentials, then an error message is shown and the user stays on the sign-in screen.}
-\acend{Given a signed-in user, when the app is closed and reopened, then the user is still signed in.}
+\acend{Given a signed-in user, when the app is closed and reopened, then the user is still signed in (the stored refresh token is exchanged for a new access token).}
 
 \frfirst{FR 1.3}
   {The system shall allow a signed-in user to sign out.}
   {UR-01}
-  {When the user selects Sign out in Settings, then the Sign In screen is shown and the stored sign-in access token is removed from secure device storage.}
+  {When the user selects Sign out in Settings, then the refresh token is revoked on the server and all tokens are removed from secure device storage.}
   {Must}
-\acend{After signing out, the previous account's session history is no longer visible on the device.}
+\acend{After signing out, the app continues in guest mode and the account's history is no longer loaded.}
+
+\frfirst{FR 1.4}
+  {The system shall allow the app to be used without an account (guest mode).}
+  {UR-01}
+  {The user can select Continue as guest and use every service.}
+  {Should}
+\acnext{Sessions finished in guest mode are stored on the device and shown in History.}
+\acend{When the user signs in or signs up, the sessions stored on the device are uploaded to the account.}
 
 % ============================================================
 % MODULE 2
@@ -73,13 +81,13 @@ cases.
 \frfirst{FR 2.1}
   {The system shall allow the user to choose a session duration of 10, 20 or 30 minutes.}
   {UR-02}
-  {The Home Space shows three duration options (10, 20 and 30 minutes), with 20 minutes selected by default.}
+  {The Home Space shows three duration options (10, 20 and 30 minutes), preset to the default duration from Settings (20 minutes initially).}
   {Must}
 \acnext{Exactly one option is selected at a time, and selecting another option changes the selection.}
 \acend{While a session is active, the duration cannot be changed.}
 
 \frfirst{FR 2.2}
-  {The system shall start a session when the user taps the radio, the newspaper or the TV in the Space while no session is active.}
+  {The system shall start a session when the user taps the radio, the newspaper, the TV or the gamepad in the Space while no session is active.}
   {UR-03}
   {Given no active session, when the user taps an object, then the countdown starts from the selected duration and the matching service screen opens.}
   {Must}
@@ -89,7 +97,7 @@ cases.
 \frfirst{FR 2.3}
   {The system shall display the remaining session time on every screen while a session is active.}
   {UR-04}
-  {The remaining time is visible on the Home Space, Radio, News, Article and TV screens during a session.}
+  {The remaining time is visible on the Home Space, Radio, News, Article, TV, Game Corner and game screens during a session.}
   {Must}
 \acend{The displayed time updates every second in minutes and seconds.}
 
@@ -98,7 +106,7 @@ cases.
   {UR-04}
   {Given a 10-minute session, when the app is in the background for 3 minutes and then reopened, then the remaining time is 7 minutes $\pm$ 2 seconds.}
   {Must}
-\acend{Given the countdown reaches zero while the app is in the background, when the app is reopened, then the session is shown as ended and its summary is available.}
+\acend{Given the countdown reaches zero while the app is in the background, when the app is reopened, then the session is shown as ended and its summary is shown.}
 
 \frfirst{FR 2.5}
   {The system shall show a gentle notice when one minute of the session remains.}
@@ -111,17 +119,17 @@ cases.
 \frfirst{FR 2.6}
   {The system shall end the session automatically when the countdown reaches zero.}
   {UR-05}
-  {When the countdown reaches zero, then music and video playback stop.}
+  {When the countdown reaches zero, then music and video playback stop and the in-app browsers are closed.}
   {Must}
 \acnext{The Session Summary screen is shown.}
-\acend{The session record is saved with its start time and duration.}
+\acend{The session record is saved with its start time, end time, planned and actual duration and end reason.}
 
 \frfirst{FR 2.7}
   {The system shall allow the user to end an active session early after confirmation.}
   {UR-06}
-  {When the user selects End session, then a confirmation dialog is shown.}
+  {When the user selects End break, then a confirmation dialog is shown.}
   {Should}
-\acnext{When the user confirms, then the session ends and the Session Summary screen is shown.}
+\acnext{When the user confirms, then the session ends with the reason ``ended early'' and the Session Summary screen is shown.}
 \acend{When the user cancels, then the session continues unchanged.}
 
 % ============================================================
@@ -130,27 +138,27 @@ cases.
 \multicolumn{5}{|c|}{\textbf{Module 3 --- Space and Themes}} \\ \hline
 
 \frfirst{FR 3.1}
-  {The system shall present the Home Space as a full-screen illustrated scene in which the radio, the newspaper and the TV open the music, news and short-video services.}
+  {The system shall present the Home Space as a full-screen illustrated room in which the radio, the newspaper, the TV and the gamepad open the music, news, video and game services.}
   {UR-07}
-  {The radio, newspaper and TV are each tappable and carry a visible label (Music, News, Short Videos).}
+  {The four objects are each tappable and carry a visible label (Music, News, Videos, Games).}
   {Must}
 \acnext{Each tappable object has a touch target of at least 48 dp.}
-\acend{The duration selector and, during a session, the timer are shown on top of the scene with readable contrast.}
+\acnext{The duration selector and, during a session, the timer are shown on top of the scene with readable contrast.}
+\acend{The wall clock shows the current time, and floating notes rise from the radio while music plays.}
 
 \frfirst{FR 3.2}
-  {The system shall provide two themes, Cozy Room and Garden, that the user can select in the Theme Selector.}
+  {The system shall provide two themes, Cozy chill room and Normal garden, that the user can select.}
   {UR-08}
-  {The Theme Selector lists both themes with a preview image and a name.}
+  {The Theme Selector lists both themes with a preview and a name; a switch in the Home Space header toggles between them.}
   {Must}
-\acnext{When the user applies a theme, then the Home Space background and colours change while the layout and object positions stay the same.}
-\acend{If a theme image cannot be loaded, then a fallback background in the theme colours is shown and the objects remain usable.}
+\acend{When the user applies a theme, then the room, the window sky and the interface colours change while the layout and object positions stay the same.}
 
 \frfirst{FR 3.3}
   {The system shall remember the selected theme.}
   {UR-08}
-  {On the first launch, the Cozy Room theme is shown by default.}
+  {On the first launch, the Cozy chill room theme is shown by default.}
   {Must}
-\acend{After the app is closed and reopened, the last selected theme is shown.}
+\acend{After the app is closed and reopened, the last selected theme is shown; for a signed-in user it is also stored in the account preferences.}
 
 % ============================================================
 % MODULE 4
@@ -158,34 +166,35 @@ cases.
 \multicolumn{5}{|c|}{\textbf{Module 4 --- Music (Radio)}} \\ \hline
 
 \frfirst{FR 4.1}
-  {The system shall allow the user to choose a music station category and start playback.}
+  {The system shall allow the user to choose a music station and start playback.}
   {UR-09}
-  {The Radio screen lists the available categories (for example Lo-fi, Piano, Acoustic and Nature).}
+  {The Radio screen lists the stations Lo-fi, Piano, Acoustic, Nature, Jazz, Chill, Classical and Guitar.}
   {Must}
-\acnext{When the user selects a category, a track from that category starts playing.}
-\acend{Only one category is selected at a time.}
+\acnext{When the user selects a station, a track from that station starts playing.}
+\acend{Only one station is selected at a time.}
 
 \frfirst{FR 4.2}
-  {The system shall provide play, pause, next-track and volume controls.}
+  {The system shall provide play, pause, previous, next, seek and volume controls.}
   {UR-09}
   {Pause stops the audio and the control changes to play; play resumes from the same position.}
   {Must}
-\acnext{Next track starts another track from the selected category.}
+\acnext{Previous and next move to the neighbouring track of the station.}
+\acnext{Tapping or dragging the seek bar moves playback to the chosen position when the finger is released.}
 \acend{The volume control changes the playback volume.}
 
 \frfirst{FR 4.3}
-  {The system shall show the title, artist and artwork of the current track on the Radio screen, and a mini-player on other screens while music plays.}
+  {The system shall show the current track and its licence on the Radio screen, and a mini-player on other screens while music plays.}
   {UR-09}
-  {The Radio screen shows the title, artist and artwork of the current track.}
+  {The Radio screen shows the title, artist, artwork and the Creative Commons licence of the current track, with a link to the licence.}
   {Should}
-\acend{While music plays, a mini-player with a play/pause control is shown on the News and Article screens.}
+\acend{While music plays, a mini-player with a play/pause control is shown on the Home Space, News, Game Corner and History screens.}
 
 \frfirst{FR 4.4}
   {The system shall keep music playing when the user moves between screens or locks the device.}
   {UR-10}
   {Moving from the Radio screen to another screen does not interrupt playback.}
   {Must}
-\acnext{Locking the device during a session does not stop playback.}
+\acnext{Locking the device during a session does not stop playback, and the lock screen shows the track with play/pause and seek controls.}
 \acend{Playback stops when the session ends.}
 
 \frfirst{FR 4.5}
@@ -195,6 +204,21 @@ cases.
   {Should}
 \acnext{When the user leaves the TV, the music resumes from the paused position.}
 \acend{If the user had paused the music manually, it stays paused after leaving the TV.}
+
+\frfirst{FR 4.6}
+  {The system shall allow the user to download a track as an MP3 file and play it offline.}
+  {UR-21}
+  {A download control is shown only for tracks whose artist allows downloads.}
+  {Should}
+\acnext{A downloaded track is listed in the Downloaded station and plays without a connection.}
+\acend{A downloaded track can be saved to the phone (the Files app on iOS) or removed.}
+
+\frfirst{FR 4.7}
+  {The system shall skip tracks that cannot be played.}
+  {UR-20}
+  {When a track fails to load, the next track of the station starts automatically.}
+  {Should}
+\acend{When every track of the station fails, playback stops and an error message is shown.}
 
 % ============================================================
 % MODULE 5
@@ -215,7 +239,7 @@ cases.
   {Category chips are shown above the article list.}
   {Should}
 \acnext{When the user selects a category, only articles from that category are listed.}
-\acend{Selecting the all-articles chip restores the full list.}
+\acend{Selecting the All chip restores the full list.}
 
 \frfirst{FR 5.3}
   {The system shall allow the user to refresh the article list.}
@@ -227,46 +251,46 @@ cases.
 \frfirst{FR 5.4}
   {The system shall allow the user to read an article inside the app.}
   {UR-12}
-  {When the user taps an article card, then the Article screen opens inside the app.}
+  {When the user taps an article card, then the article page opens in an in-app reader.}
   {Must}
-\acnext{The Article screen shows the title, source, publication time, image (if available) and the content provided by the feed.}
+\acnext{The reader shows a loading bar and the source domain.}
 \acend{The session countdown remains visible while reading.}
 
 \frfirst{FR 5.5}
-  {The system shall allow the user to open the full article on the source website.}
+  {The system shall allow the user to open the article on the source website when the in-app reader cannot show it.}
   {UR-13}
-  {The Article screen offers a ``Read full article'' action.}
+  {When the reader fails to load a page, it offers Try again, Open in browser and Back to News.}
   {Should}
-\acnext{When the user selects it, then the source page opens in a browser view.}
-\acend{When the user returns, the Article screen is shown and the countdown has kept running.}
+\acnext{Open in browser opens the article in the system browser view.}
+\acend{When the user returns, the countdown has kept running.}
 
 % ============================================================
 % MODULE 6
 % ============================================================
-\multicolumn{5}{|c|}{\textbf{Module 6 --- Short Videos (TV)}} \\ \hline
+\multicolumn{5}{|c|}{\textbf{Module 6 --- Videos (TV)}} \\ \hline
 
 \frfirst{FR 6.1}
-  {The system shall show short videos in a full-screen vertical feed.}
+  {The system shall let the user browse and watch videos on the mobile YouTube website inside the app.}
   {UR-14}
-  {When the user opens the TV, the first clip starts playing in full screen.}
+  {When the user opens the TV, \texttt{m.youtube.com} opens in an in-app browser with the session timer above it.}
   {Should}
-\acnext{A swipe up moves to the next clip and a swipe down moves to the previous clip.}
-\acend{A progress indicator shows the position of the current clip in the feed.}
+\acend{The YouTube page itself is not modified; the user can search, browse and play videos.}
 
 \frfirst{FR 6.2}
-  {The system shall allow the user to pause, resume, mute and unmute a video.}
-  {UR-14}
-  {Tapping the video toggles between pause and play.}
+  {The system shall keep the TV on YouTube.}
+  {UR-15}
+  {Links that lead outside YouTube open in the system browser instead of the TV.}
   {Should}
-\acend{The mute control switches the sound off and on.}
+\acnext{Links that would switch to another app are blocked.}
+\acend{Video playback pauses when the app goes to the background.}
 
 \frfirst{FR 6.3}
-  {The system shall limit each video feed to a fixed number of clips and finish it with an end card.}
+  {The system shall limit each session to a fixed number of videos and finish with an end card.}
   {UR-15}
-  {A feed contains at most 10 clips.}
+  {The TV counts each distinct video the user opens and shows the count, at most 10 per session.}
   {Should}
-\acnext{After the last clip, an end card with a closing message is shown instead of further videos.}
-\acnext{No further clip plays automatically after the end card appears.}
+\acnext{After the tenth video, an end card with a closing message is shown instead of further videos.}
+\acnext{When the session ends while the TV is open, the browser is closed and the end card is shown.}
 \acend{The user can return to the Home Space from the end card.}
 
 % ============================================================
@@ -279,62 +303,89 @@ cases.
   {UR-16}
   {When a session ends, the Session Summary screen shows the total time used.}
   {Should}
-\acnext{The summary shows the time spent listening to music, the number of articles opened and the number of videos watched.}
-\acend{The Done button returns the user to the Home Space.}
+\acnext{The summary shows the time spent listening to music and the number of articles opened, videos watched and games played.}
+\acend{The Back to room action returns the user to the Home Space.}
 
 \frfirst{FR 7.2}
-  {The system shall save a record of every finished session to the user's account.}
+  {The system shall save a record of every finished session.}
   {UR-18}
-  {When a session ends, a record with its start time, duration and services used is saved to the user's account.}
+  {When a session ends, a record with its start and end time, duration, end reason and services used is saved on the device and, for a signed-in user, uploaded to the account.}
   {Must}
-\acnext{Given the device is offline when a session ends, then the record is stored on the device and uploaded when the connection returns.}
+\acnext{Given the device is offline when a session ends, then the record stays in an upload queue and is uploaded when the connection returns; a record is never stored twice.}
 \acend{After signing in on another device, the saved records are available.}
 
 \frfirst{FR 7.3}
   {The system shall calculate and display the user's current streak.}
   {UR-17}
-  {The current streak counts consecutive days with at least one completed session.}
+  {The current streak counts consecutive calendar days, ending today or yesterday, with at least one recorded session.}
   {Must}
-\acnext{The streak is shown on the Home Space and on the History screen.}
-\acend{A day without a completed session resets the streak to zero.}
+\acnext{The streak is shown on the Home Space, on the History screen and on the profile card.}
+\acend{A day without a session resets the streak to zero.}
 
 \frfirst{FR 7.4}
   {The system shall display a history of the user's past sessions.}
   {UR-18}
-  {The History screen lists past sessions from newest to oldest, each with its date, duration and services used.}
+  {The History screen lists past sessions grouped by day from newest to oldest, each with its time, duration and services used.}
   {Must}
 \acnext{When there are no sessions, an empty-state message is shown.}
 \acend{If the history cannot be loaded, an error message with a retry option is shown.}
 
 \frfirst{FR 7.5}
-  {The system shall allow the user to turn the one-minute notice on or off.}
+  {The system shall allow the user to change the break settings.}
   {UR-19}
-  {Settings contains a switch for the one-minute notice, turned on by default.}
+  {Settings contains the default break length (10, 20 or 30 minutes), the room theme, the one-minute warning switch (on by default) and the radio volume.}
   {Should}
-\acnext{When the switch is off, no one-minute notice is shown during sessions.}
-\acend{The setting is kept after the app is restarted.}
+\acnext{When the one-minute warning is off, no notice is shown during sessions.}
+\acend{The settings are kept after the app is restarted and, for a signed-in user, stored in the account.}
 
 \frfirst{FR 7.6}
-  {The system shall show where the news, music and video content comes from.}
+  {The system shall show where the music, news, video and game content comes from.}
   {UR-19}
-  {Settings contains a Content credits entry.}
+  {Settings contains a Content credits group.}
   {Should}
-\acend{The entry lists the source of the news, music and video content used in the app.}
+\acend{The group lists Jamendo (Creative Commons artists), VnExpress RSS feeds and YouTube; the Game Corner names The New York Times as the game provider.}
 
 \frfirst{FR 7.7}
   {The system shall show a loading state while content is being loaded.}
   {UR-20}
-  {While news, music or video content is loading, a placeholder or loading indicator is shown instead of a blank screen.}
+  {While news, music, video or game content is loading, a placeholder or loading indicator is shown instead of a blank screen.}
   {Should}
 \acend{The loading indicator disappears when the content is displayed or an error is shown.}
 
 \frfirst{FR 7.8}
   {The system shall show offline and error states with a retry option.}
   {UR-20}
-  {When a content request fails because there is no connection, an offline message with a retry option is shown.}
+  {When a content request fails because there is no connection, an error message with a retry option is shown.}
   {Should}
 \acnext{When the user selects retry and the connection is available, the content loads.}
 \acend{The session countdown continues while an offline or error message is displayed.}
+
+% ============================================================
+% MODULE 8
+% ============================================================
+\multicolumn{5}{|c|}{\textbf{Module 8 --- Game Corner}} \\ \hline
+
+\frfirst{FR 8.1}
+  {The system shall list the daily games of the Game Corner.}
+  {UR-22}
+  {The Game Corner lists Wordle, Connections, Strands and Pips, each with its official icon and a short description.}
+  {Should}
+\acend{Each game shows whether it has been played today and the user's streak for that game.}
+
+\frfirst{FR 8.2}
+  {The system shall open a game inside the app.}
+  {UR-22}
+  {When the user selects a game, the game page opens in an in-app browser with the session timer above it.}
+  {Should}
+\acend{Links that lead outside the game site open in the system browser.}
+
+\frfirst{FR 8.3}
+  {The system shall record at most one play per game and day.}
+  {UR-22}
+  {When a game page loads for the first time on a day, a play is recorded with the user's local date.}
+  {Should}
+\acnext{Recording the same game again on the same day does not create a second play.}
+\acend{The game is counted in the Session Summary of the current break.}
 
 \end{longtable}
 \endgroup
