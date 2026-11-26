@@ -25,7 +25,10 @@ export default function MainLayout() {
     endSession,
     dismissOneMinuteBanner,
   } = useSessionTimer();
-  const prevCompletedId = useRef<string | null>(null);
+  // Seeded with the break that had already ended when this layout mounted: the layout remounts after a
+  // visit to the (auth) screens, and that old break must not reopen the summary. Only breaks that end
+  // while the layout is mounted (including on return from the background) navigate to it.
+  const prevCompletedId = useRef<string | null>(lastCompleted?.clientId ?? null);
 
   useEffect(() => {
     void useSessionStore.getState().hydrate();
