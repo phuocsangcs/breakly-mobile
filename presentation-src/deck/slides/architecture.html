@@ -1,0 +1,39 @@
+<section id="architecture">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Architecture</h2>
+<div style="display:grid; grid-template-columns:1fr 160px 1fr 160px 0.8fr; row-gap:0">
+<div class="tile up" style="--i:1; grid-column:1; grid-row:1; padding:36px; gap:14px">
+<p class="chip" style="align-self:flex-start">Mobile app</p>
+<h3>Expo · React Native</h3>
+<p class="t">Timer, music player, in-app browsers</p>
+</div>
+<div class="up" style="--i:2; grid-column:2; grid-row:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px"><p class="s">REST + JWT</p><x-connector head="both" style="width:120px; color:#2F6B5E; border-width:4px"></x-connector></div>
+<div class="tile green up" style="--i:3; grid-column:3; grid-row:1; padding:36px; gap:14px">
+<p class="chip warm" style="align-self:flex-start">Backend</p>
+<h3>Spring Boot 4</h3>
+<p class="t">Accounts, history, streak, catalogue</p>
+</div>
+<div class="up" style="--i:4; grid-column:4; grid-row:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px"><p class="s">JPA</p><x-connector head="end" style="width:120px; color:#2F6B5E; border-width:4px"></x-connector></div>
+<div class="tile up" style="--i:5; grid-column:5; grid-row:1; padding:36px; gap:14px">
+<p class="chip" style="align-self:flex-start">Database</p>
+<h3>PostgreSQL</h3>
+<p class="t">6 tables, Flyway</p>
+</div>
+<div class="up" style="--i:6; grid-column:1; grid-row:2; display:flex; flex-direction:column; align-items:center">
+<div style="width:0; height:56px; border-left:4px dashed #B4572F"></div>
+<div class="tile yellow" style="align-self:stretch; padding:28px; gap:12px">
+<p class="s" style="color:#B4572F; font-weight:700">LOADED DIRECTLY BY THE APP</p>
+<div style="display:flex; gap:10px; flex-wrap:wrap"><p class="chip warm" style="background:#FFFCF7">YouTube</p><p class="chip warm" style="background:#FFFCF7">NYT Games</p><p class="chip warm" style="background:#FFFCF7">Articles</p><p class="chip warm" style="background:#FFFCF7">MP3 files</p></div>
+</div>
+</div>
+<div class="up" style="--i:7; grid-column:3; grid-row:2; display:flex; flex-direction:column; align-items:center">
+<div style="width:0; height:56px; border-left:4px dashed #2F6B5E"></div>
+<div class="tile" style="align-self:stretch; padding:28px; gap:12px">
+<p class="s" style="color:#2F6B5E; font-weight:700">FETCHED AND CACHED BY THE BACKEND</p>
+<div style="display:flex; gap:10px; flex-wrap:wrap"><p class="chip">Jamendo · 10 min</p><p class="chip">VnExpress RSS · 5 min</p></div>
+</div>
+</div>
+</div>
+<aside>(~45s) Kiến trúc là client và server. App Expo giữ mọi thứ cần chạy trong giờ nghỉ: đồng hồ tính từ thời điểm kết thúc đã lưu, trình phát nhạc chung cho cả app, và các trình duyệt trong app. Backend Spring Boot cung cấp REST API có JWT, lưu tài khoản, lịch sử, streak và cài đặt vào PostgreSQL. Phía dưới là hai luồng nội dung: backend lấy và cache danh sách nhạc từ Jamendo 10 phút và tin từ VnExpress 5 phút; còn YouTube, game, trang bài báo và file MP3 thì app tải trực tiếp, backend không trung chuyển media.</aside>
+</section>

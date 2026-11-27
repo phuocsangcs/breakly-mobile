@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TITLE}}</title>
+<meta property="og:title" content="{{TITLE}}">
+<meta property="og:description" content="Breakly: small breaks with a stopping point. CO3043 · CC02.">
+<meta name="theme-color" content="#2F6B5E">
+<meta name="description" content="Breakly: small breaks with a stopping point. Mobile Application Development (CO3043), class CC02.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;700&display=swap">
+<style>
+/*DECK_CSS*/
+
+/* ---- Web runtime ---- */
+* { margin: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #E9E1D3; overflow: hidden; }
+#stage { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+#stage > section { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; visibility: hidden; }
+#stage > section.active { visibility: visible; z-index: 2; }
+#stage > section.leaving { visibility: visible; z-index: 1; }
+
+/* ---- Motion: Breakly's own set, built around a break timer ---- */
+:root { --ease-out: cubic-bezier(.16, 1, .3, 1); --ease-wipe: cubic-bezier(.76, 0, .24, 1); }
+/* Slide change: the new slide is wiped in behind an amber time bar; the old one steps back. */
+#stage > section.enter-fwd { animation: wipe-fwd 760ms var(--ease-wipe) both; }
+#stage > section.enter-back { animation: wipe-back 760ms var(--ease-wipe) both; }
+#stage > section.leaving.fwd { animation: step-back-l 760ms var(--ease-wipe) both; }
+#stage > section.leaving.back { animation: step-back-r 760ms var(--ease-wipe) both; }
+@keyframes wipe-fwd { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes wipe-back { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes step-back-l { to { transform: translateX(-90px); filter: brightness(.82) saturate(.8); } }
+@keyframes step-back-r { to { transform: translateX(90px); filter: brightness(.82) saturate(.8); } }
+#sweep { position: absolute; top: 0; left: 0; width: 12px; height: 1080px; z-index: 3; opacity: 0; pointer-events: none; background: var(--amber); box-shadow: 0 0 40px 6px rgba(242, 176, 94, .55); }
+#sweep.dark { background: var(--navy); box-shadow: 0 0 40px 6px rgba(35, 36, 55, .45); }
+#sweep.fwd { animation: sweep-fwd 760ms var(--ease-wipe) both; }
+#sweep.back { animation: sweep-back 760ms var(--ease-wipe) both; }
+@keyframes sweep-fwd { 0% { opacity: 1; transform: translateX(1920px); } 92% { opacity: 1; } 100% { opacity: 0; transform: translateX(-12px); } }
+@keyframes sweep-back { 0% { opacity: 1; transform: translateX(-12px); } 92% { opacity: 1; } 100% { opacity: 0; transform: translateX(1920px); } }
+
+/* Entrances replay each time a slide becomes active, after the wipe has started. */
+#stage > section:not(.active) .up, #stage > section:not(.active) .zoom, #stage > section:not(.active) .conn,
+#stage > section:not(.active) tr, #stage > section:not(.active) .timer-ring, #stage > section:not(.active) .timer-dot { animation: none !important; }
+.up { animation: focus-in 900ms var(--ease-out) both; animation-delay: calc(260ms + var(--i, 0) * 110ms); }
+h1.up, h2.up { animation-name: track-in; }
+@keyframes focus-in { from { opacity: 0; filter: blur(12px); transform: scale(.985); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes track-in { from { opacity: 0; filter: blur(10px); letter-spacing: 10px; } }
+.zoom, img.up.pic, img.up.shotimg { animation: unveil 1000ms var(--ease-out) both; animation-delay: calc(300ms + var(--i, 0) * 110ms); }
+@keyframes unveil { from { clip-path: inset(100% -80px -80px -80px); filter: saturate(.2) brightness(1.1); } to { clip-path: inset(-80px -80px -80px -80px); filter: none; } }
+.conn { transform-origin: left center; animation: draw-x 700ms var(--ease-out) both; animation-delay: calc(420ms + var(--i, 0) * 110ms); }
+.conn.conn-both { transform-origin: center; }
+@keyframes draw-x { from { transform: scaleX(0); } }
+tr { animation: row-in 620ms var(--ease-out) both; animation-delay: calc(360ms + var(--r, 0) * 70ms); }
+@keyframes row-in { from { opacity: 0; background: var(--amber-soft); } 40% { opacity: 1; background: var(--amber-soft); } }
+tr.thead { animation-name: focus-in; }
+.timer-ring { animation: ring 1600ms var(--ease-wipe) 500ms both; }
+@keyframes ring { from { stroke-dashoffset: 1000; } }
+.timer-dot { transform-box: fill-box; transform-origin: center; animation: dot 600ms var(--ease-out) 1950ms both; }
+@keyframes dot { from { transform: scale(.4); opacity: .4; } 50% { transform: scale(1.5); } to { transform: scale(1); opacity: 1; } }
+
+/* Click steps: arrows draw in the direction they point, other steps focus in. */
+.fragment { opacity: 0; filter: blur(8px); transform: none; transition: opacity 450ms ease, filter 450ms ease, clip-path 600ms var(--ease-out); }
+.fragment.visible { opacity: 1; filter: none; transform: none; }
+.msg.fragment { filter: none; clip-path: inset(-30px 100% -30px -30px); }
+.msg.fragment:has(.back) { clip-path: inset(-30px -30px -30px 100%); }
+.msg.fragment.visible { clip-path: inset(-30px -30px -30px -30px); }
+
+h1 { font-size: 104px; } h2 { font-size: 64px; } h3 { font-size: 36px; }
+table { border-collapse: collapse; }
+th, td { padding: .42em .7em; text-align: left; border-bottom: 1px solid rgba(185, 180, 204, .22); }
+th { font-weight: 700; color: var(--ink); }
+.tri-r, .tri-l { display: block; width: 26px; height: 18px; }
+.tri-r { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.tri-l { clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+.conn { display: block; height: 4px; background: currentColor; position: relative; }
+.conn::after, .conn-both::before { content: ""; position: absolute; top: -8px; width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; }
+.conn::after { right: -2px; border-left: 16px solid currentColor; }
+.conn-both::before { left: -2px; border-right: 16px solid currentColor; }
+svg.ico, svg.icon { display: block; }
+
+/* Controls */
+#bar { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 999px; background: rgba(28, 29, 46, .82); backdrop-filter: blur(8px); z-index: 10; transition: opacity 300ms; font-family: 'Be Vietnam Pro', Arial, sans-serif; }
+#bar.idle { opacity: 0; pointer-events: none; }
+#bar button { border: 0; border-radius: 999px; background: #30314B; color: #F6EBDD; font: 600 14px/1 'Be Vietnam Pro', Arial, sans-serif; padding: 10px 16px; cursor: pointer; }
+#bar button:hover { background: #3E3F5E; }
+#bar button:focus-visible { outline: 2px solid #F2B05E; outline-offset: 2px; }
+#pos { color: #B9B4CC; font: 600 14px/1 'Be Vietnam Pro', Arial, sans-serif; min-width: 64px; text-align: center; }
+#clock { display: block; width: 34px; height: 34px; margin: 0 2px 0 6px; }
+#clock circle { fill: none; stroke-width: 4; }
+#clock .bg { stroke: #3E3F5E; }
+#clock .fg { stroke: #F2B05E; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 700ms var(--ease-out); }
+#notes { position: fixed; right: 18px; bottom: 74px; width: min(460px, calc(100vw - 36px)); max-height: 46vh; overflow: auto; padding: 18px 20px; border-radius: 16px; background: rgba(28, 29, 46, .94); color: #F6EBDD; font: 400 16px/1.6 'Be Vietnam Pro', Arial, sans-serif; z-index: 11; display: none; box-shadow: 0 18px 40px rgba(0, 0, 0, .4); }
+#notes.open { display: block; }
+#notes b { color: #F2B05E; display: block; margin-bottom: 6px; font-size: 13px; letter-spacing: 1px; }
+#help { position: fixed; left: 18px; bottom: 22px; color: #6F6B88; font: 400 12px/1.4 'Be Vietnam Pro', Arial, sans-serif; z-index: 10; }
+#help { color: #8A8577; }
+@media (max-width: 1000px), (max-height: 560px) { #help { display: none; } }
+@media (max-width: 700px) { #bar button { padding: 9px 12px; } }
+@media (prefers-reduced-motion: reduce) { *, #stage > section { animation: none !important; transition: none !important; } .fragment.visible { clip-path: none; } }
+</style>
+</head>
+<body>
+<main id="stage" aria-live="polite">
+<!--SLIDES-->
+<div id="sweep" aria-hidden="true"></div>
+</main>
+<nav id="bar" aria-label="Slide controls">
+<button id="prev" aria-label="Previous slide">‹</button>
+<svg id="clock" viewBox="0 0 34 34" aria-hidden="true"><circle class="bg" cx="17" cy="17" r="13"/><circle class="fg" cx="17" cy="17" r="13" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
+<span id="pos">1 / 17</span>
+<button id="next" aria-label="Next slide">›</button>
+<button id="noteBtn" aria-pressed="false">Notes</button>
+<button id="fsBtn">Full screen</button>
+</nav>
+<div id="notes" role="region" aria-label="Speaker notes"></div>
+<p id="help">← → or Space · N notes · F full screen</p>
+<script>
+(() => {
+  const notes = /*NOTES*/[];
+  const stage = document.getElementById('stage');
+  const slides = Array.from(stage.querySelectorAll(':scope > section'));
+  const total = slides.length;
+  const pos = document.getElementById('pos');
+  const bar = document.getElementById('bar');
+  const notesBox = document.getElementById('notes');
+  const noteBtn = document.getElementById('noteBtn');
+  const clock = document.querySelector('#clock .fg');
+  const sweep = document.getElementById('sweep');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur = -1;
+  let settle;
+
+  // Table rows get their own stagger index.
+  slides.forEach((sl) => sl.querySelectorAll('tr').forEach((tr, k) => tr.style.setProperty('--r', k)));
+
+  // Cover and Thanks: a timer ring draws round the green circle and stops at the amber dot.
+  slides.forEach((sl) => {
+    const svg = sl.querySelector('svg[aria-label^="Soft green circle"]');
+    if (!svg) return;
+    const [big, dot] = svg.querySelectorAll('circle');
+    const cx = +big.getAttribute('cx'), cy = +big.getAttribute('cy'), r = +big.getAttribute('r');
+    const ang = (Math.atan2(+dot.getAttribute('cx') - cx, cy - +dot.getAttribute('cy')) + 2 * Math.PI) % (2 * Math.PI);
+    const rest = Math.round(1000 * (1 - ang / (2 * Math.PI)));
+    const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    const attrs = { cx, cy, r, fill: 'none', stroke: '#2F6B5E', 'stroke-width': 8, 'stroke-linecap': 'round', pathLength: 1000,
+      'stroke-dasharray': 1000, 'stroke-dashoffset': rest, transform: `rotate(-90 ${cx} ${cy})`, class: 'timer-ring' };
+    Object.entries(attrs).forEach(([k, v]) => ring.setAttribute(k, v));
+    big.after(ring);
+    dot.classList.add('timer-dot');
+  });
+
+  // Big numbers count up to their value.
+  function countUp(sl) {
+    if (reduced) return;
+    sl.querySelectorAll('.huge, .big').forEach((el) => {
+      const final = el.dataset.final || (el.dataset.final = el.textContent);
+      if (!/\d/.test(final)) return;
+      const host = el.closest('[style*="--i"]') || el;
+      const delay = 380 + (parseFloat(getComputedStyle(host).getPropertyValue('--i')) || 0) * 110;
+      const t0 = performance.now() + delay, dur = 1100;
+      el.textContent = final.replace(/\d+(?:\.\d+)?/g, (m) => (0).toFixed((m.split('.')[1] || '').length));
+      const step = (now) => {
+        if (!sl.classList.contains('active')) { el.textContent = final; return; }
+        const k = Math.min(1, Math.max(0, (now - t0) / dur));
+        const e = 1 - Math.pow(1 - k, 4);
+        el.textContent = final.replace(/\d+(?:\.\d+)?/g, (m) => (parseFloat(m) * e).toFixed((m.split('.')[1] || '').length));
+        if (k < 1) requestAnimationFrame(step); else el.textContent = final;
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  function fit() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+  }
+
+  function fragments(i) { return Array.from(slides[i].querySelectorAll('.fragment')); }
+
+  function show(i, fromBack) {
+    const next = Math.max(0, Math.min(total - 1, i));
+    if (next === cur) return;
+    const prevSlide = slides[cur];
+    const dir = cur < 0 ? null : (next > cur ? 'fwd' : 'back');
+    cur = next;
+    clearTimeout(settle);
+    slides.forEach((s) => s.classList.remove('active', 'leaving', 'enter-fwd', 'enter-back', 'fwd', 'back'));
+    const sl = slides[cur];
+    if (dir && !reduced) {
+      prevSlide.classList.add('leaving', dir);
+      sl.classList.add('enter-' + dir);
+      sweep.className = '';
+      void sweep.offsetWidth;
+      sweep.className = dir + (sl.classList.contains('sun') ? ' dark' : '');
+      settle = setTimeout(() => {
+        prevSlide.classList.remove('leaving', 'fwd', 'back');
+        sl.classList.remove('enter-fwd', 'enter-back');
+      }, 800);
+    }
+    sl.classList.add('active');
+    countUp(sl);
+    // Arriving forwards hides the click steps; arriving backwards shows them all.
+    fragments(cur).forEach((f) => f.classList.toggle('visible', !!fromBack));
+    pos.textContent = `${cur + 1} / ${total}`;
+    clock.style.strokeDashoffset = String(100 - ((cur + 1) / total) * 100);
+    notesBox.innerHTML = `<b>SLIDE ${cur + 1} · NOTES</b>` + (notes[cur] || '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+    if (location.hash !== `#${cur + 1}`) history.replaceState(null, '', `#${cur + 1}`);
+  }
+
+  function next() {
+    const hidden = fragments(cur).find((f) => !f.classList.contains('visible'));
+    if (hidden) { hidden.classList.add('visible'); return; }
+    if (cur < total - 1) show(cur + 1, false);
+  }
+  function prev() {
+    const shown = fragments(cur).filter((f) => f.classList.contains('visible'));
+    if (shown.length) { shown[shown.length - 1].classList.remove('visible'); return; }
+    if (cur > 0) show(cur - 1, true);
+  }
+  function toggleNotes() {
+    const open = notesBox.classList.toggle('open');
+    noteBtn.setAttribute('aria-pressed', String(open));
+  }
+  function toggleFull() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+
+  document.getElementById('next').onclick = next;
+  document.getElementById('prev').onclick = prev;
+  noteBtn.onclick = toggleNotes;
+  document.getElementById('fsBtn').onclick = toggleFull;
+
+  addEventListener('keydown', (e) => {
+    if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0, false);
+    else if (e.key === 'End') show(total - 1, true);
+    else if (e.key === 'n' || e.key === 'N') toggleNotes();
+    else if (e.key === 'f' || e.key === 'F') toggleFull();
+  });
+
+  let tx = null;
+  addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchend', (e) => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
+    tx = null;
+  });
+
+  let idle;
+  function wake() { bar.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(() => bar.classList.add('idle'), 2500); }
+  addEventListener('mousemove', wake);
+  addEventListener('touchstart', wake, { passive: true });
+
+  addEventListener('resize', fit);
+  addEventListener('hashchange', () => { const n = parseInt(location.hash.slice(1), 10); if (n && n - 1 !== cur) show(n - 1, false); });
+  fit();
+  const start = parseInt(location.hash.slice(1), 10);
+  show(Number.isFinite(start) ? start - 1 : 0, false);
+  wake();
+})();
+</script>
+</body>
+</html>

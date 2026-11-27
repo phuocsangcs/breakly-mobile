@@ -1,0 +1,17 @@
+<section id="nfr">
+<p class="tag">02 · Requirements</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Non-functional requirements</h2>
+<table class="up" style="--i:1; font-size:28px">
+<tr class="thead"><th style="width:24%">Quality</th><th>Measurable target</th></tr>
+<tr><td>Response time</td><td>Content or a loading state within 3 s</td></tr>
+<tr><td>Background</td><td>Timer within ±2 s; music plays with the screen locked</td></tr>
+<tr><td>Offline</td><td>Error with Retry within 10 s; sessions upload later</td></tr>
+<tr><td>Security</td><td>BCrypt passwords, token in secure storage, HTTPS</td></tr>
+<tr><td>Permissions</td><td>No location, contacts, camera, mic or notifications</td></tr>
+<tr><td>Platform</td><td>iOS 16+ and Android 8+, portrait</td></tr>
+<tr><td>Battery and data</td><td>Music lists cached 10 min; downloads play offline</td></tr>
+<tr><td>Accessibility</td><td>Text up to 130%, contrast 4.5 : 1</td></tr>
+</table>
+<aside>(~35s) Yêu cầu phi chức năng đều có con số đo được. Màn hình tải trong 3 giây; đồng hồ lệch tối đa 2 giây khi app chạy nền và nhạc vẫn phát khi khoá máy. Mất mạng thì trong 10 giây có thông báo và nút thử lại, phiên nghỉ được đồng bộ sau và không bị trùng. Về bảo mật: mật khẩu băm BCrypt, token lưu trong secure storage, và app không xin quyền nhạy cảm nào. Danh sách nhạc được cache 10 phút, chữ đạt độ tương phản 4.5:1.</aside>
+</section>

@@ -1,0 +1,27 @@
+<section id="sequence">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0; margin-bottom:36px">Sequence: one break</h2>
+<div class="who up" style="--i:1">
+<div><p>User</p></div>
+<div><p>Home Space</p></div>
+<div><p>Session store</p></div>
+<div><p>Music player</p></div>
+<div><p>Backend API</p></div>
+</div>
+<div class="seq">
+<div class="life" style="left:166px"></div>
+<div class="life" style="left:499px"></div>
+<div class="life" style="left:832px"></div>
+<div class="life" style="left:1165px"></div>
+<div class="life" style="left:1498px"></div>
+<div class="msg fragment" style="left:166px; top:20px; width:333px"><p>1 · Tap the radio</p><div class="arrow"><div class="shaft"></div><x-shape kind="arrow-right" class="head"></x-shape></div></div>
+<div class="msg fragment" style="left:499px; top:90px; width:333px"><p>2 · Save end time</p><div class="arrow"><div class="shaft"></div><x-shape kind="arrow-right" class="head"></x-shape></div></div>
+<div class="note fragment" style="left:632px; top:160px; width:400px"><p>Every second: end − now</p></div>
+<div class="msg fragment" style="left:832px; top:236px; width:333px"><p>3 · 00:00 → stop</p><div class="arrow"><div class="shaft"></div><x-shape kind="arrow-right" class="head"></x-shape></div></div>
+<div class="msg fragment" style="left:832px; top:306px; width:666px"><p>4 · Save the session</p><div class="arrow"><div class="shaft"></div><x-shape kind="arrow-right" class="head"></x-shape></div></div>
+<div class="msg fragment" style="left:832px; top:376px; width:666px"><p class="back">5 · Saved</p><div class="arrow"><x-shape kind="arrow-left" class="head back"></x-shape><div class="shaft back"></div></div></div>
+<div class="msg fragment" style="left:166px; top:376px; width:666px"><p>6 · Show summary</p><div class="arrow"><x-shape kind="arrow-left" class="head"></x-shape><div class="shaft"></div></div></div>
+</div>
+<aside>(~45s) Đây là luồng chính, bấm để hiện từng bước. Người dùng chạm vào cái đài. Session store lưu thời điểm kết thúc và mỗi giây tính lại thời gian còn lại bằng thời điểm kết thúc trừ giờ hiện tại, nên khi app chạy nền đồng hồ vẫn đúng. Khi về 00:00, store dừng nhạc, gửi bản ghi phiên lên backend; nếu mất mạng thì bản ghi nằm trong hàng đợi và gửi lại sau, server bỏ qua bản trùng. Cuối cùng app hiện màn tóm tắt.</aside>
+</section>
