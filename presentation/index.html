@@ -1,0 +1,692 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Breakly — Small breaks, with a stopping point</title>
+<meta property="og:title" content="Breakly — Small breaks, with a stopping point">
+<meta property="og:description" content="Breakly: small breaks with a stopping point. CO3043 · CC02.">
+<meta name="theme-color" content="#2F6B5E">
+<meta name="description" content="Breakly: small breaks with a stopping point. Mobile Application Development (CO3043), class CC02.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;700&display=swap">
+<style>
+:root {
+  --paper: #F7F2EA;
+  --card: #FFFCF7;
+  --ink: #1F2233;
+  --body: #565A6B;
+  --soft: #8A8577;
+  --line: #E6DCCB;
+  --sage: #2F6B5E;
+  --sage-soft: #DCEAE3;
+  --amber: #F2B05E;
+  --amber-soft: #FBE7C8;
+  --clay: #B4572F;
+  --navy: #232437;
+  --navy-2: #2E2F46;
+  --cream: #F6EBDD;
+  --mist: #C9C3D9;
+}
+
+body { font-family: 'Be Vietnam Pro', Arial, sans-serif; color: var(--ink); }
+
+section {
+  counter-increment: page;
+  background: var(--paper);
+  color: var(--ink);
+  padding: 176px 128px 120px;
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+}
+section.night { background: var(--navy); color: var(--cream); }
+section.sun { background: var(--amber); }
+
+/* Type scale: 104 / 64 / 36 / 28 / 24 */
+h1 { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 104px; font-weight: 800; line-height: 1.02; letter-spacing: -2px; margin: 0; color: var(--ink); }
+h2 { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 64px; font-weight: 800; line-height: 1.08; letter-spacing: -1px; margin: 0 0 48px; color: var(--ink); }
+h3 { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 36px; font-weight: 800; line-height: 1.15; margin: 0; color: var(--ink); }
+.night h1, .night h2, .night h3 { color: var(--cream); }
+.t { font-size: 28px; line-height: 1.5; color: var(--body); margin: 0; }
+.night .t { color: var(--mist); }
+.sun .t { color: #4A3416; }
+.s { font-size: 24px; line-height: 1.45; color: var(--soft); margin: 0; }
+.night .s { color: #9C97B5; }
+.em { color: var(--sage); font-weight: 700; }
+.night .em { color: var(--amber); }
+
+/* Corner marks: section tag top-left, page number top-right */
+.tag { position: absolute; left: 128px; top: 72px; font-size: 24px; font-weight: 700; color: var(--sage); background: var(--sage-soft); padding: 8px 20px; border-radius: 999px; margin: 0; }
+.night .tag { color: var(--navy); background: var(--amber); }
+.sun .tag { color: var(--amber-soft); background: var(--ink); }
+.pg { position: absolute; left: 1592px; top: 64px; width: 200px; text-align: right; font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 44px; font-weight: 800; color: var(--line); }
+.night .pg { color: #3E3F5C; }
+.sun .pg { color: #D99A45; }
+.pg::after { content: counter(page, decimal-leading-zero); }
+
+/* Tiles */
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+.grid3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 24px; }
+.grid4 { display: grid; grid-template-columns: 1fr 1fr 1fr 1fr; gap: 24px; }
+.tile { background: var(--card); border: 2px solid var(--line); border-radius: 24px; padding: 32px; display: flex; flex-direction: column; gap: 12px; }
+.night .tile { background: var(--navy-2); border-color: #3B3C58; }
+.tile.green { background: var(--sage); border-color: var(--sage); }
+.tile.green h3, .tile.green .big { color: var(--cream); }
+.tile.green .t { color: #D6E8E0; }
+.tile.yellow { background: var(--amber-soft); border-color: #F0D3A2; }
+.big { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 64px; font-weight: 800; line-height: 1; color: var(--sage); margin: 0; }
+.night .big { color: var(--amber); }
+.huge { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 120px; font-weight: 800; line-height: 1; letter-spacing: -3px; color: var(--ink); margin: 0; }
+.night .huge { color: var(--amber); }
+.chip { font-size: 24px; font-weight: 700; padding: 6px 18px; border-radius: 999px; margin: 0; background: var(--sage-soft); color: var(--sage); }
+.chip.warm { background: var(--amber-soft); color: var(--clay); }
+.chip.dark { background: var(--ink); color: var(--cream); }
+.night .chip { background: #3B3C58; color: var(--cream); }
+
+/* App logos */
+.logos { display: flex; gap: 14px; align-items: center; }
+.logo { width: 72px; height: 72px; border-radius: 18px; object-fit: cover; box-shadow: 0 6px 14px rgba(40, 32, 20, 0.16); }
+
+/* Pictures */
+.pic { border-radius: 24px; object-fit: cover; }
+.shotimg { border-radius: 20px; object-fit: cover; border: 2px solid var(--line); background: var(--card); }
+.phone { width: 300px; height: 650px; object-fit: cover; border-radius: 40px; border: 8px solid #17182A; box-shadow: 0 26px 52px rgba(40, 32, 20, 0.22); }
+.night .phone { box-shadow: 0 26px 52px rgba(5, 6, 15, 0.5); }
+.cap { font-size: 26px; font-weight: 700; color: var(--ink); margin: 0; text-align: center; }
+.night .cap { color: var(--cream); }
+.num { width: 52px; height: 52px; border-radius: 26px; background: var(--sage); display: flex; align-items: center; justify-content: center; }
+.num p { font-size: 26px; font-weight: 800; color: var(--cream); margin: 0; }
+
+/* Tables */
+table { font-size: 26px; color: var(--body); width: 100%; }
+.thead { background: var(--sage-soft); }
+
+/* Sequence */
+.who { display: flex; }
+.who div { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 8px; }
+.who p { font-size: 26px; font-weight: 800; color: var(--ink); margin: 0; background: var(--card); border: 2px solid var(--line); border-radius: 999px; padding: 8px 22px; }
+.seq { position: relative; height: 440px; }
+.life { position: absolute; top: 0; width: 0; height: 440px; border-left: 2px dashed #CDBFA6; }
+.msg { position: absolute; display: flex; flex-direction: column; gap: 6px; }
+.msg p { font-size: 24px; font-weight: 700; color: var(--ink); margin: 0; text-align: center; }
+.msg p.back { color: var(--clay); }
+.arrow { display: flex; align-items: center; }
+.shaft { flex: 1; height: 0; border-top: 4px solid var(--sage); }
+.shaft.back { border-top: 4px dashed var(--clay); }
+.head { width: 24px; height: 18px; background: var(--sage); }
+.head.back { background: var(--clay); }
+.note { position: absolute; background: var(--amber-soft); border-radius: 14px; padding: 10px 18px; }
+.note p { font-size: 24px; color: var(--clay); font-weight: 700; margin: 0; text-align: center; }
+
+/* Motion: the plain rule is the finished look */
+.up { animation: up 600ms cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 100ms); }
+@keyframes up { from { opacity: 0; transform: translateY(24px); } }
+.zoom { animation: zoom 700ms cubic-bezier(.2, .7, .2, 1) both; animation-delay: calc(var(--i, 0) * 100ms); }
+@keyframes zoom { from { opacity: 0; transform: scale(0.94); } }
+.fragment { opacity: 0; transform: translateY(10px); transition: opacity 400ms ease, transform 400ms ease; }
+.fragment.visible { opacity: 1; transform: translateY(0); }
+
+
+/* ---- Web runtime ---- */
+* { margin: 0; box-sizing: border-box; }
+html, body { height: 100%; background: #E9E1D3; overflow: hidden; }
+#stage { position: fixed; left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+#stage > section { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; overflow: hidden; visibility: hidden; }
+#stage > section.active { visibility: visible; z-index: 2; }
+#stage > section.leaving { visibility: visible; z-index: 1; }
+
+/* ---- Motion: Breakly's own set, built around a break timer ---- */
+:root { --ease-out: cubic-bezier(.16, 1, .3, 1); --ease-wipe: cubic-bezier(.76, 0, .24, 1); }
+/* Slide change: the new slide is wiped in behind an amber time bar; the old one steps back. */
+#stage > section.enter-fwd { animation: wipe-fwd 760ms var(--ease-wipe) both; }
+#stage > section.enter-back { animation: wipe-back 760ms var(--ease-wipe) both; }
+#stage > section.leaving.fwd { animation: step-back-l 760ms var(--ease-wipe) both; }
+#stage > section.leaving.back { animation: step-back-r 760ms var(--ease-wipe) both; }
+@keyframes wipe-fwd { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes wipe-back { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes step-back-l { to { transform: translateX(-90px); filter: brightness(.82) saturate(.8); } }
+@keyframes step-back-r { to { transform: translateX(90px); filter: brightness(.82) saturate(.8); } }
+#sweep { position: absolute; top: 0; left: 0; width: 12px; height: 1080px; z-index: 3; opacity: 0; pointer-events: none; background: var(--amber); box-shadow: 0 0 40px 6px rgba(242, 176, 94, .55); }
+#sweep.dark { background: var(--navy); box-shadow: 0 0 40px 6px rgba(35, 36, 55, .45); }
+#sweep.fwd { animation: sweep-fwd 760ms var(--ease-wipe) both; }
+#sweep.back { animation: sweep-back 760ms var(--ease-wipe) both; }
+@keyframes sweep-fwd { 0% { opacity: 1; transform: translateX(1920px); } 92% { opacity: 1; } 100% { opacity: 0; transform: translateX(-12px); } }
+@keyframes sweep-back { 0% { opacity: 1; transform: translateX(-12px); } 92% { opacity: 1; } 100% { opacity: 0; transform: translateX(1920px); } }
+
+/* Entrances replay each time a slide becomes active, after the wipe has started. */
+#stage > section:not(.active) .up, #stage > section:not(.active) .zoom, #stage > section:not(.active) .conn,
+#stage > section:not(.active) tr, #stage > section:not(.active) .timer-ring, #stage > section:not(.active) .timer-dot { animation: none !important; }
+.up { animation: focus-in 900ms var(--ease-out) both; animation-delay: calc(260ms + var(--i, 0) * 110ms); }
+h1.up, h2.up { animation-name: track-in; }
+@keyframes focus-in { from { opacity: 0; filter: blur(12px); transform: scale(.985); } to { opacity: 1; filter: blur(0); transform: none; } }
+@keyframes track-in { from { opacity: 0; filter: blur(10px); letter-spacing: 10px; } }
+.zoom, img.up.pic, img.up.shotimg { animation: unveil 1000ms var(--ease-out) both; animation-delay: calc(300ms + var(--i, 0) * 110ms); }
+@keyframes unveil { from { clip-path: inset(100% -80px -80px -80px); filter: saturate(.2) brightness(1.1); } to { clip-path: inset(-80px -80px -80px -80px); filter: none; } }
+.conn { transform-origin: left center; animation: draw-x 700ms var(--ease-out) both; animation-delay: calc(420ms + var(--i, 0) * 110ms); }
+.conn.conn-both { transform-origin: center; }
+@keyframes draw-x { from { transform: scaleX(0); } }
+tr { animation: row-in 620ms var(--ease-out) both; animation-delay: calc(360ms + var(--r, 0) * 70ms); }
+@keyframes row-in { from { opacity: 0; background: var(--amber-soft); } 40% { opacity: 1; background: var(--amber-soft); } }
+tr.thead { animation-name: focus-in; }
+.timer-ring { animation: ring 1600ms var(--ease-wipe) 500ms both; }
+@keyframes ring { from { stroke-dashoffset: 1000; } }
+.timer-dot { transform-box: fill-box; transform-origin: center; animation: dot 600ms var(--ease-out) 1950ms both; }
+@keyframes dot { from { transform: scale(.4); opacity: .4; } 50% { transform: scale(1.5); } to { transform: scale(1); opacity: 1; } }
+
+/* Click steps: arrows draw in the direction they point, other steps focus in. */
+.fragment { opacity: 0; filter: blur(8px); transform: none; transition: opacity 450ms ease, filter 450ms ease, clip-path 600ms var(--ease-out); }
+.fragment.visible { opacity: 1; filter: none; transform: none; }
+.msg.fragment { filter: none; clip-path: inset(-30px 100% -30px -30px); }
+.msg.fragment:has(.back) { clip-path: inset(-30px -30px -30px 100%); }
+.msg.fragment.visible { clip-path: inset(-30px -30px -30px -30px); }
+
+h1 { font-size: 104px; } h2 { font-size: 64px; } h3 { font-size: 36px; }
+table { border-collapse: collapse; }
+th, td { padding: .42em .7em; text-align: left; border-bottom: 1px solid rgba(185, 180, 204, .22); }
+th { font-weight: 700; color: var(--ink); }
+.tri-r, .tri-l { display: block; width: 26px; height: 18px; }
+.tri-r { clip-path: polygon(0 0, 100% 50%, 0 100%); }
+.tri-l { clip-path: polygon(100% 0, 0 50%, 100% 100%); }
+.conn { display: block; height: 4px; background: currentColor; position: relative; }
+.conn::after, .conn-both::before { content: ""; position: absolute; top: -8px; width: 0; height: 0; border-top: 10px solid transparent; border-bottom: 10px solid transparent; }
+.conn::after { right: -2px; border-left: 16px solid currentColor; }
+.conn-both::before { left: -2px; border-right: 16px solid currentColor; }
+svg.ico, svg.icon { display: block; }
+
+/* Controls */
+#bar { position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%); display: flex; gap: 8px; align-items: center; padding: 8px; border-radius: 999px; background: rgba(28, 29, 46, .82); backdrop-filter: blur(8px); z-index: 10; transition: opacity 300ms; font-family: 'Be Vietnam Pro', Arial, sans-serif; }
+#bar.idle { opacity: 0; pointer-events: none; }
+#bar button { border: 0; border-radius: 999px; background: #30314B; color: #F6EBDD; font: 600 14px/1 'Be Vietnam Pro', Arial, sans-serif; padding: 10px 16px; cursor: pointer; }
+#bar button:hover { background: #3E3F5E; }
+#bar button:focus-visible { outline: 2px solid #F2B05E; outline-offset: 2px; }
+#pos { color: #B9B4CC; font: 600 14px/1 'Be Vietnam Pro', Arial, sans-serif; min-width: 64px; text-align: center; }
+#clock { display: block; width: 34px; height: 34px; margin: 0 2px 0 6px; }
+#clock circle { fill: none; stroke-width: 4; }
+#clock .bg { stroke: #3E3F5E; }
+#clock .fg { stroke: #F2B05E; stroke-linecap: round; transform: rotate(-90deg); transform-origin: center; transition: stroke-dashoffset 700ms var(--ease-out); }
+#notes { position: fixed; right: 18px; bottom: 74px; width: min(460px, calc(100vw - 36px)); max-height: 46vh; overflow: auto; padding: 18px 20px; border-radius: 16px; background: rgba(28, 29, 46, .94); color: #F6EBDD; font: 400 16px/1.6 'Be Vietnam Pro', Arial, sans-serif; z-index: 11; display: none; box-shadow: 0 18px 40px rgba(0, 0, 0, .4); }
+#notes.open { display: block; }
+#notes b { color: #F2B05E; display: block; margin-bottom: 6px; font-size: 13px; letter-spacing: 1px; }
+#help { position: fixed; left: 18px; bottom: 22px; color: #6F6B88; font: 400 12px/1.4 'Be Vietnam Pro', Arial, sans-serif; z-index: 10; }
+#help { color: #8A8577; }
+@media (max-width: 1000px), (max-height: 560px) { #help { display: none; } }
+@media (max-width: 700px) { #bar button { padding: 9px 12px; } }
+@media (prefers-reduced-motion: reduce) { *, #stage > section { animation: none !important; transition: none !important; } .fragment.visible { clip-path: none; } }
+</style>
+</head>
+<body>
+<main id="stage" aria-live="polite">
+<section data-slide="0" id="cover" data-transition="fade" style="padding:128px; justify-content:center">
+<svg aria-label="Soft green circle behind the phones" width="780" height="780" viewBox="0 0 780 780" style="position:absolute; left:1010px; top:150px; width:780px; height:780px"><circle cx="390" cy="390" r="380" fill="#DCEAE3"/><circle cx="660" cy="110" r="26" fill="#F2B05E"/></svg>
+<img class="phone zoom" style="--i:3; position:absolute; left:1400px; top:170px" src="assets/home_active_dark.png" alt="Breakly Home Space at night during a break">
+<img class="phone zoom" style="--i:2; position:absolute; left:1110px; top:270px" src="assets/home_idle_light.png" alt="Breakly Home Space by day with the 10, 20 and 30 minute selector">
+<div style="display:flex; flex-direction:column; gap:28px; width:860px">
+<p class="chip up" style="--i:0; align-self:flex-start">HCMUT · CO3043 · CC02</p>
+<h1 class="up" style="--i:1; font-size:168px; color:#2F6B5E">breakly</h1>
+<h2 class="up" style="--i:2; margin:0">Small breaks,<br>with a stopping point.</h2>
+<p class="t up" style="--i:3">Trần Phước Sang · Trần Ngọc Bảo</p>
+</div>
+
+</section>
+
+<section data-slide="1" id="team">
+<p class="tag">Team</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Meet the team</h2>
+<div class="grid3">
+<div class="tile up" style="--i:1; padding:44px"><p class="chip" style="align-self:flex-start">2353044</p><h3 style="font-size:44px">Trần Phước Sang</h3><p class="t">Backend, architecture, report</p></div>
+<div class="tile up" style="--i:2; padding:44px"><p class="chip" style="align-self:flex-start">2352109</p><h3 style="font-size:44px">Trần Ngọc Bảo</h3><p class="t">UI/UX, research, testing</p></div>
+<div class="tile green up" style="--i:3; padding:44px"><p class="chip warm" style="align-self:flex-start">Instructor</p><h3 style="font-size:44px">Phan Trần Minh Khuê</h3><p class="t">Mobile Application Development</p></div>
+</div>
+
+</section>
+
+<section data-slide="2" id="landscape">
+<p class="tag">01 · Context</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">What people open in a short break</h2>
+<div class="grid3">
+<div class="up" style="--i:1; display:flex; flex-direction:column; gap:16px">
+<div class="logos"><img class="logo" src="assets/logo_youtube.jpg" alt="YouTube logo"><img class="logo" src="assets/logo_spotify.jpg" alt="Spotify logo"><img class="logo" src="assets/logo_vnexpress.jpg" alt="VnExpress logo"><p class="s" style="margin-left:6px">YouTube · Spotify<br>VnExpress</p></div>
+<img class="shotimg" style="width:100%; height:280px" src="assets/youtube.png" alt="YouTube app screens with an endless Shorts feed">
+<h3>Fun, but no end</h3>
+<p class="t">Autoplay and endless feeds.</p>
+</div>
+<div class="up" style="--i:2; display:flex; flex-direction:column; gap:16px">
+<div class="logos"><img class="logo" src="assets/logo_forest.jpg" alt="Forest logo"><img class="logo" src="assets/logo_opal.jpg" alt="Opal logo"><p class="s" style="margin-left:6px">Forest · Opal</p></div>
+<img class="shotimg" style="width:100%; height:280px" src="assets/forest.png" alt="Forest app screens with a growing tree and a 25 minute timer">
+<h3>A limit, but nothing to enjoy</h3>
+<p class="t">They work by blocking.</p>
+</div>
+<div class="up" style="--i:3; display:flex; flex-direction:column; gap:16px">
+<div class="logos"><img class="logo" src="assets/logo_calm.jpg" alt="Calm logo"><p class="s" style="margin-left:6px">Calm</p></div>
+<img class="shotimg" style="width:100%; height:280px" src="assets/calm.png" alt="Calm app screens with meditation and sleep stories">
+<h3>Calm, but not your content</h3>
+<p class="t">Meditation, not music and news.</p>
+</div>
+</div>
+
+</section>
+
+<section data-slide="3" id="problem" class="night">
+<p class="tag">01 · Context</p>
+<div class="pg"></div>
+<div style="display:flex; gap:72px; align-items:center; flex:1">
+<div style="width:760px; display:flex; flex-direction:column; gap:40px">
+<h2 class="up" style="--i:0; margin:0">A 5-minute break quietly becomes an hour</h2>
+<div class="up" style="--i:1"><p class="huge">18 h 36 m</p><p class="t">a week scrolling feeds</p></div>
+<div class="up" style="--i:2"><p class="huge">39.7%</p><p class="t">scroll to fill spare time</p></div>
+<p class="s up" style="--i:3">Source: Digital 2026 Global Overview Report</p>
+</div>
+<div style="width:832px; display:flex; flex-direction:column; gap:24px">
+<div class="zoom" style="--i:2; position:relative">
+<img class="pic" style="display:block; width:832px; height:308px; object-position:50% 22%" src="assets/late_scroll.jpg" alt="A man under a blanket in a dark room, his face lit by his phone">
+<p class="chip dark" style="position:absolute; left:20px; bottom:20px; background:rgba(31,34,51,.85)">Now: one more video…</p>
+</div>
+<div class="zoom" style="--i:4; position:relative">
+<img class="pic" style="display:block; width:832px; height:308px; object-position:50% 18%" src="assets/relax_headphones.jpg" alt="A woman with headphones and a mug taking a calm break">
+<p class="chip" style="position:absolute; left:20px; bottom:20px; background:#F2B05E; color:#232437">Goal: a break that ends</p>
+</div>
+</div>
+</div>
+
+</section>
+
+<section data-slide="4" id="idea">
+<p class="tag">01 · Context</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Our idea: a break with an end</h2>
+<div style="display:flex; gap:64px; align-items:center">
+<img class="pic zoom" style="--i:1; width:860px; height:484px" src="assets/phone.png" alt="Illustration: an endless feed with a worried user, next to a phone showing a 20 minute break in a calm room">
+<div style="flex:1; display:flex; flex-direction:column; gap:28px">
+<div class="up" style="--i:2; display:flex; gap:20px; align-items:center"><div class="num"><p>1</p></div><h3>10 · 20 · 30 minutes</h3></div>
+<div class="up" style="--i:3; display:flex; gap:20px; align-items:center"><div class="num"><p>2</p></div><h3>One calm room</h3></div>
+<div class="up" style="--i:4; display:flex; gap:20px; align-items:center"><div class="num"><p>3</p></div><h3>Content that ends</h3></div>
+<div class="up" style="--i:5; display:flex; gap:20px; align-items:center"><div class="num"><p>4</p></div><h3>A daily streak</h3></div>
+<p class="t up" style="--i:6; margin-top:8px">Two taps to start: <span class="em">pick a length, tap an object.</span></p>
+</div>
+</div>
+
+</section>
+
+<section data-slide="5" id="stakeholders">
+<p class="tag">01 · Context</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Who it is for</h2>
+<div class="grid2">
+<div class="tile green up" style="--i:1; padding:40px"><p class="chip warm" style="align-self:flex-start">Primary</p><h3>Students and young professionals</h3><p class="t">Enjoy a short break, stop on time.</p></div>
+<div class="tile up" style="--i:2; padding:40px"><p class="chip" style="align-self:flex-start">Secondary</p><h3>Content providers</h3><p class="t">Content used within its licence.</p></div>
+<div class="tile up" style="--i:3; padding:40px"><p class="chip" style="align-self:flex-start">Secondary</p><h3>Platforms and app stores</h3><p class="t">No sensitive permissions, keys on the server.</p></div>
+<div class="tile up" style="--i:4; padding:40px"><p class="chip" style="align-self:flex-start">Secondary</p><h3>Instructor and evaluators</h3><p class="t">Traceable requirements, tests, a live demo.</p></div>
+</div>
+
+</section>
+
+<section data-slide="6" id="fr">
+<p class="tag">02 · Requirements</p>
+<div class="pg"></div>
+<div style="display:flex; justify-content:space-between; align-items:flex-start">
+<h2 class="up" style="--i:0">Functional requirements</h2>
+<div class="up" style="--i:1; display:flex; gap:12px"><p class="chip">40 FRs</p><p class="chip warm">20 Must · 20 Should</p></div>
+</div>
+<div class="grid4">
+<div class="tile up" style="--i:2"><p class="big">4</p><h3>Account</h3><p class="s">Guest or signed in</p></div>
+<div class="tile up" style="--i:3"><p class="big">7</p><h3>Session</h3><p class="s">Countdown, auto end</p></div>
+<div class="tile up" style="--i:4"><p class="big">3</p><h3>Space</h3><p class="s">Room and two themes</p></div>
+<div class="tile up" style="--i:5"><p class="big">7</p><h3>Music</h3><p class="s">8 stations, MP3 offline</p></div>
+<div class="tile up" style="--i:6"><p class="big">5</p><h3>News</h3><p class="s">Read in the app</p></div>
+<div class="tile up" style="--i:7"><p class="big">3</p><h3>Videos</h3><p class="s">YouTube, 10 per break</p></div>
+<div class="tile up" style="--i:8"><p class="big">8</p><h3>Progress</h3><p class="s">Summary, history, settings</p></div>
+<div class="tile green up" style="--i:9"><p class="big">3</p><h3>Game Corner</h3><p class="t">New · one puzzle a day</p></div>
+</div>
+
+</section>
+
+<section data-slide="7" id="nfr">
+<p class="tag">02 · Requirements</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Non-functional requirements</h2>
+<table class="up" style="--i:1; font-size:28px">
+<tr class="thead"><th style="width:24%">Quality</th><th>Measurable target</th></tr>
+<tr><td>Response time</td><td>Content or a loading state within 3 s</td></tr>
+<tr><td>Background</td><td>Timer within ±2 s; music plays with the screen locked</td></tr>
+<tr><td>Offline</td><td>Error with Retry within 10 s; sessions upload later</td></tr>
+<tr><td>Security</td><td>BCrypt passwords, token in secure storage, HTTPS</td></tr>
+<tr><td>Permissions</td><td>No location, contacts, camera, mic or notifications</td></tr>
+<tr><td>Platform</td><td>iOS 16+ and Android 8+, portrait</td></tr>
+<tr><td>Battery and data</td><td>Music lists cached 10 min; downloads play offline</td></tr>
+<tr><td>Accessibility</td><td>Text up to 130%, contrast 4.5 : 1</td></tr>
+</table>
+
+</section>
+
+<section data-slide="8" id="usecase">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<div style="display:flex; gap:80px; align-items:center; flex:1">
+<div style="flex:1; display:flex; flex-direction:column; gap:28px">
+<h2 class="up" style="--i:0; margin-bottom:12px">14 use cases</h2>
+<div class="up" style="--i:1; display:flex; gap:12px; flex-wrap:wrap"><p class="chip dark">1 user</p><p class="chip">4 external systems</p><p class="chip warm">2 «extend»</p></div>
+<p class="t up" style="--i:2">Jamendo, VnExpress RSS, YouTube and NYT Games are «system» actors.</p>
+<p class="t up" style="--i:3">The countdown and the automatic end are steps, not use cases.</p>
+</div>
+<img class="shotimg zoom" style="--i:2; width:620px; height:784px; object-fit:contain; background:#FFFFFF" src="assets/uc00_overall.png" alt="Overall use case diagram: the User connects to 12 use cases; Download track extends Listen to radio and Open full article extends Read news; Jamendo, VnExpress RSS, YouTube and NYT Games are external systems">
+</div>
+
+</section>
+
+<section data-slide="9" id="architecture">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Architecture</h2>
+<div style="display:grid; grid-template-columns:1fr 160px 1fr 160px 0.8fr; row-gap:0">
+<div class="tile up" style="--i:1; grid-column:1; grid-row:1; padding:36px; gap:14px">
+<p class="chip" style="align-self:flex-start">Mobile app</p>
+<h3>Expo · React Native</h3>
+<p class="t">Timer, music player, in-app browsers</p>
+</div>
+<div class="up" style="--i:2; grid-column:2; grid-row:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px"><p class="s">REST + JWT</p><span class="conn conn-both" style="width:120px; color:#2F6B5E; border-width:4px"></span></div>
+<div class="tile green up" style="--i:3; grid-column:3; grid-row:1; padding:36px; gap:14px">
+<p class="chip warm" style="align-self:flex-start">Backend</p>
+<h3>Spring Boot 4</h3>
+<p class="t">Accounts, history, streak, catalogue</p>
+</div>
+<div class="up" style="--i:4; grid-column:4; grid-row:1; display:flex; flex-direction:column; justify-content:center; align-items:center; gap:8px"><p class="s">JPA</p><span class="conn conn-end" style="width:120px; color:#2F6B5E; border-width:4px"></span></div>
+<div class="tile up" style="--i:5; grid-column:5; grid-row:1; padding:36px; gap:14px">
+<p class="chip" style="align-self:flex-start">Database</p>
+<h3>PostgreSQL</h3>
+<p class="t">6 tables, Flyway</p>
+</div>
+<div class="up" style="--i:6; grid-column:1; grid-row:2; display:flex; flex-direction:column; align-items:center">
+<div style="width:0; height:56px; border-left:4px dashed #B4572F"></div>
+<div class="tile yellow" style="align-self:stretch; padding:28px; gap:12px">
+<p class="s" style="color:#B4572F; font-weight:700">LOADED DIRECTLY BY THE APP</p>
+<div style="display:flex; gap:10px; flex-wrap:wrap"><p class="chip warm" style="background:#FFFCF7">YouTube</p><p class="chip warm" style="background:#FFFCF7">NYT Games</p><p class="chip warm" style="background:#FFFCF7">Articles</p><p class="chip warm" style="background:#FFFCF7">MP3 files</p></div>
+</div>
+</div>
+<div class="up" style="--i:7; grid-column:3; grid-row:2; display:flex; flex-direction:column; align-items:center">
+<div style="width:0; height:56px; border-left:4px dashed #2F6B5E"></div>
+<div class="tile" style="align-self:stretch; padding:28px; gap:12px">
+<p class="s" style="color:#2F6B5E; font-weight:700">FETCHED AND CACHED BY THE BACKEND</p>
+<div style="display:flex; gap:10px; flex-wrap:wrap"><p class="chip">Jamendo · 10 min</p><p class="chip">VnExpress RSS · 5 min</p></div>
+</div>
+</div>
+</div>
+
+</section>
+
+<section data-slide="10" id="stack">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Technology stack</h2>
+<div class="grid3">
+<div class="tile up" style="--i:1"><p class="s">Mobile</p><h3>Expo SDK 58</h3><p class="t">React Native · TypeScript</p></div>
+<div class="tile up" style="--i:2"><p class="s">State</p><h3>Zustand</h3><p class="t">TanStack Query</p></div>
+<div class="tile up" style="--i:3"><p class="s">Media</p><h3>expo-audio</h3><p class="t">WebView for YouTube, news, games</p></div>
+<div class="tile green up" style="--i:4"><p class="s" style="color:#D6E8E0">Backend</p><h3>Spring Boot 4</h3><p class="t">Java 21 · REST · JWT</p></div>
+<div class="tile up" style="--i:5"><p class="s">Database</p><h3>PostgreSQL</h3><p class="t">Flyway · Spring Data JPA</p></div>
+<div class="tile up" style="--i:6"><p class="s">Testing</p><h3>JUnit 5</h3><p class="t">Testcontainers · GitHub Actions</p></div>
+</div>
+
+</section>
+
+<section data-slide="11" id="sequence">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0; margin-bottom:36px">Sequence: one break</h2>
+<div class="who up" style="--i:1">
+<div><p>User</p></div>
+<div><p>Home Space</p></div>
+<div><p>Session store</p></div>
+<div><p>Music player</p></div>
+<div><p>Backend API</p></div>
+</div>
+<div class="seq">
+<div class="life" style="left:166px"></div>
+<div class="life" style="left:499px"></div>
+<div class="life" style="left:832px"></div>
+<div class="life" style="left:1165px"></div>
+<div class="life" style="left:1498px"></div>
+<div class="msg fragment" style="left:166px; top:20px; width:333px"><p>1 · Tap the radio</p><div class="arrow"><div class="shaft"></div><span class="head tri-r"></span></div></div>
+<div class="msg fragment" style="left:499px; top:90px; width:333px"><p>2 · Save end time</p><div class="arrow"><div class="shaft"></div><span class="head tri-r"></span></div></div>
+<div class="note fragment" style="left:632px; top:160px; width:400px"><p>Every second: end − now</p></div>
+<div class="msg fragment" style="left:832px; top:236px; width:333px"><p>3 · 00:00 → stop</p><div class="arrow"><div class="shaft"></div><span class="head tri-r"></span></div></div>
+<div class="msg fragment" style="left:832px; top:306px; width:666px"><p>4 · Save the session</p><div class="arrow"><div class="shaft"></div><span class="head tri-r"></span></div></div>
+<div class="msg fragment" style="left:832px; top:376px; width:666px"><p class="back">5 · Saved</p><div class="arrow"><span class="head back tri-l"></span><div class="shaft back"></div></div></div>
+<div class="msg fragment" style="left:166px; top:376px; width:666px"><p>6 · Show summary</p><div class="arrow"><span class="head tri-l"></span><div class="shaft"></div></div></div>
+</div>
+
+</section>
+
+<section data-slide="12" id="erd">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Data: six tables</h2>
+<div class="grid3">
+<div class="tile up" style="--i:1"><h3>users</h3><p class="t">Email, BCrypt hash</p></div>
+<div class="tile up" style="--i:2"><h3>refresh_tokens</h3><p class="t">Only a SHA-256 hash</p></div>
+<div class="tile up" style="--i:3"><h3>user_preferences</h3><p class="t">Theme, duration, volume</p></div>
+<div class="tile yellow up" style="--i:4"><h3>sessions</h3><p class="t">Unique per device ID: no duplicate uploads</p></div>
+<div class="tile yellow up" style="--i:5"><h3>game_plays</h3><p class="t">Unique per game and day</p></div>
+<div class="tile up" style="--i:6"><h3>content_items</h3><p class="t">Tags, feeds, game links</p></div>
+</div>
+<p class="s up" style="--i:7; margin-top:28px">Highlighted: the two unique keys that make retries safe. Schema versioned by Flyway V1–V6.</p>
+
+</section>
+
+<section data-slide="13" id="ui-break" style="padding-bottom:96px">
+<p class="tag">04 · Product</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0; margin-bottom:32px">One break, start to finish</h2>
+<div style="display:flex; justify-content:space-between">
+<div class="zoom" style="--i:1; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/home_idle_light.png" alt="Home Space with the 10, 20 and 30 minute selector"><div style="display:flex; gap:12px; align-items:center"><div class="num"><p>1</p></div><p class="cap">Pick, tap</p></div></div>
+<div class="zoom" style="--i:2; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/radio_list_light.png" alt="Radio screen with the Lo-fi station playing"><div style="display:flex; gap:12px; align-items:center"><div class="num"><p>2</p></div><p class="cap">Music</p></div></div>
+<div class="zoom" style="--i:3; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/toast_light.png" alt="Home Space with the one minute left notice"><div style="display:flex; gap:12px; align-items:center"><div class="num"><p>3</p></div><p class="cap">1 min left</p></div></div>
+<div class="zoom" style="--i:4; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/timesup_light.png" alt="Time's up screen"><div style="display:flex; gap:12px; align-items:center"><div class="num"><p>4</p></div><p class="cap">Time’s up</p></div></div>
+<div class="zoom" style="--i:5; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/summary_light.png" alt="Session summary"><div style="display:flex; gap:12px; align-items:center"><div class="num"><p>5</p></div><p class="cap">Summary</p></div></div>
+</div>
+
+</section>
+
+<section data-slide="14" id="ui-more" class="night" style="padding-bottom:96px">
+<p class="tag">04 · Product</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0; margin-bottom:32px">More of the app, at night</h2>
+<div style="display:flex; justify-content:space-between">
+<div class="zoom" style="--i:1; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/news_list_dark.png" alt="News feed with VnExpress articles"><p class="cap">News</p></div>
+<div class="zoom" style="--i:2; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/games_dark.png" alt="Game Corner with four NYT puzzles"><p class="cap">Game Corner</p></div>
+<div class="zoom" style="--i:3; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/radio_player_dark.png" alt="Full radio player with seek bar and Download MP3"><p class="cap">Player · MP3</p></div>
+<div class="zoom" style="--i:4; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/history_dark.png" alt="History screen with the streak"><p class="cap">History</p></div>
+<div class="zoom" style="--i:5; display:flex; flex-direction:column; align-items:center; gap:16px"><img class="phone" style="width:240px; height:520px" src="assets/profile_dark.png" alt="Profile with settings and content credits"><p class="cap">Profile</p></div>
+</div>
+
+</section>
+
+<section data-slide="15" id="testing">
+<p class="tag">05 · Quality</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">What we checked</h2>
+<div class="grid3">
+<div class="tile up" style="--i:1; padding:44px; gap:16px"><p class="huge" style="color:#2F6B5E">11/11</p><h3>Backend tests pass</h3><p class="t">On a real PostgreSQL</p></div>
+<div class="tile up" style="--i:2; padding:44px; gap:16px"><p class="huge" style="color:#2F6B5E">0</p><h3>Type and lint errors</h3><p class="t">Checked on every change</p></div>
+<div class="tile up" style="--i:3; padding:44px; gap:16px"><p class="huge" style="color:#B4572F">18</p><h3>Acceptance cases</h3><p class="t">Run on iPhone</p></div>
+</div>
+
+</section>
+
+<section data-slide="16" id="thanks" style="padding:128px; justify-content:center">
+<svg aria-label="Soft green circle behind the phone" width="780" height="780" viewBox="0 0 780 780" style="position:absolute; left:1010px; top:150px; width:780px; height:780px"><circle cx="390" cy="390" r="380" fill="#DCEAE3"/><circle cx="120" cy="660" r="26" fill="#F2B05E"/></svg>
+<img class="phone zoom" style="--i:2; position:absolute; left:1250px; top:215px" src="assets/home_active_light.png" alt="Breakly Home Space in the garden theme during a break">
+<div style="display:flex; flex-direction:column; gap:28px; width:860px">
+<p class="chip up" style="--i:0; align-self:flex-start">breakly · CO3043 · CC02</p>
+<h1 class="up" style="--i:1; font-size:150px">Thank you</h1>
+<p class="t up" style="--i:2; font-size:36px">Questions and feedback are welcome.</p>
+<p class="s up" style="--i:3">Trần Phước Sang · Trần Ngọc Bảo</p>
+</div>
+
+</section>
+
+<div id="sweep" aria-hidden="true"></div>
+</main>
+<nav id="bar" aria-label="Slide controls">
+<button id="prev" aria-label="Previous slide">‹</button>
+<svg id="clock" viewBox="0 0 34 34" aria-hidden="true"><circle class="bg" cx="17" cy="17" r="13"/><circle class="fg" cx="17" cy="17" r="13" pathLength="100" stroke-dasharray="100" stroke-dashoffset="100"/></svg>
+<span id="pos">1 / 17</span>
+<button id="next" aria-label="Next slide">›</button>
+<button id="noteBtn" aria-pressed="false">Notes</button>
+<button id="fsBtn">Full screen</button>
+</nav>
+<div id="notes" role="region" aria-label="Speaker notes"></div>
+<p id="help">← → or Space · N notes · F full screen</p>
+<script>
+(() => {
+  const notes = ["(~15s) Xin chào thầy cô và các bạn. Nhóm em giới thiệu Breakly: một ứng dụng cho những giờ nghỉ ngắn, nhưng có điểm dừng. Người dùng chọn 10, 20 hoặc 30 phút, rồi nghe nhạc, đọc tin, xem video hoặc chơi một trò đố mỗi ngày, và giờ nghỉ tự kết thúc đúng hạn.", "(~10s) Nhóm em gồm hai thành viên: Trần Phước Sang phụ trách backend, kiến trúc và báo cáo; Trần Ngọc Bảo phụ trách giao diện, khảo sát và kiểm thử. Giảng viên hướng dẫn là cô Phan Trần Minh Khuê.", "(~30s) Khi có vài phút rảnh, mọi người mở YouTube, Spotify hay VnExpress: nội dung hay nhưng không có điểm dừng, tự phát tiếp và cuộn vô tận. Nhóm công cụ như Forest hay Opal thì có điểm dừng, nhưng chỉ chặn, không có gì để tận hưởng. Calm thì thư giãn nhưng không phải nội dung người dùng quen. Breakly nằm ở khoảng trống giữa hai nhóm này.", "(~30s) Theo báo cáo Digital 2026, người trưởng thành dùng internet dành trung bình 18 giờ 36 phút mỗi tuần để lướt mạng xã hội và video, và gần 40% nói lý do chính là để lấp thời gian rảnh. Vấn đề không phải giải trí, mà là giải trí không có điểm dừng: định nghỉ 5 phút nhưng thành cả tiếng. Breakly muốn biến cảnh ở ảnh trên, lướt hết video này đến video khác, thành cảnh ở ảnh dưới: một khoảng nghỉ thật sự và có điểm kết thúc.", "(~35s) Ý tưởng của Breakly gồm bốn phần. Một: phiên nghỉ có giới hạn 10, 20 hoặc 30 phút, đồng hồ luôn hiện và tự kết thúc. Hai: một căn phòng minh hoạ, bốn đồ vật mở bốn dịch vụ. Ba: nội dung hữu hạn, nhạc dừng theo phiên, TV dừng sau 10 video, mỗi trò đố một lần mỗi ngày. Bốn: chuỗi ngày nghỉ để tạo thói quen. Chỉ cần hai lần chạm để bắt đầu.", "(~30s) Người dùng chính là sinh viên và người đi làm trẻ: họ cần một giờ nghỉ dễ chịu và dừng đúng lúc. Bên cạnh đó là các nhà cung cấp nội dung, các nền tảng và cửa hàng ứng dụng, và giảng viên đánh giá. Với mỗi bên, nhóm đều có cách đáp ứng cụ thể: ghi nguồn giấy phép, không xin quyền nhạy cảm, và truy vết yêu cầu tới kiểm thử.", "(~40s) Yêu cầu chức năng chia thành tám module với 40 yêu cầu; số lớn là số yêu cầu của mỗi module. Gồm tài khoản, phiên nghỉ, không gian và theme, nhạc, tin tức, video, tiến độ và cài đặt, và module mới là Game Corner. Mỗi yêu cầu có tiêu chí chấp nhận để chuyển thành test case: 20 yêu cầu mức Must và 20 mức Should.", "(~35s) Yêu cầu phi chức năng đều có con số đo được. Màn hình tải trong 3 giây; đồng hồ lệch tối đa 2 giây khi app chạy nền và nhạc vẫn phát khi khoá máy. Mất mạng thì trong 10 giây có thông báo và nút thử lại, phiên nghỉ được đồng bộ sau và không bị trùng. Về bảo mật: mật khẩu băm BCrypt, token lưu trong secure storage, và app không xin quyền nhạy cảm nào. Danh sách nhạc được cache 10 phút, chữ đạt độ tương phản 4.5:1.", "(~40s) Mô hình use case gồm một actor chính là User, có thể dùng ở chế độ khách hoặc có tài khoản, và bốn hệ thống bên ngoài: Jamendo, VnExpress, YouTube và NYT Games. Có 14 use case, trong đó Tải nhạc mở rộng Nghe radio, và Mở bài gốc mở rộng Đọc tin. Những thứ hệ thống tự làm như đếm ngược, tự kết thúc hay phát nền không được vẽ thành use case, mà là các bước bên trong.", "(~45s) Kiến trúc là client và server. App Expo giữ mọi thứ cần chạy trong giờ nghỉ: đồng hồ tính từ thời điểm kết thúc đã lưu, trình phát nhạc chung cho cả app, và các trình duyệt trong app. Backend Spring Boot cung cấp REST API có JWT, lưu tài khoản, lịch sử, streak và cài đặt vào PostgreSQL. Phía dưới là hai luồng nội dung: backend lấy và cache danh sách nhạc từ Jamendo 10 phút và tin từ VnExpress 5 phút; còn YouTube, game, trang bài báo và file MP3 thì app tải trực tiếp, backend không trung chuyển media.", "(~35s) Công nghệ được chọn cho một nhóm hai người. App dùng Expo SDK 58 với React Native và TypeScript, một mã nguồn cho cả iOS và Android. Trạng thái dùng Zustand và TanStack Query. Nhạc dùng expo-audio để phát nền và hiện trên màn hình khoá, còn YouTube, báo và game mở trong WebView. Backend là Spring Boot 4 với Java 21 và PostgreSQL, quản lý schema bằng Flyway. Kiểm thử bằng JUnit 5 với Testcontainers chạy PostgreSQL thật.", "(~45s) Đây là luồng chính, bấm để hiện từng bước. Người dùng chạm vào cái đài. Session store lưu thời điểm kết thúc và mỗi giây tính lại thời gian còn lại bằng thời điểm kết thúc trừ giờ hiện tại, nên khi app chạy nền đồng hồ vẫn đúng. Khi về 00:00, store dừng nhạc, gửi bản ghi phiên lên backend; nếu mất mạng thì bản ghi nằm trong hàng đợi và gửi lại sau, server bỏ qua bản trùng. Cuối cùng app hiện màn tóm tắt.", "(~35s) Cơ sở dữ liệu gồm sáu bảng. Hai ô màu vàng là hai khoá duy nhất quan trọng: phiên nghỉ duy nhất theo người dùng và mã phiên do máy tạo, nên gửi lại từ hàng đợi offline không bao giờ bị trùng; lượt chơi game duy nhất theo người dùng, game và ngày. Refresh token chỉ lưu dạng băm SHA-256, và bảng nội dung chỉ lưu định danh, không lưu media.", "(~45s) Đây là chức năng cốt lõi, chụp từ app thật. Một: chọn 10 phút rồi chạm vào cái đài. Hai: chọn đài Lo-fi, nhạc phát và đồng hồ chạy ở góc. Ba: còn một phút thì hiện thông báo nhẹ, không chặn màn hình. Bốn: hết giờ, mọi thứ tự dừng, nhạc tắt, trang báo đóng. Năm: màn tóm tắt cho biết đã nghe nhạc bao lâu, đọc mấy bài, và chuỗi ngày nghỉ.", "(~40s) Các màn hình khác, ở theme tối. Tin tức từ VnExpress, lọc theo chuyên mục và đọc ngay trong app. Game Corner là phần mới: bốn trò đố miễn phí của New York Times, mỗi trò một lần mỗi ngày, có đánh dấu đã chơi và chuỗi ngày. Trình phát nhạc có thanh tua, ghi nguồn giấy phép và tải MP3 để nghe offline. Cuối cùng là lịch sử với chuỗi ngày nghỉ, và trang cá nhân với các cài đặt.", "(~30s) Về kiểm thử: 11 test backend đều qua, chạy với PostgreSQL thật qua Testcontainers và token JWT thật. App được kiểm tra kiểu và lint ở mỗi thay đổi, không có lỗi. Nhóm có 18 test case nghiệm thu theo từng use case để chạy trên iPhone. Các phần logic quan trọng như streak, lượt chơi không trùng, đọc RSS và cache đều có test. Bây giờ nhóm em xin gửi điện thoại để thầy dùng thử app trực tiếp.", "(~10s) Cảm ơn thầy cô và các bạn đã lắng nghe. Nhóm em rất mong nhận được câu hỏi và góp ý."];
+  const stage = document.getElementById('stage');
+  const slides = Array.from(stage.querySelectorAll(':scope > section'));
+  const total = slides.length;
+  const pos = document.getElementById('pos');
+  const bar = document.getElementById('bar');
+  const notesBox = document.getElementById('notes');
+  const noteBtn = document.getElementById('noteBtn');
+  const clock = document.querySelector('#clock .fg');
+  const sweep = document.getElementById('sweep');
+  const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let cur = -1;
+  let settle;
+
+  // Table rows get their own stagger index.
+  slides.forEach((sl) => sl.querySelectorAll('tr').forEach((tr, k) => tr.style.setProperty('--r', k)));
+
+  // Cover and Thanks: a timer ring draws round the green circle and stops at the amber dot.
+  slides.forEach((sl) => {
+    const svg = sl.querySelector('svg[aria-label^="Soft green circle"]');
+    if (!svg) return;
+    const [big, dot] = svg.querySelectorAll('circle');
+    const cx = +big.getAttribute('cx'), cy = +big.getAttribute('cy'), r = +big.getAttribute('r');
+    const ang = (Math.atan2(+dot.getAttribute('cx') - cx, cy - +dot.getAttribute('cy')) + 2 * Math.PI) % (2 * Math.PI);
+    const rest = Math.round(1000 * (1 - ang / (2 * Math.PI)));
+    const ring = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    const attrs = { cx, cy, r, fill: 'none', stroke: '#2F6B5E', 'stroke-width': 8, 'stroke-linecap': 'round', pathLength: 1000,
+      'stroke-dasharray': 1000, 'stroke-dashoffset': rest, transform: `rotate(-90 ${cx} ${cy})`, class: 'timer-ring' };
+    Object.entries(attrs).forEach(([k, v]) => ring.setAttribute(k, v));
+    big.after(ring);
+    dot.classList.add('timer-dot');
+  });
+
+  // Big numbers count up to their value.
+  function countUp(sl) {
+    if (reduced) return;
+    sl.querySelectorAll('.huge, .big').forEach((el) => {
+      const final = el.dataset.final || (el.dataset.final = el.textContent);
+      if (!/\d/.test(final)) return;
+      const host = el.closest('[style*="--i"]') || el;
+      const delay = 380 + (parseFloat(getComputedStyle(host).getPropertyValue('--i')) || 0) * 110;
+      const t0 = performance.now() + delay, dur = 1100;
+      el.textContent = final.replace(/\d+(?:\.\d+)?/g, (m) => (0).toFixed((m.split('.')[1] || '').length));
+      const step = (now) => {
+        if (!sl.classList.contains('active')) { el.textContent = final; return; }
+        const k = Math.min(1, Math.max(0, (now - t0) / dur));
+        const e = 1 - Math.pow(1 - k, 4);
+        el.textContent = final.replace(/\d+(?:\.\d+)?/g, (m) => (parseFloat(m) * e).toFixed((m.split('.')[1] || '').length));
+        if (k < 1) requestAnimationFrame(step); else el.textContent = final;
+      };
+      requestAnimationFrame(step);
+    });
+  }
+
+  function fit() {
+    const s = Math.min(innerWidth / 1920, innerHeight / 1080);
+    stage.style.transform = `translate(${(innerWidth - 1920 * s) / 2}px, ${(innerHeight - 1080 * s) / 2}px) scale(${s})`;
+  }
+
+  function fragments(i) { return Array.from(slides[i].querySelectorAll('.fragment')); }
+
+  function show(i, fromBack) {
+    const next = Math.max(0, Math.min(total - 1, i));
+    if (next === cur) return;
+    const prevSlide = slides[cur];
+    const dir = cur < 0 ? null : (next > cur ? 'fwd' : 'back');
+    cur = next;
+    clearTimeout(settle);
+    slides.forEach((s) => s.classList.remove('active', 'leaving', 'enter-fwd', 'enter-back', 'fwd', 'back'));
+    const sl = slides[cur];
+    if (dir && !reduced) {
+      prevSlide.classList.add('leaving', dir);
+      sl.classList.add('enter-' + dir);
+      sweep.className = '';
+      void sweep.offsetWidth;
+      sweep.className = dir + (sl.classList.contains('sun') ? ' dark' : '');
+      settle = setTimeout(() => {
+        prevSlide.classList.remove('leaving', 'fwd', 'back');
+        sl.classList.remove('enter-fwd', 'enter-back');
+      }, 800);
+    }
+    sl.classList.add('active');
+    countUp(sl);
+    // Arriving forwards hides the click steps; arriving backwards shows them all.
+    fragments(cur).forEach((f) => f.classList.toggle('visible', !!fromBack));
+    pos.textContent = `${cur + 1} / ${total}`;
+    clock.style.strokeDashoffset = String(100 - ((cur + 1) / total) * 100);
+    notesBox.innerHTML = `<b>SLIDE ${cur + 1} · NOTES</b>` + (notes[cur] || '').replace(/[<>&]/g, (c) => ({ '<': '&lt;', '>': '&gt;', '&': '&amp;' }[c]));
+    if (location.hash !== `#${cur + 1}`) history.replaceState(null, '', `#${cur + 1}`);
+  }
+
+  function next() {
+    const hidden = fragments(cur).find((f) => !f.classList.contains('visible'));
+    if (hidden) { hidden.classList.add('visible'); return; }
+    if (cur < total - 1) show(cur + 1, false);
+  }
+  function prev() {
+    const shown = fragments(cur).filter((f) => f.classList.contains('visible'));
+    if (shown.length) { shown[shown.length - 1].classList.remove('visible'); return; }
+    if (cur > 0) show(cur - 1, true);
+  }
+  function toggleNotes() {
+    const open = notesBox.classList.toggle('open');
+    noteBtn.setAttribute('aria-pressed', String(open));
+  }
+  function toggleFull() {
+    if (!document.fullscreenElement) document.documentElement.requestFullscreen?.();
+    else document.exitFullscreen?.();
+  }
+
+  document.getElementById('next').onclick = next;
+  document.getElementById('prev').onclick = prev;
+  noteBtn.onclick = toggleNotes;
+  document.getElementById('fsBtn').onclick = toggleFull;
+
+  addEventListener('keydown', (e) => {
+    if (e.target.closest && e.target.closest('button') && (e.key === ' ' || e.key === 'Enter')) return;
+    if (['ArrowRight', 'PageDown', ' ', 'Enter'].includes(e.key)) { e.preventDefault(); next(); }
+    else if (['ArrowLeft', 'PageUp', 'Backspace'].includes(e.key)) { e.preventDefault(); prev(); }
+    else if (e.key === 'Home') show(0, false);
+    else if (e.key === 'End') show(total - 1, true);
+    else if (e.key === 'n' || e.key === 'N') toggleNotes();
+    else if (e.key === 'f' || e.key === 'F') toggleFull();
+  });
+
+  let tx = null;
+  addEventListener('touchstart', (e) => { tx = e.touches[0].clientX; }, { passive: true });
+  addEventListener('touchend', (e) => {
+    if (tx === null) return;
+    const dx = e.changedTouches[0].clientX - tx;
+    if (Math.abs(dx) > 50) (dx < 0 ? next : prev)();
+    tx = null;
+  });
+
+  let idle;
+  function wake() { bar.classList.remove('idle'); clearTimeout(idle); idle = setTimeout(() => bar.classList.add('idle'), 2500); }
+  addEventListener('mousemove', wake);
+  addEventListener('touchstart', wake, { passive: true });
+
+  addEventListener('resize', fit);
+  addEventListener('hashchange', () => { const n = parseInt(location.hash.slice(1), 10); if (n && n - 1 !== cur) show(n - 1, false); });
+  fit();
+  const start = parseInt(location.hash.slice(1), 10);
+  show(Number.isFinite(start) ? start - 1 : 0, false);
+  wake();
+})();
+</script>
+</body>
+</html>

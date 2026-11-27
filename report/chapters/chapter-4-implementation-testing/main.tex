@@ -4,24 +4,233 @@
 \section{Implementation}
 \label{sec:implementation}
 
-The implementation will deliver the mobile presentation layer, break-session
-domain rules, local persistence, activity selection, and notification adapter.
-The architecture keeps timer and preference rules independent of UI
-components so they can be unit-tested.
+\subsection{Project Structure}
+\label{sec:project-structure}
+
+The project is one Git repository with three parts:
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt]
+  \item \texttt{src/backend} -- the Spring Boot service: \texttt{controller},
+        \texttt{service}, \texttt{client}, \texttt{repository}, \texttt{entity},
+        \texttt{dto}, \texttt{config} and \texttt{common} packages, Flyway
+        migrations in \texttt{resources/db/migration} and the tests.
+  \item \texttt{src/frontend-mobile} -- the Expo app: routes in
+        \texttt{src/app}, features in \texttt{src/features}, shared
+        infrastructure in \texttt{src/core}, UI components in
+        \texttt{src/components} and images exported from Figma in
+        \texttt{assets}.
+  \item \texttt{report} -- this report, and \texttt{.github/workflows} -- the
+        CI workflows.
+\end{itemize}
+
+\subsection{Key Implementation Details}
+\label{sec:key-implementation}
+
+\paragraph{Session engine.}
+The session store (Zustand) starts a session with a client-generated UUID and
+stores the start time and the planned end time in AsyncStorage. The main
+layout calls \texttt{tick()} every second and again whenever the app returns
+to the foreground; the remaining time is always \textit{end time minus now},
+so background time is counted correctly (FR 2.4). The store also counts music
+seconds, opened articles, watched videos and played games for the summary.
+When a session ends, the record is pushed to an upload queue and the queue is
+flushed at once, at start-up and after every sign-in; the backend's unique key
+on \texttt{(user\_id, client\_id)} makes repeated uploads harmless (FR 7.2).
+
+\paragraph{Music player.}
+One \texttt{expo-audio} player is created for the whole app, outside React,
+so music continues across screens. The audio mode allows playback in silent
+mode and in the background and takes exclusive audio focus, which iOS requires
+before it shows the lock-screen and Control Center controls. The first track
+of a session registers the player for the lock screen with the title, artist
+and artwork; later tracks only update the metadata, and the controls are
+removed when the session ends (FR 4.4). A failed track is skipped
+automatically, at most once per track of the queue (FR 4.7). The seek bar
+follows the finger while dragging and seeks only on release, so the stream is
+not reloaded on every movement.
+
+\paragraph{Downloads.}
+Tracks whose artist allows downloads carry a Jamendo download URL. The app
+downloads the MP3 file with \texttt{expo-file-system} into the document folder
+(\texttt{music/<track id>.mp3}) and keeps the list of downloads in AsyncStorage.
+When a downloaded track is played, the local file is used instead of the
+stream, so the \textit{Downloaded} station works offline. \textit{Save to
+phone} uses the share sheet on iOS (with \texttt{UIFileSharingEnabled} the
+files also appear in the Files app) and a folder picker on Android (FR 4.6).
+
+\paragraph{Media focus.}
+A small coordinator registers the music player. Entering the TV pauses the
+music only if it is playing and remembers that it did; leaving the TV resumes
+the music only in that case, so music paused by the user stays paused
+(FR 4.5).
+
+\paragraph{News reader.}
+The backend reads the configured VnExpress RSS feeds, parses title, summary,
+image, link and date, merges and sorts them and caches the result for five
+minutes. The app opens an article in an in-app browser; when the page fails
+to load it offers \textit{Try again}, \textit{Open in browser} (the system
+browser through \texttt{expo-web-browser}) and \textit{Back to News}
+(FR 5.4, FR 5.5).
+
+\paragraph{YouTube guard rails.}
+The TV loads \texttt{m.youtube.com} in \texttt{react-native-webview} without
+changing the page. A navigation filter keeps the browser on YouTube hosts,
+opens other sites in the system browser and blocks app-switch links such as
+\texttt{intent://}. Because YouTube changes pages with
+\texttt{history.pushState}, an injected script reports the current address
+after each change; the screen extracts the video ID and counts distinct IDs.
+At ten videos, or when the break ends, the browser is unmounted and the end
+card is shown. Playback is paused when the app goes to the background
+(FR 6.1--6.3). On the web build, where an in-app browser is not available, the
+TV falls back to a curated list played with the official IFrame player.
+
+\paragraph{Game Corner.}
+The games are rows of \texttt{content\_items} with the type \texttt{GAME}.
+\texttt{GET /games} returns them with \texttt{playedToday} and the per-game
+streak for the user's time zone. The game screen opens the page in an in-app
+browser; on the first successful load it records the play locally, counts the
+game for the current break and sends \texttt{POST /games/\{id\}/plays} with the
+local date. The backend accepts only dates within one day of its UTC date and
+inserts with \texttt{ON CONFLICT DO NOTHING}, so concurrent or repeated
+requests create at most one row (FR 8.1--8.3).
+
+\paragraph{Content proxies on the backend.}
+\texttt{JamendoClient} requests tracks by tag with the MP3 stream and download
+formats. Jamendo sometimes answers \textit{success} with an empty list, so the
+client retries up to three times, and an empty list is never cached. The TTL
+cache returns the last good list when a provider fails; when no list exists,
+or when no Jamendo client ID is configured, a small set of demo tracks keeps
+the Radio usable.
+
+\paragraph{Authentication.}
+\texttt{AuthService} hashes passwords with BCrypt, issues an HS256-signed JWT
+access token (15 minutes) and a random refresh token (30 days) whose SHA-256
+hash is stored. A refresh revokes the old token and issues a new pair. In the
+app, the axios client adds the access token to every request and, on a 401
+response, runs a single shared refresh and repeats the request.
 
 \section{Deployment Details}
 \label{sec:deployment-details}
 
-The application will be packaged for the Android and iOS versions supported
-by the selected Expo and React Native release. Deployment configuration,
-environment variables, build profiles, and release steps will be documented
-with the final build.
+\paragraph{Backend configuration.}
+All secrets come from environment variables. For local development the
+backend also reads an optional, git-ignored \texttt{.env} file next to
+\texttt{pom.xml}; a \texttt{.env.example} file lists the keys. Real
+environment variables take precedence over the file.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{4.6cm}|>{\raggedright\arraybackslash}p{9.6cm}|}
+\caption{Backend environment variables}\label{tab:env-vars}\\ \hline
+\textbf{Variable} & \textbf{Purpose} \\ \hline
+\endfirsthead
+\multicolumn{2}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\ \hline
+\textbf{Variable} & \textbf{Purpose} \\ \hline
+\endhead
+\texttt{SPRING\_PROFILES\_ACTIVE} & \texttt{dev} (default) or \texttt{prod} \\ \hline
+\texttt{DB\_URL}, \texttt{DB\_USERNAME}, \texttt{DB\_PASSWORD} & PostgreSQL connection in the \texttt{prod} profile (the \texttt{dev} profile defaults to a local \texttt{breakly\_db}) \\ \hline
+\texttt{JWT\_SECRET} & Key for signing access tokens; required in \texttt{prod} \\ \hline
+\texttt{JWT\_ACCESS\_TTL}, \texttt{JWT\_REFRESH\_TTL} & Token lifetimes (15 minutes and 30 days by default) \\ \hline
+\texttt{JAMENDO\_CLIENT\_ID} & Jamendo API client ID; without it every station plays the demo tracks \\ \hline
+\texttt{YOUTUBE\_API\_KEY} & Optional key for video metadata of the curated web fallback list \\ \hline
+\texttt{CORS\_ALLOWED\_ORIGINS} & Allowed origins for the web build \\ \hline
+\end{longtable}
+\endgroup
+
+\paragraph{Running the system.}
+\begin{enumerate}[leftmargin=1.8em,itemsep=2pt]
+  \item Start PostgreSQL in Docker (container \texttt{breakly-postgres},
+        database \texttt{breakly\_db}).
+  \item In \texttt{src/backend}, run \texttt{./mvnw spring-boot:run}; Flyway
+        applies the migrations on start-up and the API listens on port 8080.
+  \item In \texttt{src/frontend-mobile}, run \texttt{npm install} and then
+        \texttt{npx expo run:ios} for a development build on an iPhone or the
+        simulator. Expo Go (\texttt{npx expo start}) can be used for quick UI
+        checks, but background audio, the lock-screen controls and file
+        sharing need the development build. The app finds the backend on the
+        same Wi-Fi through the Metro host address, or through
+        \texttt{EXPO\_PUBLIC\_API\_URL}.
+\end{enumerate}
+
+\paragraph{Container image and CI.}
+The backend has a multi-stage Dockerfile: a Maven image with JDK 21 builds the
+jar, and a JRE 21 Alpine image runs it as a non-root user. Three GitHub
+Actions workflows exist: \textit{Backend CI} builds the backend with Maven on
+every change under \texttt{src/backend}, \textit{Frontend CI} installs the app
+dependencies and runs the TypeScript compiler, and \textit{Deploy} is prepared
+for a server deployment from \texttt{main} but does not yet push to a server.
 
 \section{Testing}
 \label{sec:testing}
 
-Testing will cover functional acceptance criteria, timer and persistence
-rules, offline and permission-denied states, accessibility requirements,
-performance targets, and the main demonstration flows.
+\subsection{Automated Tests}
+\label{sec:automated-tests}
 
+Backend tests use JUnit 5 and Spring Boot Test. Integration tests start a real
+PostgreSQL database with Testcontainers, apply all Flyway migrations and call
+the API through MockMvc with real JWT tokens. All tests passed on 19 November
+2026 (Table~\ref{tab:automated-tests}). The app has no automated UI tests yet;
+every change is checked with the TypeScript compiler (\texttt{tsc --noEmit})
+and ESLint (\texttt{expo lint}), which reported no errors for the final build.
 
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{4.9cm}|>{\raggedright\arraybackslash}p{7.2cm}|>{\centering\arraybackslash}p{1.8cm}|}
+\caption{Automated backend tests}\label{tab:automated-tests}\\ \hline
+\textbf{Test} & \textbf{What it checks} & \textbf{Result} \\ \hline
+\endfirsthead
+\multicolumn{3}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\ \hline
+\textbf{Test} & \textbf{What it checks} & \textbf{Result} \\ \hline
+\endhead
+\testname{contextLoads} & The application starts with the database and all migrations & Pass \\ \hline
+\testname{listsSeededGamesForSignedInUser} & \texttt{GET /games} returns the four active games in order, with Pips last & Pass \\ \hline
+\testname{requiresAuthentication} & The games endpoint rejects requests without a token (401) & Pass \\ \hline
+\testname{recordingTwiceOnSameDayIsIdempotent} & The first play returns 201, a repeat on the same day 200, and only one row exists & Pass \\ \hline
+\testname{rejectsDatesFarFromToday} & A play date far from today is rejected (400) & Pass \\ \hline
+\testname{unknownGameReturns404} & A play for an unknown game returns 404 & Pass \\ \hline
+\testname{computesCurrentAndLongestStreaks} & Current and longest streak rules, including a streak that ended yesterday & Pass \\ \hline
+\testname{acceptsOnlyPlausibleLocalPlayDates} & Local play dates are accepted only within one day of the UTC date & Pass \\ \hline
+\testname{parsesVnExpressRssItems} & The RSS parser reads title, link, image and date from a VnExpress item & Pass \\ \hline
+\testname{ttlCacheReturnsStaleValueWhenUpstreamFails} & The cache serves the last good value when a provider fails & Pass \\ \hline
+\testname{hashesRefreshTokensDeterministically} & Refresh tokens are stored as stable SHA-256 hashes & Pass \\ \hline
+\end{longtable}
+\endgroup
+
+\subsection{Acceptance Test Plan}
+\label{sec:acceptance-tests}
+
+The use cases are verified manually on the reference iPhone with a
+development build. Table~\ref{tab:acceptance-tests} lists the test cases; the
+result column is filled in when the test is executed on the device.
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{1.1cm}|>{\raggedright\arraybackslash}p{1.3cm}|>{\raggedright\arraybackslash}p{5.6cm}|>{\raggedright\arraybackslash}p{4.6cm}|>{\centering\arraybackslash}p{1.3cm}|}
+\caption{Acceptance test cases}\label{tab:acceptance-tests}\\ \hline
+\textbf{ID} & \textbf{UC} & \textbf{Steps} & \textbf{Expected result} & \textbf{Result} \\ \hline
+\endfirsthead
+\multicolumn{5}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\ \hline
+\textbf{ID} & \textbf{UC} & \textbf{Steps} & \textbf{Expected result} & \textbf{Result} \\ \hline
+\endhead
+TC-01 & UC-01 & Sign up with a new email and an 8-character password & Home Space shown; account created & \\ \hline
+TC-02 & UC-01 & Sign up again with the same email & ``already registered'' error; no second account & \\ \hline
+TC-03 & UC-02 & Sign in, close and reopen the app & Still signed in & \\ \hline
+TC-04 & UC-03 & Sign out in Settings & Settings shows \textit{Sign in / Create account} & \\ \hline
+TC-05 & UC-04 & Select 10 minutes and tap the radio & Timer starts at 10:00 and the Radio opens & \\ \hline
+TC-06 & UC-04 & Lock the phone for 3 minutes during a 10-minute break & Timer shows 7:00 $\pm$ 2 s after unlocking & \\ \hline
+TC-07 & UC-04 & Let a break run to 00:00 & Toast at 1:00; media stops; summary shown & \\ \hline
+TC-08 & UC-05 & Select \textit{End break} and confirm & Summary shown; history row says ended early & \\ \hline
+TC-09 & UC-06 & Switch the theme and restart the app & The new theme is kept & \\ \hline
+TC-10 & UC-07 & Play a station, open News, then lock the phone & Music continues; lock screen shows the track & \\ \hline
+TC-11 & UC-07 & Play music, open the TV, leave the TV & Music pauses and then resumes & \\ \hline
+TC-12 & UC-08 & Download a track, enable airplane mode, play \textit{Downloaded} & The track plays offline & \\ \hline
+TC-13 & UC-09 & Open News, filter by a category, open an article & Filtered list; article opens with the timer & \\ \hline
+TC-14 & UC-10 & Open an article without a connection, then \textit{Open in browser} & Failure message; system browser opens & \\ \hline
+TC-15 & UC-11 & Open ten different videos on the TV & End card after the tenth video & \\ \hline
+TC-16 & UC-12 & Open Wordle, go back to the Game Corner & Wordle marked as played today & \\ \hline
+TC-17 & UC-13 & Finish breaks on two consecutive days & Streak shows 2 & \\ \hline
+TC-18 & UC-14 & Turn off the 1-minute warning and run a break to the end & No toast in the final minute & \\ \hline
+\end{longtable}
+\endgroup

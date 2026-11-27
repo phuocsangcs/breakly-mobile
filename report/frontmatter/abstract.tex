@@ -1,17 +1,24 @@
 \chapter*{Abstract}
 \addcontentsline{toc}{chapter}{Abstract}
 
-Breakly is a mobile application that helps students and desk-based workers
-take intentional, time-boxed micro-breaks. The project addresses the
-difficulty of interrupting prolonged screen use, choosing a suitable short
-activity, and returning to work without unnecessary configuration.
+Breakly is a mobile application that turns a short entertainment break into
+a time-boxed session with a clear end. Many entertainment apps are designed
+with no natural stopping point, so a five-minute break between tasks often
+becomes much longer. In Breakly the user chooses 10, 20 or 30 minutes and
+enters a calm illustrated room, where a radio, a newspaper, a television and a
+gamepad open Creative Commons music from Jamendo, news from VnExpress, videos
+on YouTube (at most ten per break) and the free daily puzzles of NYT Games. A
+countdown is visible on every screen and stays correct in the background; when
+time is up, all media stops, a summary is shown and the daily streak is
+updated.
 
-This specification defines the stakeholders, personas, elicitation plan,
-functional requirements, and MoSCoW priorities for the Breakly MVP. It also
-sets measurable mobile constraints for performance, offline behaviour,
-security, permissions, accessibility, battery, and network usage. The
-proposed design uses a mobile-first Clean Architecture with MVVM, local
-storage for the core offline flow, and optional backend synchronisation.
-The report further specifies the data model, API contract, user flows,
-hi-fi mockup requirements, and traceability from requirements to screens,
-architecture components, and verification evidence.
+This report specifies the project context, 22 user requirements, 40
+functional requirements in eight modules with MoSCoW priorities, and
+measurable non-functional requirements. It presents the use case model with
+14 use cases, the technology choices, and the design: the client--server
+architecture, the sitemap, sequence diagrams, the PostgreSQL data model, the
+REST API and the UI/UX design based on a Figma kit with two themes. The app is
+built with React Native and Expo and runs mainly on iOS; the backend uses
+Spring Boot 4 with PostgreSQL and JWT authentication. The report closes with
+the implementation details, deployment, automated tests, an acceptance test
+plan and three demonstration flows.

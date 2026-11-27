@@ -1,49 +1,114 @@
 \subsection{Overall Architecture}
 \label{sec:overall-architecture}
 
-Breakly is organised as a mobile-first system. The mobile client contains the
-presentation layer, break-session orchestration, local persistence, and
-notification integration. An optional backend can provide authenticated
-content synchronisation and analytics without being required for the core
-offline flow. External services are isolated behind adapters so that the
-application remains testable when a service is unavailable.
+Breakly is a client--server system. The mobile client owns everything that
+must keep working during a break: the countdown, the media players, the
+in-app browsers and the local storage. The Spring Boot backend owns accounts,
+the session history and streaks, the preferences, the curated content
+catalogue and the proxies that fetch music and news from external providers.
+The client talks to the backend only through a versioned REST API
+(\texttt{/api/v1}). Pages that the user reads, watches or plays (articles,
+YouTube and NYT Games) are loaded directly by the in-app browsers, and MP3
+files are streamed or downloaded directly from Jamendo, so the backend never
+relays media.
 
 \begin{figure}[H]
 \centering
-\fbox{\parbox{0.85\textwidth}{\centering
-Mobile app $\leftrightarrow$ API/backend $\leftrightarrow$ database and
-content services\\[4pt]
-The mobile app also uses local storage and the operating-system notification
-service directly.}}
-\caption{Breakly overall architecture placeholder}
+\begin{tikzpicture}[
+  font=\small,
+  box/.style={draw, rounded corners=3pt, align=center, minimum height=1.0cm, text width=3.0cm, fill=white},
+  ext/.style={draw, dashed, rounded corners=3pt, align=center, minimum height=0.9cm, text width=2.7cm},
+  arr/.style={-{Stealth[length=2mm]}, thick},
+  lbl/.style={font=\scriptsize, align=center}
+]
+  % Mobile client
+  \node[box] (ui) {Screens and components\\\scriptsize Expo Router};
+  \node[box, below=0.45cm of ui] (vm) {Feature hooks and stores\\\scriptsize Zustand, TanStack Query};
+  \node[box, below=0.45cm of vm] (core) {API client, storage, media\\\scriptsize axios, AsyncStorage, expo-audio};
+  \node[box, left=0.5cm of vm] (web) {In-app browsers\\\scriptsize react-native-webview};
+  \node[draw, rounded corners=6pt, inner sep=7pt, fit=(ui)(vm)(core)(web),
+        label={[font=\bfseries]above:Mobile client (React Native, Expo)}] (client) {};
+  \draw[arr] (ui) -- (vm);
+  \draw[arr] (vm) -- (core);
+  \draw[arr] (ui.west) -| (web.north);
+
+  % Backend
+  \node[box, right=2.8cm of vm] (api) {REST controllers\\\scriptsize Spring Security (JWT)};
+  \node[box, below=0.45cm of api] (svc) {Services and clients\\\scriptsize auth, session, content, game};
+  \node[box, below=0.45cm of svc] (repo) {Repositories\\\scriptsize Spring Data JPA};
+  \node[draw, rounded corners=6pt, inner sep=7pt, fit=(api)(svc)(repo),
+        label={[font=\bfseries]above:Backend (Spring Boot 4, Java 21)}] (backend) {};
+  \draw[arr] (api) -- (svc);
+  \draw[arr] (svc) -- (repo);
+
+  \node[box, below=1.0cm of repo] (db) {PostgreSQL\\\scriptsize Flyway migrations};
+  \draw[arr] (repo) -- (db);
+
+  \draw[arr, <->] (core.east) -- node[lbl, above, pos=0.5] {HTTPS, JSON} node[lbl, below, pos=0.5]{\texttt{/api/v1}} (api.west |- core.east);
+
+  % External systems
+  \node[ext, right=0.6cm of api] (jam) {Jamendo API};
+  \node[ext, right=0.6cm of svc] (rss) {VnExpress RSS};
+  \draw[arr] (svc.east) -- (rss.west);
+  \draw[arr] (svc.north east) -- (jam.south west);
+
+  \node[ext, below=1.0cm of web] (yt) {YouTube, NYT Games,\\publisher pages};
+  \draw[arr] (web) -- (yt);
+  \node[ext, below=1.0cm of core] (mp3) {Jamendo MP3 files};
+  \draw[arr] (core) -- (mp3);
+\end{tikzpicture}
+\caption{Overall architecture of Breakly}
 \label{fig:overall-architecture}
 \end{figure}
+
+\subsection{Backend Architecture}
+\label{sec:backend-architecture}
+
+The backend is a layered Spring Boot application (package
+\texttt{com.breakly}):
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt]
+  \item \textbf{Controllers} (\texttt{AuthController}, \texttt{SessionController},
+        \texttt{PreferenceController}, \texttt{ContentController},
+        \texttt{GameController}) map HTTP requests to services and validate
+        request bodies with Bean Validation.
+  \item \textbf{Services} hold the business rules: registration and token
+        rotation (\texttt{AuthService}), idempotent session upload and streak
+        calculation (\texttt{SessionService}), the content catalogue and the
+        music and news proxies (\texttt{ContentService}), and daily game plays
+        (\texttt{GameService}).
+  \item \textbf{Clients} wrap the external providers (\texttt{JamendoClient},
+        \texttt{RssClient}, \texttt{YoutubeClient}) behind one shared HTTP client
+        with strict timeouts. Their results are kept in a small in-memory TTL
+        cache that returns the last good value when a provider fails.
+  \item \textbf{Repositories} use Spring Data JPA; the schema is created and
+        versioned by Flyway (V1 to V6), and Hibernate only validates it.
+  \item \textbf{Cross-cutting parts}: Spring Security as an OAuth2 resource
+        server that verifies the JWT on every protected request, CORS
+        configuration, and a global exception handler that turns every error
+        into the same JSON shape (Section~\ref{sec:api-contract}).
+\end{itemize}
 
 \subsection{In-App Architecture}
 \label{sec:in-app-architecture}
 
-The app follows a pragmatic Clean Architecture with MVVM at the presentation
-boundary:
-\begin{itemize}
-\item \textbf{Presentation:} screens, navigation, view models, and reusable
-  UI components.
-\item \textbf{Domain:} break-session rules, duration validation, activity
-  selection, and session result policies.
-\item \textbf{Data:} repositories, local storage, optional API client, and
-  notification adapter.
-\end{itemize}
+The app follows a feature-based MVVM structure. Screens (views) live in
+\texttt{src/app} as Expo Router routes and only render state. Each feature in
+\texttt{src/features} (auth, session, preferences, music, news, video, games)
+has an \texttt{api.ts} module for its endpoints, hooks or a Zustand store that
+act as the view model, and its own components. Shared infrastructure lives in
+\texttt{src/core}: the axios API client, which attaches the access token and
+refreshes it once when a request is rejected with 401, the TanStack Query
+client and query keys, key--value storage on AsyncStorage, secure token
+storage and the media-focus coordinator that pauses music while the TV is
+open. Reusable UI components from the Figma kit are in
+\texttt{src/components/ui}, and the animated room (wall clock, window sky and
+music notes) in \texttt{src/components/room}.
 
-This separation keeps timer and preference rules independent of React
-components and makes them unit-testable. React Native with Expo is selected
-for cross-platform delivery, TypeScript for type safety, and a local
-database or key-value store for offline-first persistence. Final package
-versions and the decision matrix will be recorded before implementation.
-
-\subsection{Main Flow Sequences}
-\label{sec:sequence-diagrams}
-
-The final report will include sequence diagrams for: starting a break,
-pausing/resuming and completing a break, scheduling a reminder, and loading
-content while offline. Each diagram must show the user, screen/view model,
-domain service, repository, storage, and notification service where relevant,
-including failure paths.
+Two pieces of state are deliberately kept outside React components so that
+they survive navigation: the session store, which runs the one-second tick and
+computes the remaining time from the stored end time, and the music player
+singleton, which keeps one \texttt{expo-audio} player for the whole app and
+registers it with the iOS lock screen. Platform-specific behaviour is chosen
+with file suffixes; for example \texttt{YouTubeBrowser.web.tsx} replaces the
+native in-app browser with the curated embedded player when the app runs in a
+web browser.

@@ -1,0 +1,15 @@
+<section id="erd">
+<p class="tag">03 · Design</p>
+<div class="pg"></div>
+<h2 class="up" style="--i:0">Data: six tables</h2>
+<div class="grid3">
+<div class="tile up" style="--i:1"><h3>users</h3><p class="t">Email, BCrypt hash</p></div>
+<div class="tile up" style="--i:2"><h3>refresh_tokens</h3><p class="t">Only a SHA-256 hash</p></div>
+<div class="tile up" style="--i:3"><h3>user_preferences</h3><p class="t">Theme, duration, volume</p></div>
+<div class="tile yellow up" style="--i:4"><h3>sessions</h3><p class="t">Unique per device ID: no duplicate uploads</p></div>
+<div class="tile yellow up" style="--i:5"><h3>game_plays</h3><p class="t">Unique per game and day</p></div>
+<div class="tile up" style="--i:6"><h3>content_items</h3><p class="t">Tags, feeds, game links</p></div>
+</div>
+<p class="s up" style="--i:7; margin-top:28px">Highlighted: the two unique keys that make retries safe. Schema versioned by Flyway V1–V6.</p>
+<aside>(~35s) Cơ sở dữ liệu gồm sáu bảng. Hai ô màu vàng là hai khoá duy nhất quan trọng: phiên nghỉ duy nhất theo người dùng và mã phiên do máy tạo, nên gửi lại từ hàng đợi offline không bao giờ bị trùng; lượt chơi game duy nhất theo người dùng, game và ngày. Refresh token chỉ lưu dạng băm SHA-256, và bảng nội dung chỉ lưu định danh, không lưu media.</aside>
+</section>

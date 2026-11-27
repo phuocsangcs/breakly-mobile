@@ -1,0 +1,70 @@
+The app opens on the Home Space, both for guests and for signed-in users; the
+Sign In and Sign Up screens are reached from the first launch or from
+Settings. The Home Space is the hub: its four objects open the services, and
+the bottom bar opens History and Profile. The Session Summary is not opened
+from a menu; the app shows it automatically when a break ends.
+Figure~\ref{fig:sitemap} shows the screens and Table~\ref{tab:routes} lists
+their routes.
+
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[
+  font=\small,
+  scr/.style={draw, rounded corners=3pt, align=center, minimum height=0.8cm, text width=2.2cm, fill=white},
+  hub/.style={scr, very thick},
+  line/.style={-{Stealth[length=1.8mm]}},
+  auto/.style={line, dashed}
+]
+  \node[hub] (home) {Home Space\\\scriptsize\texttt{/}};
+  \node[scr, above left=0.9cm and 0.6cm of home] (signin) {Sign In\\\scriptsize\texttt{/sign-in}};
+  \node[scr, left=0.5cm of signin] (signup) {Sign Up\\\scriptsize\texttt{/sign-up}};
+  \node[scr, above right=0.9cm and 0.6cm of home] (summary) {Session Summary\\\scriptsize\texttt{/summary}};
+
+  \node[scr, below left=1.2cm and 4.2cm of home] (radio) {Radio\\\scriptsize\texttt{/radio}};
+  \node[scr, right=0.35cm of radio] (news) {News\\\scriptsize\texttt{/news}};
+  \node[scr, right=0.35cm of news] (tv) {TV\\\scriptsize\texttt{/tv}};
+  \node[scr, right=0.35cm of tv] (games) {Game Corner\\\scriptsize\texttt{/games}};
+  \node[scr, right=0.35cm of games] (history) {History\\\scriptsize\texttt{/history}};
+  \node[scr, right=0.35cm of history] (settings) {Profile and Settings\\\scriptsize\texttt{/settings}};
+
+  \node[scr, below=0.7cm of news] (article) {Article reader\\\scriptsize\texttt{/news/[id]}};
+  \node[scr, below=0.7cm of games] (game) {Game\\\scriptsize\texttt{/games/[id]}};
+  \node[scr, below=0.7cm of settings] (themes) {Theme Selector\\\scriptsize\texttt{/themes}};
+
+  \draw[line] (signin) -- (home);
+  \draw[line, <->] (signup) -- (signin);
+  \draw[auto] (home) -- node[font=\scriptsize, above, sloped] {break ends} (summary);
+  \foreach \t in {radio,news,tv,games,history,settings} \draw[line] (home.south) -- (\t.north);
+  \draw[line] (news) -- (article);
+  \draw[line] (games) -- (game);
+  \draw[line] (settings) -- (themes);
+\end{tikzpicture}
+\caption{Sitemap of the Breakly app (dashed: opened automatically)}
+\label{fig:sitemap}
+\end{figure}
+
+\begingroup
+\small
+\renewcommand{\arraystretch}{1.2}
+\begin{longtable}{|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{2.4cm}|>{\raggedright\arraybackslash}p{6.6cm}|>{\raggedright\arraybackslash}p{1.6cm}|}
+\caption{Screens and routes of the app}\label{tab:routes}\\ \hline
+\textbf{Screen} & \textbf{Route} & \textbf{Purpose} & \textbf{Use cases} \\ \hline
+\endfirsthead
+\multicolumn{4}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\ \hline
+\textbf{Screen} & \textbf{Route} & \textbf{Purpose} & \textbf{Use cases} \\ \hline
+\endhead
+Sign In & \texttt{/sign-in} & Sign in, continue as guest, link to Sign Up & UC-02 \\ \hline
+Sign Up & \texttt{/sign-up} & Create an account & UC-01 \\ \hline
+Home Space & \texttt{/} & Room with the four objects, duration selector, streak, theme switch, mini-player & UC-04, UC-05, UC-06 \\ \hline
+Radio & \texttt{/radio} & Stations, track list, full player, downloads & UC-07, UC-08 \\ \hline
+News & \texttt{/news} & Article list with category chips & UC-09 \\ \hline
+Article reader & \texttt{/news/[id]} & Source page in an in-app browser & UC-09, UC-10 \\ \hline
+TV & \texttt{/tv} & Mobile YouTube in an in-app browser, video counter, end card & UC-11 \\ \hline
+Game Corner & \texttt{/games} & List of daily games & UC-12 \\ \hline
+Game & \texttt{/games/[id]} & Game page in an in-app browser & UC-12 \\ \hline
+Session Summary & \texttt{/summary} & Time's up message and break summary & UC-04, UC-05 \\ \hline
+History & \texttt{/history} & Statistics and past sessions by day & UC-13 \\ \hline
+Profile and Settings & \texttt{/settings} & Profile card, break settings, credits, account & UC-03, UC-14 \\ \hline
+Theme Selector & \texttt{/themes} & Choose the room theme & UC-06 \\ \hline
+\end{longtable}
+\endgroup

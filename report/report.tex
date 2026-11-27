@@ -117,6 +117,10 @@
 \usepackage{subcaption}   % subfigure
 \usepackage{tabularx}
 \usepackage{amssymb}      % \checkmark
+\usepackage{pgf-umlsd}    % sequence diagrams (Chapter 3)
+\usepackage{seqsplit}     % breakable test names (Chapter 4)
+\newcommand{\testname}[1]{\texttt{\seqsplit{#1}}}
+\usetikzlibrary{positioning,arrows.meta,fit,shapes.multipart}
 \usepackage{enumitem}     % compact lists inside table cells
 
 \newcolumntype{Y}{>{\raggedright\arraybackslash}X}  % skip if already defined

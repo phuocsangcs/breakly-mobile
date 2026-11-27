@@ -1,6 +1,7 @@
 % =====================================================================
 % Use case analysis for Breakly
-% Diagrams are stored in graphics/usecase/*.pdf
+% The overall diagram is graphics/usecase/uc00_overall.png
+% (editable source: graphics/usecase/uc00_overall.drawio).
 % =====================================================================
 
 % Use case specification table: \begin{ucspec}{caption}{label} ... \end{ucspec}
@@ -22,778 +23,502 @@
 % One row of a specification table
 \newcommand{\ucrow}[2]{\textbf{#1} & #2 \\ \hline}
 
-The use case model of Breakly formalises the operational interactions between
-the user, the system, and external supporting services during a time-boxed break.
-To maintain strict consistency with the requirement baseline established in
-Chapter~\ref{chap:introduction-requirements} (specifically
-Section~\ref{sec:system-boundary} and Table~\ref{tab:functional-requirements}),
-the model is organised into the exact same seven functional modules:
-\begin{enumerate}[leftmargin=2.0em,itemsep=1pt,topsep=2pt]
-  \item \textbf{Module 1 --- Authentication \& Account Management}
-  \item \textbf{Module 2 --- Session Management}
-  \item \textbf{Module 3 --- Space and Themes}
-  \item \textbf{Module 4 --- Music (Radio)}
-  \item \textbf{Module 5 --- News}
-  \item \textbf{Module 6 --- Short Videos (TV)}
-  \item \textbf{Module 7 --- Progress, Settings and Reliability}
-\end{enumerate}
+The use case model describes what a user can do with Breakly and which
+external systems take part. It is derived from the functional requirements in
+Table~\ref{tab:functional-requirements} and from the implemented application.
 
-\paragraph{System Boundary and Actors.}
-As identified in Section~\ref{sec:system-boundary}, the Breakly application
-interacts with one primary human actor and three external supporting actors:
+\paragraph{What counts as a use case.}
+A use case in this model is a goal that the user starts and that produces a
+visible result: a screen opens, data is created or changed, or a feature runs.
+Single steps inside a goal, such as entering an email address or choosing the
+session length, are written as steps of a use case rather than as use cases of
+their own. Behaviour that the system performs by itself is also kept inside the
+flows: the countdown, the automatic end of a session, the Session Summary
+screen that follows it, background playback and the pausing of music while
+videos play. Sign-in is not drawn as an \guillemotleft include\guillemotright{}
+of every other use case, because Breakly can be used without an account; the
+need for an account is stated in the preconditions where it applies.
+
+\paragraph{Actors.}
 \begin{itemize}[leftmargin=1.8em,itemsep=2pt,topsep=2pt]
-  \item \textbf{User} -- the primary human actor (the Breakly user) who directly
-        drives application interactions to configure, initiate, and enjoy bounded
-        break sessions. UC-01 and UC-02 are performed before the user is signed in;
-        all other use cases require a signed-in user.
-  \item \textbf{Mobile OS} -- the platform service that manages the application
-        lifecycle (foreground, background, locked screen),
-        and provides secure hardware-backed storage for authentication tokens.
-  \item \textbf{Content Providers} -- the external services delivering digital
-        media feeds. In detailed subsystem models, this actor is specialized into
-        three concrete content providers: the \textbf{Music Content Provider}
-        (streaming audio tracks), the \textbf{News Feed Content Provider} (RSS/Atom syndication),
-        and the \textbf{Video Content Provider} (curated finite short-video clips).
+  \item \textbf{User} -- the only primary actor. A user may work as a guest,
+        whose sessions are stored on the device, or sign in so that sessions,
+        streaks and preferences are saved to their account and available on
+        any device.
+  \item \textbf{Jamendo} \guillemotleft system\guillemotright{} -- the music
+        catalogue. The Breakly backend requests Creative Commons tracks by
+        tag, and the app streams or downloads the MP3 files.
+  \item \textbf{VnExpress RSS} \guillemotleft system\guillemotright{} -- the
+        news feeds aggregated by the backend, and the publisher website that
+        shows each full article.
+  \item \textbf{YouTube} \guillemotleft system\guillemotright{} -- the mobile
+        YouTube website shown inside the app for the video service.
+  \item \textbf{NYT Games} \guillemotleft system\guillemotright{} -- the daily
+        puzzle games of The New York Times (Wordle, Connections, Strands and
+        Pips), played in an in-app browser.
 \end{itemize}
+The Breakly backend (Spring Boot and PostgreSQL) is part of the system under
+design, so it is inside the system boundary and is not an actor.
 
 % ---------------------------------------------------------------------
-\subsection{Overall Use Case}
+\subsection{Overall Use Case Diagram}
 \label{sec:overall-usecase}
+
+Figure~\ref{fig:uc-overall} shows the complete use case model in a single
+diagram. Twelve use cases are associated directly with the User. Two optional
+use cases extend a base use case from the screen that offers them:
+\textit{Download track (MP3)} extends \textit{Listen to radio}, and
+\textit{Open full article} extends \textit{Read news}.
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=0.92\textwidth,height=0.78\textheight,keepaspectratio]{graphics/usecase/uc00_overall.pdf}
+  \includegraphics[width=0.85\textwidth,height=0.78\textheight,keepaspectratio]{graphics/usecase/uc00_overall.png}
   \caption{Overall use case diagram of Breakly}
   \label{fig:uc-overall}
 \end{figure}
 
-\clearpage
-
 \begingroup
 \small
 \renewcommand{\arraystretch}{1.25}
-\begin{longtable}{|>{\centering\arraybackslash}p{1.3cm}|>{\raggedright\arraybackslash}p{3.5cm}|>{\raggedright\arraybackslash}p{4.5cm}|>{\raggedright\arraybackslash}p{2.9cm}|>{\centering\arraybackslash}p{1.6cm}|}
+\begin{longtable}{|>{\centering\arraybackslash}p{1.3cm}|>{\raggedright\arraybackslash}p{3.6cm}|>{\raggedright\arraybackslash}p{3.0cm}|>{\raggedright\arraybackslash}p{3.7cm}|>{\centering\arraybackslash}p{1.6cm}|}
 \caption{Use case list and traceability to functional requirements}
 \label{tab:usecase-list}\\ \hline
-\textbf{ID} & \textbf{Use Case} & \textbf{Module} & \textbf{Related FR (UR)} & \textbf{Priority} \\ \hline
+\textbf{ID} & \textbf{Use Case} & \textbf{Module} & \textbf{Related FR} & \textbf{Priority} \\ \hline
 \endfirsthead
 \multicolumn{5}{c}{{\bfseries \tablename\ \thetable{} -- continued from previous page}} \\ \hline
-\textbf{ID} & \textbf{Use Case} & \textbf{Module} & \textbf{Related FR (UR)} & \textbf{Priority} \\ \hline
+\textbf{ID} & \textbf{Use Case} & \textbf{Module} & \textbf{Related FR} & \textbf{Priority} \\ \hline
 \endhead
-UC-01 & Sign up & Module 1 --- Authentication \& Account Management & FR 1.1 (UR-01) & Must \\ \hline
-UC-02 & Sign in & Module 1 --- Authentication \& Account Management & FR 1.2 (UR-01) & Must \\ \hline
-UC-03 & Sign out & Module 1 --- Authentication \& Account Management & FR 1.3 (UR-01) & Must \\ \hline
-UC-04 & Start a break session & Module 2 --- Session Management & FR 2.1, 2.2, 2.3, 3.1\newline(UR-02, 03, 04, 07) & Must \\ \hline
-UC-05 & Monitor session countdown & Module 2 --- Session Management & FR 2.3, 2.4, 2.5, 2.6, 7.2\newline(UR-04, 05, 18) & Must \\ \hline
-UC-06 & End session early & Module 2 --- Session Management & FR 2.7 (UR-06) & Should \\ \hline
-UC-07 & Change theme & Module 3 --- Space and Themes & FR 3.1, 3.2, 3.3\newline(UR-07, 08) & Must \\ \hline
-UC-08 & Listen to music station & Module 4 --- Music (Radio) & FR 4.1--4.5, 7.7, 7.8\newline(UR-09, 10, 20) & Must \\ \hline
-UC-09 & Browse and read news & Module 5 --- News & FR 5.1--5.4, 7.7, 7.8\newline(UR-11, 12, 20) & Must \\ \hline
-UC-10 & Open full article & Module 5 --- News & FR 5.5 (UR-13) & Should \\ \hline
-UC-11 & Watch short videos & Module 6 --- Short Videos (TV) & FR 6.1--6.3, 4.5, 7.7, 7.8\newline(UR-14, 15, 20) & Should \\ \hline
-UC-12 & View session summary & Module 7 --- Progress, Settings and Reliability & FR 7.1 (UR-16) & Should \\ \hline
-UC-13 & View history and streak & Module 7 --- Progress, Settings and Reliability & FR 7.2, 7.3, 7.4, 7.8\newline(UR-17, 18, 20) & Must \\ \hline
-UC-14 & Manage settings & Module 7 --- Progress, Settings and Reliability & FR 7.5, 7.6 (UR-19) & Should \\ \hline
+UC-01 & Sign up & 1 -- Account & FR 1.1, 1.4 & Must \\ \hline
+UC-02 & Sign in & 1 -- Account & FR 1.2, 1.4 & Must \\ \hline
+UC-03 & Sign out & 1 -- Account & FR 1.3 & Must \\ \hline
+UC-04 & Start a break session & 2 -- Session & FR 2.1--2.6, 3.1, 7.1, 7.2 & Must \\ \hline
+UC-05 & End session early & 2 -- Session & FR 2.7, 7.1, 7.2 & Should \\ \hline
+UC-06 & Change theme & 3 -- Space and Themes & FR 3.2, 3.3 & Must \\ \hline
+UC-07 & Listen to radio & 4 -- Music & FR 4.1--4.5, 4.7, 7.7, 7.8 & Must \\ \hline
+UC-08 & Download track (MP3) & 4 -- Music & FR 4.6 & Should \\ \hline
+UC-09 & Read news & 5 -- News & FR 5.1--5.4, 7.7, 7.8 & Must \\ \hline
+UC-10 & Open full article & 5 -- News & FR 5.5 & Should \\ \hline
+UC-11 & Watch videos & 6 -- Videos & FR 6.1--6.3, 4.5 & Should \\ \hline
+UC-12 & Play daily game & 8 -- Game Corner & FR 8.1--8.3 & Should \\ \hline
+UC-13 & View history and streak & 7 -- Progress & FR 7.3, 7.4 & Must \\ \hline
+UC-14 & Manage settings & 7 -- Settings & FR 7.5, 7.6 & Should \\ \hline
 \end{longtable}
 \endgroup
 
 % ---------------------------------------------------------------------
-\subsection{Detailed Use Case Diagrams}
-\label{sec:detailed-usecase}
+\subsection{Use Case Descriptions}
+\label{sec:usecase-descriptions}
 
-\paragraph{Module 1 --- Authentication \& Account Management.}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.95\textwidth,height=0.45\textheight,keepaspectratio]{graphics/usecase/uc01_account.pdf}
-  \caption{Use case diagram for Module 1 --- Authentication \& Account Management}
-  \label{fig:uc-account}
-\end{figure}
-
-% ---------------------------- UC-01 ----------------------------------
-\begin{ucspec}{UC-01: Sign up}{tab:uc-01}
-\ucrow{Use Case ID}{UC-01}
-\ucrow{Module}{Module 1 --- Authentication \& Account Management}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{A new user creates a Breakly account with an email address and a password so that sessions and streaks can be saved.}
-\ucrow{Related FR}{FR 1.1 (UR-01)}
-\ucrow{Priority}{Must}
-\ucrow{Preconditions}{The app is installed and opened. The user is not signed in.}
-\ucrow{Trigger}{The user selects \textit{Create account} on the Sign In screen.}
-\ucrow{Normal Flow}{%
-1. The system displays the sign-up form with email and password fields.\newline
-2. The user enters an unused email address and a password of at least 8 characters.\newline
-3. The user submits the form.\newline
-4. The system validates that the email format is valid and the password has at least 8 characters.\newline
-5. The system sends the registration request to the Auth \& Sync Service.\newline
-6. The Auth \& Sync Service creates the account and returns an access token.\newline
-7. The system stores the access token securely in device storage (NFR-04) and displays the Home Space with the default Cozy Room theme.}
-\ucrow{Alternative Flows}{%
-A1. The user already has an account: at step 2 the user selects \textit{Sign in} and continues with UC-02.}
-\ucrow{Exception Flows}{%
-E1. Invalid email format or password shorter than 8 characters: at step 4 the system shows an inline error next to the field and does not submit the form.\newline
-E2. Email already registered: at step 6 the service rejects the request; the system shows an error message and no second account is created.\newline
-E3. No connection or service unavailable: the system shows an offline message with a \textit{Retry} option; no account is created.}
-\ucrow{Postconditions}{%
-Success: a new account exists, the access token is stored in secure device storage, and the user is authenticated on the Home Space.\newline
-Failure: no account is created and the user stays on the sign-up form.}
-\end{ucspec}
-
-
-\paragraph{Module 2 --- Session Management.}
-Figure~\ref{fig:uc-session} specifies the core break-session lifecycle. Starting
-a session (UC-04) encapsulates duration selection (10, 20, or 30 minutes, defaulting
-to 20) and triggering a service via Space interactive objects. During an active
-session, the countdown is calculated dynamically from the stored start and target end
-timestamps, while the Mobile OS lifecycle management ensures audio continuity
-across background and screen-locked states (UC-05). As the session approaches its
-conclusion, the system delivers a gentle one-minute in-app reminder, and upon timer
-expiration automatically halts playback and persists a completed session record.
-End session early (UC-06) extends the countdown workflow to enable safe user-confirmed
-termination, saving the session as ended early.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.95\textwidth,height=0.5\textheight,keepaspectratio]{graphics/usecase/uc02_session.pdf}
-  \caption{Use case diagram for Module 2 --- Session Management}
-  \label{fig:uc-session}
-\end{figure}
-
-% ---------------------------- UC-04 ----------------------------------
-\begin{ucspec}{UC-04: Start a break session}{tab:uc-04}
-\ucrow{Use Case ID}{UC-04}
-\ucrow{Module}{Module 2 --- Session Management}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{--}
-\ucrow{Description}{The user taps the radio, the newspaper or the TV in the Space to start a time-boxed session with the selected duration and open the matching service.}
-\ucrow{Related FR}{FR 2.1, FR 2.2, FR 2.3, FR 3.1 (UR-02, UR-03, UR-04, UR-07)}
-\ucrow{Priority}{Must}
-\ucrow{Preconditions}{The user is signed in, the Home Space is displayed, and no session is active.}
-\ucrow{Trigger}{The user views the Home Space with no active session.}
-\ucrow{Normal Flow}{%
-1. The system displays the Home Space scene with the labelled interactive objects -- radio (Music), newspaper (News) and TV (Short Videos), each with a touch target of at least 48~dp -- and the duration selector with 20 minutes selected by default.\newline
-2. The user taps an object (a session can be started in at most two taps from the Home Space).\newline
-3. The system creates an active session with status \textit{in\_progress}, records the start timestamp and the target end timestamp, and starts the countdown.\newline
-4. The system locks the duration selector while the session is active.\newline
-5. The system opens the matching service: Radio (UC-08), News (UC-09) or TV (UC-11).\newline
-6. The system shows the remaining time on every screen and updates it every second (UC-05).}
-\ucrow{Alternative Flows}{%
-A1. Choose session duration: at step 1 the user selects 10, 20 or 30 minutes; exactly one option is selected at a time, and the flow returns to step 1 with the new duration selected.}
-\ucrow{Exception Flows}{%
-E1. Content fails to load upon opening service: the system shows a loading indicator followed by an offline or error message with a \textit{Retry} option; the countdown keeps running.}
-\ucrow{Postconditions}{%
-A session is active with a stored start time and duration, the countdown is visible, and the selected service is open.}
-\end{ucspec}
-
-
-\paragraph{Module 3 --- Space and Themes.}
-As illustrated in Figure~\ref{fig:uc-space-theme}, the Home Space acts as the
-primary visual anchor, loading the user's selected theme (Cozy Room or Garden)
-from local storage with graceful fallback backgrounds in case of asset loading errors.
-Changing themes (UC-07) enables previewing and persisting aesthetic selections
-locally and to the cloud profile without altering the spatial positioning of interactive objects.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.85\textwidth,height=0.4\textheight,keepaspectratio]{graphics/usecase/uc03_space_theme.pdf}
-  \caption{Use case diagram for Module 3 --- Space and Themes}
-  \label{fig:uc-space-theme}
-\end{figure}
-
-% ---------------------------- UC-07 ----------------------------------
-\begin{ucspec}{UC-07: Change theme}{tab:uc-07}
-\ucrow{Use Case ID}{UC-07}
-\ucrow{Module}{Module 3 --- Space and Themes}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{The user changes the look of the Home Space between the Cozy Room and Garden themes, and the choice is remembered.}
-\ucrow{Related FR}{FR 3.1, FR 3.2, FR 3.3 (UR-07, UR-08)}
-\ucrow{Priority}{Must}
-\ucrow{Preconditions}{The user is signed in.}
-\ucrow{Trigger}{The user opens the Theme Selector.}
-\ucrow{Normal Flow}{%
-1. The system lists the Cozy Room and Garden themes, each with a preview image and a name, and marks the current theme.\newline
-2. The user selects a theme.\newline
-3. The user applies the theme.\newline
-4. The system changes the Home Space background and colours; the layout and the positions of the radio, newspaper, and TV stay the same.\newline
-5. The system persists the selected theme in local storage immediately and syncs with account preferences on the Auth \& Sync Service when online.}
-\ucrow{Alternative Flows}{%
-A1. First launch: no theme has been saved, so the system shows Cozy Room by default.\newline
-A2. The user leaves the Theme Selector without applying: the current theme is kept.\newline
-A3. The user selects the theme that is already active: nothing changes.}
-\ucrow{Exception Flows}{%
-E1. The theme image cannot be loaded: the system shows a fallback background in the theme colours and the objects remain usable.}
-\ucrow{Postconditions}{%
-The selected theme is shown on the Home Space and is shown again after the app is closed and reopened.}
-\end{ucspec}
-
-
-\paragraph{Module 4 --- Music (Radio).}
-Figure~\ref{fig:uc-music} captures the music service. The user selects a station
-category (Lo-fi, Piano, Acoustic or Nature) and listens to tracks from the Music
-Content Provider (UC-08); playback continues across screens and on the locked
-screen through the Mobile OS audio session, and pauses automatically while the
-TV is open. While music is playing, the user may control playback on the Radio
-screen (play/pause, next track, volume) or from the mini-player on the News and
-Article screens; both extend UC-08.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.85\textwidth,height=0.45\textheight,keepaspectratio]{graphics/usecase/uc04_music.pdf}
-  \caption{Use case diagram for Module 4 --- Music (Radio)}
-  \label{fig:uc-music}
-\end{figure}
-
-% ---------------------------- UC-08 ----------------------------------
-\begin{ucspec}{UC-08: Listen to music station}{tab:uc-08}
-\ucrow{Use Case ID}{UC-08}
-\ucrow{Module}{Module 4 --- Music (Radio)}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Music Content Provider; Mobile OS}
-\ucrow{Description}{The user picks a music station category and controls playback; music keeps playing across screens and when the device is locked, and automatically pauses while the TV is open.}
-\ucrow{Related FR}{FR 4.1--4.5, 7.7, 7.8 (UR-09, UR-10, UR-20)}
-\ucrow{Priority}{Must}
-\ucrow{Preconditions}{A session is active (started from the radio in UC-04 or already running).}
-\ucrow{Trigger}{The user taps the radio in the Space, either to start a session (UC-04) or while a session is already active; in the second case the countdown continues without restarting.}
-\ucrow{Normal Flow}{%
-1. The system shows the Radio screen with the categories (for example Lo-fi, Piano, Acoustic and Nature).\newline
-2. The user selects a category (only one category is selected at a time).\newline
-3. The system loads a track from the Music Content Provider and starts playback, showing the title, artist and artwork.\newline
-4. When the user moves to another screen, playback continues and a mini-player with a play/pause control is shown on the News and Article screens.\newline
-5. When the user locks the device, playback continues under the Mobile OS audio session.\newline
-6. When the session ends, the system stops playback automatically.}
-\ucrow{Alternative Flows}{%
-A1. The user selects another category: the system switches to a track from the new category.\newline
-A2. The user opens the TV screen while music plays: audio playback pauses automatically, and resumes from the paused position when the user leaves the TV screen (unless the user had paused playback manually).\newline
-A3. The user had paused the music manually before opening the TV: it stays paused after leaving the TV.\newline
-A4. Control playback (play/pause, next, volume): at any time between step 3 and step 6 the user uses the controls on the Radio screen. Pause stops the audio and the control changes to play; play resumes from the same position; next track starts another track of the selected category; the volume control changes the playback volume. The flow returns to the step where it was interrupted.\newline
-A5. Control music from mini-player: while the News or Article screen is shown (step 4), the user taps play/pause on the mini-player; playback pauses or resumes and the flow returns to step 4.}
-\ucrow{Exception Flows}{%
-E1. The track cannot be loaded: the system shows a loading indicator, then an error message with a \textit{Retry} option; the countdown keeps running.\newline
-E2. No connection: the system shows an offline message with a \textit{Retry} option.}
-\ucrow{Postconditions}{%
-Playback reflects the user's last action, and total listening duration is tracked for inclusion in the session summary.}
-\end{ucspec}
-
-
-\paragraph{Module 5 --- News.}
-Figure~\ref{fig:uc-news} outlines the news reading experience. Browsing news
-(UC-09) loads curated feeds from the News Feed Content Provider and supports direct
-in-app reading with full countdown visibility. Category filtering and pull-to-refresh
-actions enhance feed navigation, while opening the complete source article
-in an in-app browser view (UC-10) extends the reading workflow.
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.95\textwidth,height=0.45\textheight,keepaspectratio]{graphics/usecase/uc05_news.pdf}
-  \caption{Use case diagram for Module 5 --- News}
-  \label{fig:uc-news}
-\end{figure}
-
-% ---------------------------- UC-09 ----------------------------------
-\begin{ucspec}{UC-09: Browse and read news}{tab:uc-09}
-\ucrow{Use Case ID}{UC-09}
-\ucrow{Module}{Module 5 --- News}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{News Feed Content Provider}
-\ucrow{Description}{The user browses the latest articles, optionally filters or refreshes the list, and reads an article inside the app (an article is counted as opened once its detail view is displayed).}
-\ucrow{Related FR}{FR 5.1--5.4, 7.7, 7.8 (UR-11, UR-12, UR-20)}
-\ucrow{Priority}{Must}
-\ucrow{Preconditions}{A session is active.}
-\ucrow{Trigger}{The user taps the newspaper in the Space, either to start a session (UC-04) or while a session is already active.}
-\ucrow{Normal Flow}{%
-1. The system shows placeholder cards while it loads the configured feeds.\newline
-2. The system lists the articles from newest to oldest; each card shows the title, source, publication time, and an image when available.\newline
-3. The user taps an article card.\newline
-4. The system opens the Article screen inside the app with the title, source, publication time, image, and content provided by the feed; the countdown stays visible.\newline
-5. The user goes back to the article list.}
-\ucrow{Alternative Flows}{%
-A1. Filter news by category: at step 2 the user selects a category chip and only articles of that category are listed; the all-articles chip restores the full list.\newline
-A2. Refresh news feed: at step 2 the user pulls the list down; the feeds are reloaded and newer articles appear at the top.\newline
-A3. Open full article: at step 4 the user selects \textit{Read full article} and continues with UC-10.}
-\ucrow{Exception Flows}{%
-E1. No connection on first load: the system shows an offline message with a \textit{Retry} option; the countdown keeps running.\newline
-E2. Refresh fails: the system shows an error message and keeps the existing list.\newline
-E3. The selected category has no articles: the system shows an empty-state message.}
-\ucrow{Postconditions}{%
-The articles the user opened are counted for the session summary. No data on the server is modified.}
-\end{ucspec}
-
-
-\paragraph{Module 6 --- Short Videos (TV).}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.9\textwidth,height=0.42\textheight,keepaspectratio]{graphics/usecase/uc06_videos.pdf}
-  \caption{Use case diagram for Module 6 --- Short Videos (TV)}
-  \label{fig:uc-videos}
-\end{figure}
-
-% ---------------------------- UC-11 ----------------------------------
-\begin{ucspec}{UC-11: Watch short videos}{tab:uc-11}
-\ucrow{Use Case ID}{UC-11}
-\ucrow{Module}{Module 6 --- Short Videos (TV)}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Video Content Provider}
-\ucrow{Description}{The user watches a finite feed of short videos in full screen, which ends with an end card instead of endless scrolling (a video is counted as watched once played for at least 3 seconds).}
-\ucrow{Related FR}{FR 6.1--6.3, 4.5, 7.7, 7.8 (UR-14, UR-15, UR-20)}
-\ucrow{Priority}{Should}
-\ucrow{Preconditions}{A session is active.}
-\ucrow{Trigger}{The user taps the TV in the Space, either to start a session (UC-04) or while a session is already active.}
-\ucrow{Normal Flow}{%
-1. The system loads a finite feed of at most 10 clips for the current break session.\newline
-2. The first clip starts playing in full screen and a progress indicator shows its position in the feed.\newline
-3. The user swipes up for the next clip or down for the previous clip.\newline
-4. After the last clip, the system shows an end card with a closing message and plays no further clip.\newline
-5. The user returns to the Home Space from the end card.}
-\ucrow{Alternative Flows}{%
-A1. Music is playing when the TV opens: the music pauses automatically and resumes when the user leaves the TV (UC-08).\newline
-A2. Reopening the TV after reaching the end card: within the same session, reopening the TV shows the end card directly, preventing endless scrolling.\newline
-A3. Early exit: the user navigates back to the Home Space before the end card; video playback stops immediately.\newline
-A4. The user swipes down on the first clip: the first clip stays on screen.\newline
-A5. Control video playback: at any time between step 2 and step 4 the user taps the video to toggle between pause and play, or uses the mute control to switch the sound off or on; the flow returns to the step where it was interrupted.}
-\ucrow{Exception Flows}{%
-E1. The feed cannot be loaded or there is no connection: the system shows an offline or error message with a \textit{Retry} option; the countdown keeps running.\newline
-E2. A single clip fails to play: the system shows an error state for that clip with a \textit{Retry} option.}
-\ucrow{Postconditions}{%
-No more than 10 clips have been shown, video playback ceases, and the number of videos watched ($\ge 3$s) is recorded for the session summary.}
-\end{ucspec}
-
-
-\paragraph{Module 7 --- Progress, Settings and Reliability.}
-
-\begin{figure}[H]
-  \centering
-  \includegraphics[width=0.95\textwidth,height=0.45\textheight,keepaspectratio]{graphics/usecase/uc07_progress_settings.pdf}
-  \caption{Use case diagram for Module 7 --- Progress, Settings and Reliability}
-  \label{fig:uc-progress}
-\end{figure}
-
-% ---------------------------- UC-12 ----------------------------------
-\begin{ucspec}{UC-12: View session summary}{tab:uc-12}
-\ucrow{Use Case ID}{UC-12}
-\ucrow{Module}{Module 7 --- Progress, Settings and Reliability}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{--}
-\ucrow{Description}{When a session ends, the user reviews a summary of break time used and content engagement metrics, and returns to the Home Space.}
-\ucrow{Related FR}{FR 7.1 (UR-16)}
-\ucrow{Priority}{Should}
-\ucrow{Preconditions}{A session has just ended automatically (UC-05) or early (UC-06).}
-\ucrow{Trigger}{The session ends.}
-\ucrow{Normal Flow}{%
-1. The system calculates engagement metrics from the concluded session: total duration used, music listening time, number of articles opened, and number of videos watched (clips played $\ge 3$s).\newline
-2. The system displays the Session Summary screen presenting these metrics and the updated streak count.\newline
-3. The user reviews the metrics and taps \textit{Done}.\newline
-4. The system navigates back to the Home Space with the updated daily streak.}
-\ucrow{Alternative Flows}{%
-A1. The session ended while the app was in the background: the summary is shown when the app is reopened.\newline
-A2. A service was not used: its value is shown as zero in the summary metrics.}
-\ucrow{Exception Flows}{%
-E1. Metric computation error: default fallback metrics (total duration only) are shown.}
-\ucrow{Postconditions}{%
-The summary has been displayed and the user returns to the Home Space. (Note: session data persistence is completed in UC-05 or UC-06 upon session termination).}
-\end{ucspec}
-
+Each use case is specified with the same template. Steps are numbered in the
+normal flow; alternative flows (A) and exception flows (E) name the step at
+which they branch.
 
 % ---------------------------------------------------------------------
+\subsubsection{Account}
 
-
-\iffalse
 % ---------------------------- UC-01 ----------------------------------
 \begin{ucspec}{UC-01: Sign up}{tab:uc-01}
 \ucrow{Use Case ID}{UC-01}
-\ucrow{Module}{Module 1 --- Authentication \& Account Management}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{A new user creates a Breakly account with an email address and a password so that sessions and streaks can be saved.}
-\ucrow{Related FR}{FR 1.1 (UR-01)}
+\ucrow{Secondary Actor}{--}
+\ucrow{Description}{A user creates a Breakly account so that sessions, streaks and preferences are saved to the account instead of only on the device.}
+\ucrow{Related FR}{FR 1.1, FR 1.4}
 \ucrow{Priority}{Must}
-\ucrow{Preconditions}{The app is installed and opened. The user is not signed in.}
-\ucrow{Trigger}{The user selects \textit{Create account} on the Sign In screen.}
+\ucrow{Preconditions}{The user is not signed in (first launch or guest mode).}
+\ucrow{Trigger}{The user selects \textit{Create account} on the Sign In screen, or \textit{Sign in / Create account} in Settings.}
 \ucrow{Normal Flow}{%
-1. The system displays the sign-up form with email and password fields.\newline
-2. The user enters an unused email address and a password of at least 8 characters.\newline
+1. The system shows the Sign Up form with display name, email and password fields.\newline
+2. The user enters a display name, an email address and a password of at least 8 characters.\newline
 3. The user submits the form.\newline
-4. The system validates that the email format is valid and the password has at least 8 characters.\newline
-5. The system sends the registration request to the Auth \& Sync Service.\newline
-6. The Auth \& Sync Service creates the account and returns an access token.\newline
-7. The system stores the access token securely in device storage (NFR-04) and displays the Home Space with the default Cozy Room theme.}
+4. The system checks that the email has a valid format and that the password has at least 8 characters.\newline
+5. The system sends the registration request to the Breakly backend, which stores the password as a BCrypt hash and returns an access token and a refresh token.\newline
+6. The system stores the refresh token in secure device storage (NFR-04).\newline
+7. The system uploads any sessions recorded on the device in guest mode and loads the account preferences.\newline
+8. The system shows the Home Space.}
 \ucrow{Alternative Flows}{%
-A1. The user already has an account: at step 2 the user selects \textit{Sign in} and continues with UC-02.}
+A1. The user already has an account: at step 1 the user selects \textit{Sign in} and continues with UC-02.\newline
+A2. The user selects \textit{Continue as guest}: the system shows the Home Space in guest mode and the use case ends without an account.}
 \ucrow{Exception Flows}{%
-E1. Invalid email format or password shorter than 8 characters: at step 4 the system shows an inline error next to the field and does not submit the form.\newline
-E2. Email already registered: at step 6 the service rejects the request; the system shows an error message and no second account is created.\newline
-E3. No connection or service unavailable: the system shows an offline message with a \textit{Retry} option; no account is created.}
+E1. Invalid email or a password shorter than 8 characters: at step 4 the system shows an error next to the field and does not send the request.\newline
+E2. Email already registered: at step 5 the backend answers \texttt{409 EMAIL\_ALREADY\_EXISTS}; the system shows an error message and no second account is created.\newline
+E3. No connection or the backend is unavailable: the system shows an error message; no account is created and the user can try again.}
 \ucrow{Postconditions}{%
-Success: a new account exists, the access token is stored in secure device storage, and the user is authenticated on the Home Space.\newline
-Failure: no account is created and the user stays on the sign-up form.}
+Success: the account exists, the user is signed in, and guest sessions are attached to the account.\newline
+Failure: no account is created and the user stays on the Sign Up form.}
 \end{ucspec}
 
 % ---------------------------- UC-02 ----------------------------------
 \begin{ucspec}{UC-02: Sign in}{tab:uc-02}
 \ucrow{Use Case ID}{UC-02}
-\ucrow{Module}{Module 1 --- Authentication \& Account Management}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{A registered user signs in with email and password and remains signed in until signing out.}
-\ucrow{Related FR}{FR 1.2 (UR-01)}
+\ucrow{Secondary Actor}{--}
+\ucrow{Description}{A registered user signs in with email and password and stays signed in until signing out.}
+\ucrow{Related FR}{FR 1.2, FR 1.4}
 \ucrow{Priority}{Must}
-\ucrow{Preconditions}{The user has an existing account and is not signed in on this device.}
-\ucrow{Trigger}{The user opens the app without a saved sign-in, or selects \textit{Sign in}.}
+\ucrow{Preconditions}{The user has an account and is not signed in on this device.}
+\ucrow{Trigger}{The user opens the Sign In screen from the first screen of the app or from Settings.}
 \ucrow{Normal Flow}{%
-1. The system displays the sign-in form.\newline
-2. The user enters the registered email and password.\newline
-3. The user submits the form.\newline
-4. The system validates that both fields are non-empty and sends the credentials to the Auth \& Sync Service.\newline
-5. The service validates credentials and returns an access token.\newline
-6. The system stores the access token in secure device storage (NFR-04).\newline
-7. The system displays the Home Space with the user's saved theme.}
+1. The system shows the Sign In form with email and password fields.\newline
+2. The user enters the registered email and password and submits the form.\newline
+3. The system checks that both fields are filled in and sends the credentials to the Breakly backend.\newline
+4. The backend verifies the password and returns a short-lived access token (15 minutes) and a refresh token (30 days).\newline
+5. The system stores the refresh token in secure device storage.\newline
+6. The system uploads sessions queued on the device and loads the account preferences (theme, default duration, one-minute notice, radio volume).\newline
+7. The system shows the Home Space with the saved theme.}
 \ucrow{Alternative Flows}{%
-A1. Saved token at launch: when the app is reopened and a valid access token is found in secure device storage, the system skips steps 1--6 and navigates directly to the Home Space.\newline
-A2. Launch while offline with saved token: if the device is offline upon launch but contains a valid stored access token, the system validates the local token and shows the Home Space with cached data.\newline
-A3. The user has no account: the user selects \textit{Create account} and continues with UC-01.}
+A1. Saved sign-in: when the app starts and a refresh token is stored, the system obtains a new access token in the background and shows the Home Space without the form.\newline
+A2. The user has no account: the user selects \textit{Create account} and continues with UC-01.\newline
+A3. The user selects \textit{Forgot password?}: the system explains that password reset is not available in this version (it is listed as a Could item).}
 \ucrow{Exception Flows}{%
-E1. Empty field: at step 4 the system highlights the missing field and does not submit.\newline
-E2. Incorrect credentials: at step 5 the service rejects the request; the system shows an error message and the user stays on the Sign In screen.\newline
-E3. No connection or service unavailable: the system shows an offline message with a \textit{Retry} option.\newline
-E4. Expired or revoked token: if a stored token is rejected by the server, the system purges the invalid token from secure storage, displays an expiration alert, and routes to the Sign In screen.}
+E1. Empty field: at step 3 the system highlights the field and does not send the request.\newline
+E2. Wrong email or password: at step 4 the backend answers \texttt{401 INVALID\_CREDENTIALS}; the system shows an error and the user stays on the form.\newline
+E3. No connection: the system shows an error message and the user can try again.\newline
+E4. Expired or revoked refresh token at start-up (A1): the backend rejects the refresh request; the system deletes the stored token and continues in guest mode.}
 \ucrow{Postconditions}{%
-Success: the user is signed in, the access token is stored in secure storage, and the session persists across app restarts.\newline
-Failure: the user remains signed out.}
+Success: the user is signed in and stays signed in after the app is restarted.\newline
+Failure: the user stays signed out.}
 \end{ucspec}
 
 % ---------------------------- UC-03 ----------------------------------
 \begin{ucspec}{UC-03: Sign out}{tab:uc-03}
 \ucrow{Use Case ID}{UC-03}
-\ucrow{Module}{Module 1 --- Authentication \& Account Management}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{A signed-in user signs out so that the account and its history are no longer accessible on the device.}
-\ucrow{Related FR}{FR 1.3 (UR-01)}
+\ucrow{Secondary Actor}{--}
+\ucrow{Description}{A signed-in user signs out so that the account can no longer be used from this device.}
+\ucrow{Related FR}{FR 1.3}
 \ucrow{Priority}{Must}
 \ucrow{Preconditions}{The user is signed in.}
-\ucrow{Trigger}{The user selects \textit{Sign out} on the Settings screen.}
+\ucrow{Trigger}{The user selects \textit{Sign out} in the Account group of Settings.}
 \ucrow{Normal Flow}{%
 1. The user selects \textit{Sign out}.\newline
-2. The system revokes the session on the Auth \& Sync Service.\newline
-3. The system removes the stored access token from secure device storage.\newline
-4. The system clears the previous account's session history and cached data from active memory and UI views.\newline
-5. The system displays the Sign In screen.}
+2. The system sends the refresh token to the backend, which revokes it.\newline
+3. The system deletes the tokens from secure device storage.\newline
+4. The system switches to guest mode; Settings now shows \textit{Sign in / Create account} instead of the account details.}
 \ucrow{Alternative Flows}{%
-A1. Unsynced session records exist: before step 3, if pending records exist in the local queue, the system attempts an immediate cloud upload before signing out.\newline
-A2. A break session is active: before step 2 the system asks the user to confirm ending the session. If the user confirms, the session is stopped and saved with status \textit{ended\_early}, and sign-out continues at step 2. If the user cancels, sign-out is aborted and the session continues.}
+A1. A break session is active: the session keeps running in guest mode; its record is stored on the device when it ends.}
 \ucrow{Exception Flows}{%
-E1. Offline sign-out: if network connectivity is unavailable at step 2, the system warns the user that pending records will remain queued locally under the user's account ID, removes the access token from secure storage, and displays the Sign In screen; device sign-out is never blocked by network failure.}
+E1. No connection at step 2: the system still deletes the stored tokens and switches to guest mode; signing out on the device never depends on the network.}
 \ucrow{Postconditions}{%
-The access token is removed from secure device storage, active session data is purged from memory, the Sign In screen is shown, and the previous account's session history is no longer accessible on the device.}
+No token is stored on the device, the refresh token is revoked on the server when it could be reached, and the account history is no longer loaded.}
 \end{ucspec}
+
+% ---------------------------------------------------------------------
+\subsubsection{Break Session}
 
 % ---------------------------- UC-04 ----------------------------------
 \begin{ucspec}{UC-04: Start a break session}{tab:uc-04}
 \ucrow{Use Case ID}{UC-04}
-\ucrow{Module}{Module 2 --- Session Management}
 \ucrow{Primary Actor}{User}
 \ucrow{Secondary Actor}{--}
-\ucrow{Description}{The user taps the radio, the newspaper or the TV in the Space to start a time-boxed session with the selected duration and open the matching service.}
-\ucrow{Related FR}{FR 2.1, FR 2.2, FR 2.3, FR 3.1 (UR-02, UR-03, UR-04, UR-07)}
+\ucrow{Description}{The user starts a time-boxed break by tapping an object in the Space. The system runs the countdown, warns when one minute is left, ends the break automatically and shows the Session Summary.}
+\ucrow{Related FR}{FR 2.1--2.6, FR 3.1, FR 7.1, FR 7.2}
 \ucrow{Priority}{Must}
-\ucrow{Preconditions}{The user is signed in, the Home Space is displayed, and no session is active.}
-\ucrow{Trigger}{The user views the Home Space with no active session.}
+\ucrow{Preconditions}{The Home Space is displayed and no session is active.}
+\ucrow{Trigger}{The user taps the radio, the newspaper, the TV or the gamepad in the Space.}
 \ucrow{Normal Flow}{%
-1. The system displays the Home Space scene with the labelled interactive objects -- radio (Music), newspaper (News) and TV (Short Videos), each with a touch target of at least 48~dp -- and the duration selector with 20 minutes selected by default.\newline
-2. The user taps an object (a session can be started in at most two taps from the Home Space).\newline
-3. The system creates an active session with status \textit{in\_progress}, records the start timestamp and the target end timestamp, and starts the countdown.\newline
-4. The system locks the duration selector while the session is active.\newline
-5. The system opens the matching service: Radio (UC-08), News (UC-09) or TV (UC-11).\newline
-6. The system shows the remaining time on every screen and updates it every second (UC-05).}
+1. The system shows the Home Space with the four labelled objects and the duration selector (10, 20 or 30 minutes), preset to the default duration from Settings.\newline
+2. The user taps an object.\newline
+3. The system creates a session with a client-generated ID, stores the start time and the planned end time on the device, and starts the countdown.\newline
+4. The system opens the matching service: Radio (UC-07), News (UC-09), TV (UC-11) or Game Corner (UC-12).\newline
+5. The system shows the remaining time (mm:ss) on every screen and recalculates it every second from the stored end time.\newline
+6. When 60 seconds remain, the system shows a ``One minute left'' toast for about four seconds and highlights the timer.\newline
+7. When the countdown reaches 00:00, the system stops music and video, closes the content screens and marks the session as completed.\newline
+8. The system shows the Session Summary: time used, music listening time, articles opened, videos watched, games played and the updated streak.\newline
+9. The system saves the session record on the device and uploads it to the backend.\newline
+10. The user selects \textit{Back to room} and the Home Space is shown.}
 \ucrow{Alternative Flows}{%
-A1. Choose session duration: at step 1 the user selects 10, 20 or 30 minutes; exactly one option is selected at a time, and the flow returns to step 1 with the new duration selected.}
+A1. Choose another duration: at step 1 the user selects 10, 20 or 30 minutes before tapping an object; exactly one option is selected.\newline
+A2. A session is already active: tapping an object opens its service and the countdown continues without restarting.\newline
+A3. The app is in the background or the device is locked: the countdown stays correct because it is computed from the end time; if the time runs out meanwhile, the summary is shown when the app returns to the foreground.\newline
+A4. One-minute notice turned off in Settings: step 6 shows no toast.\newline
+A5. The user ends the break before 00:00: the flow continues in UC-05.}
 \ucrow{Exception Flows}{%
-E1. Content fails to load upon opening service: the system shows a loading indicator followed by an offline or error message with a \textit{Retry} option; the countdown keeps running.}
+E1. No connection at step 9: the record stays in the upload queue on the device and is sent automatically later (the server ignores duplicates by client ID).\newline
+E2. The content of the opened service cannot be loaded: the service shows its error state with a retry option while the countdown keeps running.}
 \ucrow{Postconditions}{%
-A session is active with a stored start time and duration, the countdown is visible, and the selected service is open.}
+The session has ended, playback has stopped, the summary has been shown, and the record is stored on the device and, when online and signed in, on the server.}
 \end{ucspec}
 
 % ---------------------------- UC-05 ----------------------------------
-\begin{ucspec}{UC-05: Monitor session countdown}{tab:uc-05}
+\begin{ucspec}{UC-05: End session early}{tab:uc-05}
 \ucrow{Use Case ID}{UC-05}
-\ucrow{Module}{Module 2 --- Session Management}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Mobile OS; Auth \& Sync Service}
-\ucrow{Description}{While a session is active, the system tracks remaining time across screens and in background states, provides a gentle in-app one-minute notice, halts playback upon expiration, and persists a completed session record.}
-\ucrow{Related FR}{FR 2.3, FR 2.4, FR 2.5, FR 2.6, FR 7.2 (UR-04, UR-05, UR-18)}
-\ucrow{Priority}{Must}
-\ucrow{Preconditions}{A session has been started (UC-04).}
-\ucrow{Trigger}{The countdown starts; the use case continues until the remaining time reaches zero.}
-\ucrow{Normal Flow}{%
-1. The system displays the remaining countdown in minutes and seconds ($mm:ss$) on the Home Space, Radio, News, Article, and TV screens, recalculating remaining time each second from the target end timestamp.\newline
-2. The user consumes content; the application may transition to the background or the device screen may be locked.\newline
-3. The system maintains countdown accuracy against real time upon return (NFR-02: remaining time is 7 minutes $\pm 2$ seconds after 3 minutes in background during a 10-minute session).\newline
-4. When 60 seconds remain and the application is in the foreground, the system displays a non-blocking in-app ``One minute left'' message for at least 3 seconds and highlights the timer visually.\newline
-5. When the countdown reaches zero ($00:00$), the system automatically stops music and video playback immediately (even when backgrounded or locked, managed through the Mobile OS audio session).\newline
-6. The system marks the session record as \textit{completed}, packages the start time, duration, and services used, and persists it to local storage and the Auth \& Sync Service.\newline
-7. Include View session summary (UC-12).}
-\ucrow{Alternative Flows}{%
-A1. One-minute notice disabled in Settings: step 4 shows no message.\newline
-A2. App backgrounded or screen locked at the 60-second mark: the in-app gentle notice is omitted (silent) to avoid unsolicited system push notifications (NFR-05).\newline
-A3. Time runs out while backgrounded or locked: audio playback terminates immediately; upon reopening the app, the system detects the completed session and displays the Session Summary screen (UC-12).\newline
-A4. End session early: at any time between step 1 and step 5 the user selects \textit{End session}; the flow continues in UC-06 and this use case ends.}
-\ucrow{Exception Flows}{%
-E1. Offline at session completion: the completed record is stored in the local SQLite queue and uploaded automatically when connectivity returns.}
-\ucrow{Postconditions}{%
-The session has ended, playback has stopped, and the session record (marked \textit{completed}) is saved on the device and, when online, on the Auth \& Sync Service.}
-\end{ucspec}
-
-% ---------------------------- UC-06 ----------------------------------
-\begin{ucspec}{UC-06: End session early}{tab:uc-06}
-\ucrow{Use Case ID}{UC-06}
-\ucrow{Module}{Module 2 --- Session Management}
-\ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{The user stops an active session before the countdown reaches zero, after confirming the action.}
-\ucrow{Related FR}{FR 2.7 (UR-06)}
+\ucrow{Secondary Actor}{--}
+\ucrow{Description}{The user stops an active break before the countdown reaches zero, after confirming.}
+\ucrow{Related FR}{FR 2.7, FR 7.1, FR 7.2}
 \ucrow{Priority}{Should}
 \ucrow{Preconditions}{A session is active.}
-\ucrow{Trigger}{The user selects \textit{End session}.}
+\ucrow{Trigger}{The user selects \textit{End break} on the Home Space or from the session timer on a content screen.}
 \ucrow{Normal Flow}{%
-1. The user selects \textit{End session}.\newline
-2. The system shows a confirmation dialog.\newline
-3. The user confirms.\newline
-4. The system immediately stops music and video playback and halts the countdown.\newline
-5. The system records the session with the actual time used, marks its status as \textit{ended\_early} (which does not qualify as a completed break for streak calculation), and saves it to local storage and the Auth \& Sync Service.\newline
-6. Include View session summary (UC-12).}
+1. The system asks ``End break early?'' and explains that the progress so far will be saved.\newline
+2. The user selects \textit{End break}.\newline
+3. The system stops music and video and stops the countdown.\newline
+4. The system records the session with the time actually used and the end reason \textit{ended early}.\newline
+5. The system shows the Session Summary for this session.\newline
+6. The system saves the record on the device and uploads it to the backend.}
 \ucrow{Alternative Flows}{%
-A1. The user cancels at step 3: the dialog closes and the session continues unchanged.\newline
-A2. The countdown reaches zero while the dialog is open: the dialog closes and the session ends automatically as in UC-05.}
+A1. The user selects \textit{Cancel} at step 2: the dialog closes and the session continues unchanged.\newline
+A2. The countdown reaches zero while the dialog is open: the session ends automatically as in UC-04.}
 \ucrow{Exception Flows}{%
-E1. Offline at early termination: the record is stored locally in the queue and uploaded when the connection returns.}
+E1. No connection at step 6: the record stays in the upload queue and is sent when the connection returns.}
 \ucrow{Postconditions}{%
-Confirmed: the session has ended, status is marked \textit{ended\_early}, and its record is saved.\newline
+Confirmed: the session has ended with the reason \textit{ended early} and its record is saved.\newline
 Cancelled: the session and its countdown are unchanged.}
 \end{ucspec}
 
-% ---------------------------- UC-07 ----------------------------------
-\begin{ucspec}{UC-07: Change theme}{tab:uc-07}
-\ucrow{Use Case ID}{UC-07}
-\ucrow{Module}{Module 3 --- Space and Themes}
+% ---------------------------------------------------------------------
+\subsubsection{Space and Themes}
+
+% ---------------------------- UC-06 ----------------------------------
+\begin{ucspec}{UC-06: Change theme}{tab:uc-06}
+\ucrow{Use Case ID}{UC-06}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{The user changes the look of the Home Space between the Cozy Room and Garden themes, and the choice is remembered.}
-\ucrow{Related FR}{FR 3.1, FR 3.2, FR 3.3 (UR-07, UR-08)}
+\ucrow{Secondary Actor}{--}
+\ucrow{Description}{The user switches the Space between the Cozy chill room (night) and Normal garden (day) themes, and the choice is remembered.}
+\ucrow{Related FR}{FR 3.2, FR 3.3}
 \ucrow{Priority}{Must}
-\ucrow{Preconditions}{The user is signed in.}
-\ucrow{Trigger}{The user opens the Theme Selector.}
+\ucrow{Preconditions}{--}
+\ucrow{Trigger}{The user opens the Theme Selector from Settings (\textit{Room theme}) or taps the theme switch in the Home Space header.}
 \ucrow{Normal Flow}{%
-1. The system lists the Cozy Room and Garden themes, each with a preview image and a name, and marks the current theme.\newline
-2. The user selects a theme.\newline
-3. The user applies the theme.\newline
-4. The system changes the Home Space background and colours; the layout and the positions of the radio, newspaper, and TV stay the same.\newline
-5. The system persists the selected theme in local storage immediately and syncs with account preferences on the Auth \& Sync Service when online.}
+1. The system shows both themes with a preview and a name and marks the current one.\newline
+2. The user selects a theme and applies it.\newline
+3. The system changes the room illustration, the window sky (moon and stars at night, sun by day) and the interface colours; the positions of the objects stay the same.\newline
+4. The system saves the theme on the device and, when signed in, in the account preferences.}
 \ucrow{Alternative Flows}{%
-A1. First launch: no theme has been saved, so the system shows Cozy Room by default.\newline
-A2. The user leaves the Theme Selector without applying: the current theme is kept.\newline
-A3. The user selects the theme that is already active: nothing changes.}
+A1. Quick switch: the theme switch in the Home Space header toggles between the two themes directly (steps 1--2 are skipped).\newline
+A2. The user leaves the selector without applying: the current theme is kept.\newline
+A3. First launch: the Cozy chill room theme is used by default.}
 \ucrow{Exception Flows}{%
-E1. The theme image cannot be loaded: the system shows a fallback background in the theme colours and the objects remain usable.}
+E1. The preference cannot be saved to the server: the theme stays applied on the device and is sent with the next preference update.}
 \ucrow{Postconditions}{%
-The selected theme is shown on the Home Space and is shown again after the app is closed and reopened.}
+The selected theme is shown and is used again after the app is restarted.}
+\end{ucspec}
+
+% ---------------------------------------------------------------------
+\subsubsection{Music}
+
+% ---------------------------- UC-07 ----------------------------------
+\begin{ucspec}{UC-07: Listen to radio}{tab:uc-07}
+\ucrow{Use Case ID}{UC-07}
+\ucrow{Primary Actor}{User}
+\ucrow{Secondary Actor}{Jamendo}
+\ucrow{Description}{The user picks a station and controls playback. Music keeps playing on other screens and with the device locked, and pauses while the TV is open.}
+\ucrow{Related FR}{FR 4.1--4.5, FR 4.7, FR 7.7, FR 7.8}
+\ucrow{Priority}{Must}
+\ucrow{Preconditions}{A session is active (started from the radio in UC-04 or already running).}
+\ucrow{Trigger}{The user taps the radio in the Space.}
+\ucrow{Normal Flow}{%
+1. The system shows the Radio screen with the stations Lo-fi, Piano, Acoustic, Nature, Jazz, Chill, Classical and Guitar.\newline
+2. The user selects a station.\newline
+3. The system asks the backend for the station's tracks; the backend fetches them from Jamendo by tag and caches the list for 10 minutes.\newline
+4. The system starts the first track and shows its title, artist, artwork, Creative Commons licence and a seek bar.\newline
+5. The user controls playback: play or pause, previous or next track, drag the seek bar, or change the volume.\newline
+6. When the user opens another screen, playback continues and a mini-player with play/pause is shown on the Home Space, News, Game Corner and History screens.\newline
+7. When the device is locked, playback continues and the lock screen shows the track with play/pause and 15-second seek controls.\newline
+8. When the session ends, the system stops playback and removes the lock-screen controls.}
+\ucrow{Alternative Flows}{%
+A1. The user selects another station: the system loads that station and plays its first track.\newline
+A2. The user opens the TV while music plays: the music pauses and resumes when the user leaves the TV, unless the user had paused it before.\newline
+A3. Download a track: the user selects the download control of a track and continues with UC-08.\newline
+A4. Offline station: when tracks have been downloaded, the station \textit{Downloaded} plays them from the device without a connection.\newline
+A5. The user taps the licence credit: the licence page opens in the browser.}
+\ucrow{Exception Flows}{%
+E1. A track cannot be played: the system skips to the next track; if every track of the station fails, playback stops and a message asks the user to check the connection.\newline
+E2. Jamendo is unavailable or returns no tracks: the backend serves the last cached list or a small set of demo tracks, so the station still plays.\newline
+E3. No connection to the backend: the system shows an error message with a retry option; the countdown keeps running.}
+\ucrow{Postconditions}{%
+Playback reflects the user's last action, and the listening time is counted for the Session Summary.}
 \end{ucspec}
 
 % ---------------------------- UC-08 ----------------------------------
-\begin{ucspec}{UC-08: Listen to music station}{tab:uc-08}
+\begin{ucspec}{UC-08: Download track (MP3)}{tab:uc-08}
 \ucrow{Use Case ID}{UC-08}
-\ucrow{Module}{Module 4 --- Music (Radio)}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Music Content Provider; Mobile OS}
-\ucrow{Description}{The user picks a music station category and controls playback; music keeps playing across screens and when the device is locked, and automatically pauses while the TV is open.}
-\ucrow{Related FR}{FR 4.1--4.5, 7.7, 7.8 (UR-09, UR-10, UR-20)}
-\ucrow{Priority}{Must}
-\ucrow{Preconditions}{A session is active (started from the radio in UC-04 or already running).}
-\ucrow{Trigger}{The user taps the radio in the Space, either to start a session (UC-04) or while a session is already active; in the second case the countdown continues without restarting.}
+\ucrow{Secondary Actor}{Jamendo}
+\ucrow{Description}{The user saves a track as an MP3 file for offline listening and can also save the file to the phone.}
+\ucrow{Related FR}{FR 4.6}
+\ucrow{Priority}{Should}
+\ucrow{Preconditions}{The Radio screen is open (UC-07) and the artist allows downloads of the track (the track has a download link).}
+\ucrow{Extension point}{Track list and full player of UC-07.}
+\ucrow{Trigger}{The user taps the download icon of a track or \textit{Download MP3} in the full player.}
 \ucrow{Normal Flow}{%
-1. The system shows the Radio screen with the categories (for example Lo-fi, Piano, Acoustic and Nature).\newline
-2. The user selects a category (only one category is selected at a time).\newline
-3. The system loads a track from the Music Content Provider and starts playback, showing the title, artist and artwork.\newline
-4. When the user moves to another screen, playback continues and a mini-player with a play/pause control is shown on the News and Article screens.\newline
-5. When the user locks the device, playback continues under the Mobile OS audio session.\newline
-6. When the session ends, the system stops playback automatically.}
+1. The system shows a progress indicator on the track.\newline
+2. The system downloads the MP3 file from Jamendo into the app's storage.\newline
+3. The system marks the track as downloaded and adds it to the \textit{Downloaded} station.\newline
+4. The user can now play the track without a connection.}
 \ucrow{Alternative Flows}{%
-A1. The user selects another category: the system switches to a track from the new category.\newline
-A2. The user opens the TV screen while music plays: audio playback pauses automatically, and resumes from the paused position when the user leaves the TV screen (unless the user had paused playback manually).\newline
-A3. The user had paused the music manually before opening the TV: it stays paused after leaving the TV.\newline
-A4. Control playback (play/pause, next, volume): at any time between step 3 and step 6 the user uses the controls on the Radio screen. Pause stops the audio and the control changes to play; play resumes from the same position; next track starts another track of the selected category; the volume control changes the playback volume. The flow returns to the step where it was interrupted.\newline
-A5. Control music from mini-player: while the News or Article screen is shown (step 4), the user taps play/pause on the mini-player; playback pauses or resumes and the flow returns to step 4.}
+A1. Save to phone: the user taps a downloaded track and selects \textit{Save to phone}; on iOS the share sheet opens so that the file can be saved to the Files app, and on Android the user picks a folder.\newline
+A2. Remove download: the user selects \textit{Remove download}; the file is deleted and the track leaves the \textit{Downloaded} station.\newline
+A3. The track has no download link: no download control is shown for it.}
 \ucrow{Exception Flows}{%
-E1. The track cannot be loaded: the system shows a loading indicator, then an error message with a \textit{Retry} option; the countdown keeps running.\newline
-E2. No connection: the system shows an offline message with a \textit{Retry} option.}
+E1. The download fails: the icon shows an error state and the user can retry.\newline
+E2. The file of a downloaded track has been removed by the system: the entry is dropped when the downloads are loaded again.}
 \ucrow{Postconditions}{%
-Playback reflects the user's last action, and total listening duration is tracked for inclusion in the session summary.}
+The MP3 file is stored on the device and listed in the \textit{Downloaded} station.}
 \end{ucspec}
 
+% ---------------------------------------------------------------------
+\subsubsection{News}
+
 % ---------------------------- UC-09 ----------------------------------
-\begin{ucspec}{UC-09: Browse and read news}{tab:uc-09}
+\begin{ucspec}{UC-09: Read news}{tab:uc-09}
 \ucrow{Use Case ID}{UC-09}
-\ucrow{Module}{Module 5 --- News}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{News Feed Content Provider}
-\ucrow{Description}{The user browses the latest articles, optionally filters or refreshes the list, and reads an article inside the app (an article is counted as opened once its detail view is displayed).}
-\ucrow{Related FR}{FR 5.1--5.4, 7.7, 7.8 (UR-11, UR-12, UR-20)}
+\ucrow{Secondary Actor}{VnExpress RSS}
+\ucrow{Description}{The user browses the latest articles, optionally filters or refreshes the list, and reads an article inside the app.}
+\ucrow{Related FR}{FR 5.1--5.4, FR 7.7, FR 7.8}
 \ucrow{Priority}{Must}
 \ucrow{Preconditions}{A session is active.}
-\ucrow{Trigger}{The user taps the newspaper in the Space, either to start a session (UC-04) or while a session is already active.}
+\ucrow{Trigger}{The user taps the newspaper in the Space.}
 \ucrow{Normal Flow}{%
-1. The system shows placeholder cards while it loads the configured feeds.\newline
-2. The system lists the articles from newest to oldest; each card shows the title, source, publication time, and an image when available.\newline
-3. The user taps an article card.\newline
-4. The system opens the Article screen inside the app with the title, source, publication time, image, and content provided by the feed; the countdown stays visible.\newline
-5. The user goes back to the article list.}
+1. The system shows placeholder cards while the backend loads the VnExpress RSS feeds (cached for 5 minutes).\newline
+2. The system lists the articles from newest to oldest; each card shows the title, source, publication time and an image when the feed has one.\newline
+3. The user taps an article.\newline
+4. The system opens the article page in an in-app reader with a loading bar, the source domain and the session timer.\newline
+5. The user reads the article and goes back to the list.}
 \ucrow{Alternative Flows}{%
-A1. Filter news by category: at step 2 the user selects a category chip and only articles of that category are listed; the all-articles chip restores the full list.\newline
-A2. Refresh news feed: at step 2 the user pulls the list down; the feeds are reloaded and newer articles appear at the top.\newline
-A3. Open full article: at step 4 the user selects \textit{Read full article} and continues with UC-10.}
+A1. Filter by category: at step 2 the user selects a category chip; only articles of that feed are listed, and \textit{All} restores the full list.\newline
+A2. Refresh: at step 2 the user pulls the list down; the feeds are reloaded.\newline
+A3. The page cannot be shown in the reader: the flow continues in UC-10.}
 \ucrow{Exception Flows}{%
-E1. No connection on first load: the system shows an offline message with a \textit{Retry} option; the countdown keeps running.\newline
-E2. Refresh fails: the system shows an error message and keeps the existing list.\newline
-E3. The selected category has no articles: the system shows an empty-state message.}
+E1. No connection on the first load: the system shows an error message with a retry option; the countdown keeps running.\newline
+E2. The selected category has no articles: an empty-state message is shown.}
 \ucrow{Postconditions}{%
-The articles the user opened are counted for the session summary. No data on the server is modified.}
+Each opened article is counted for the Session Summary. No server data is changed.}
 \end{ucspec}
 
 % ---------------------------- UC-10 ----------------------------------
 \begin{ucspec}{UC-10: Open full article}{tab:uc-10}
 \ucrow{Use Case ID}{UC-10}
-\ucrow{Module}{Module 5 --- News}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{News Feed Content Provider (source website)}
-\ucrow{Description}{The user opens the full article on the source website without leaving the session.}
-\ucrow{Related FR}{FR 5.5 (UR-13)}
+\ucrow{Secondary Actor}{VnExpress RSS (publisher website)}
+\ucrow{Description}{When an article cannot be displayed in the in-app reader, the user opens the full article on the publisher website in the system browser.}
+\ucrow{Related FR}{FR 5.5}
 \ucrow{Priority}{Should}
-\ucrow{Preconditions}{The Article screen is open (UC-09) and the article has a source link.}
-\ucrow{Trigger}{The user selects \textit{Read full article}.}
+\ucrow{Preconditions}{The article reader of UC-09 has failed to load the page.}
+\ucrow{Extension point}{Article reader of UC-09, after a loading failure.}
+\ucrow{Trigger}{The reader shows its failure message with \textit{Try again}, \textit{Open in browser} and \textit{Back to News}.}
 \ucrow{Normal Flow}{%
-1. The user selects \textit{Read full article}.\newline
-2. The system opens the source page in an in-app browser view (\texttt{expo-web-browser}).\newline
-3. The user reads the original web article while the native countdown continues running in the background.\newline
-4. The user closes the browser view.\newline
-5. The system shows the Article screen again; the countdown has kept running.}
+1. The user selects \textit{Open in browser}.\newline
+2. The system opens the article URL in the system browser view.\newline
+3. The user reads the article and closes the browser view.\newline
+4. The system shows the Breakly reader again; the countdown has kept running.}
 \ucrow{Alternative Flows}{%
-A1. The session ends while the browser view is open: the system automatically closes the in-app browser view and displays the Session Summary screen (UC-12).}
+A1. The user selects \textit{Try again}: the reader reloads the page and UC-09 continues.\newline
+A2. The user selects \textit{Back to News}: the article list is shown.}
 \ucrow{Exception Flows}{%
-E1. The source page cannot be loaded or there is no connection: the browser view shows an error and the user can return to the Article screen.}
+E1. The browser view cannot be opened: the system shows an error message under the buttons.}
 \ucrow{Postconditions}{%
-The user is back on the Article screen and the session countdown is unaffected.}
+The user is back in Breakly and the session countdown is unaffected.}
 \end{ucspec}
+
+% ---------------------------------------------------------------------
+\subsubsection{Videos}
 
 % ---------------------------- UC-11 ----------------------------------
-\begin{ucspec}{UC-11: Watch short videos}{tab:uc-11}
+\begin{ucspec}{UC-11: Watch videos}{tab:uc-11}
 \ucrow{Use Case ID}{UC-11}
-\ucrow{Module}{Module 6 --- Short Videos (TV)}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Video Content Provider}
-\ucrow{Description}{The user watches a finite feed of short videos in full screen, which ends with an end card instead of endless scrolling (a video is counted as watched once played for at least 3 seconds).}
-\ucrow{Related FR}{FR 6.1--6.3, 4.5, 7.7, 7.8 (UR-14, UR-15, UR-20)}
+\ucrow{Secondary Actor}{YouTube}
+\ucrow{Description}{The user browses the real mobile YouTube website inside the app and watches up to ten videos in one break; the TV then shows an end card instead of more videos.}
+\ucrow{Related FR}{FR 6.1--6.3, FR 4.5}
 \ucrow{Priority}{Should}
 \ucrow{Preconditions}{A session is active.}
-\ucrow{Trigger}{The user taps the TV in the Space, either to start a session (UC-04) or while a session is already active.}
+\ucrow{Trigger}{The user taps the TV in the Space.}
 \ucrow{Normal Flow}{%
-1. The system loads a finite feed of at most 10 clips for the current break session.\newline
-2. The first clip starts playing in full screen and a progress indicator shows its position in the feed.\newline
-3. The user swipes up for the next clip or down for the previous clip.\newline
-4. After the last clip, the system shows an end card with a closing message and plays no further clip.\newline
-5. The user returns to the Home Space from the end card.}
+1. The system pauses the music if it is playing.\newline
+2. The system opens \texttt{m.youtube.com} in an in-app browser under a header with the domain, a loading bar and the session timer.\newline
+3. The user searches or browses YouTube and opens a video.\newline
+4. The system counts each distinct video the user opens and shows ``Video $n$ of 10'' with a progress bar.\newline
+5. After the tenth video, the system closes the browser and shows an end card with a short message and \textit{Return to Home Space}.\newline
+6. The user returns to the Home Space; the music resumes if it was playing before.}
 \ucrow{Alternative Flows}{%
-A1. Music is playing when the TV opens: the music pauses automatically and resumes when the user leaves the TV (UC-08).\newline
-A2. Reopening the TV after reaching the end card: within the same session, reopening the TV shows the end card directly, preventing endless scrolling.\newline
-A3. Early exit: the user navigates back to the Home Space before the end card; video playback stops immediately.\newline
-A4. The user swipes down on the first clip: the first clip stays on screen.\newline
-A5. Control video playback: at any time between step 2 and step 4 the user taps the video to toggle between pause and play, or uses the mute control to switch the sound off or on; the flow returns to the step where it was interrupted.}
+A1. A link leads outside YouTube: it opens in the system browser instead of the TV; links that would switch to another app are blocked.\newline
+A2. The user leaves the TV before the limit: video playback stops; when the TV is opened again in the same session, the count continues.\newline
+A3. The app goes to the background: video playback is paused.\newline
+A4. The break ends while the TV is open: the browser is closed and the end card says that the break is over.}
 \ucrow{Exception Flows}{%
-E1. The feed cannot be loaded or there is no connection: the system shows an offline or error message with a \textit{Retry} option; the countdown keeps running.\newline
-E2. A single clip fails to play: the system shows an error state for that clip with a \textit{Retry} option.}
+E1. YouTube cannot be loaded: the loading bar stops and the in-app browser shows the loading error; the countdown keeps running and the user can go back.}
 \ucrow{Postconditions}{%
-No more than 10 clips have been shown, video playback ceases, and the number of videos watched ($\ge 3$s) is recorded for the session summary.}
+At most ten videos have been opened in this session, no video plays after the end card, and the number of videos watched is counted for the Session Summary.}
 \end{ucspec}
 
+% ---------------------------------------------------------------------
+\subsubsection{Game Corner}
+
 % ---------------------------- UC-12 ----------------------------------
-\begin{ucspec}{UC-12: View session summary}{tab:uc-12}
+\begin{ucspec}{UC-12: Play daily game}{tab:uc-12}
 \ucrow{Use Case ID}{UC-12}
-\ucrow{Module}{Module 7 --- Progress, Settings and Reliability}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{--}
-\ucrow{Description}{When a session ends, the user reviews a summary of break time used and content engagement metrics, and returns to the Home Space.}
-\ucrow{Related FR}{FR 7.1 (UR-16)}
+\ucrow{Secondary Actor}{NYT Games}
+\ucrow{Description}{The user plays one of the free daily puzzles of The New York Times (Wordle, Connections, Strands, Pips) inside the app; the play is recorded once per day.}
+\ucrow{Related FR}{FR 8.1--8.3}
 \ucrow{Priority}{Should}
-\ucrow{Preconditions}{A session has just ended automatically (UC-05) or early (UC-06).}
-\ucrow{Trigger}{The session ends.}
+\ucrow{Preconditions}{A session is active.}
+\ucrow{Trigger}{The user taps the gamepad in the Space.}
 \ucrow{Normal Flow}{%
-1. The system calculates engagement metrics from the concluded session: total duration used, music listening time, number of articles opened, and number of videos watched (clips played $\ge 3$s).\newline
-2. The system displays the Session Summary screen presenting these metrics and the updated streak count.\newline
-3. The user reviews the metrics and taps \textit{Done}.\newline
-4. The system navigates back to the Home Space with the updated daily streak.}
+1. The system shows the Game Corner with the four games; each row shows the game icon, a short description, whether it was played today and the user's streak for that game.\newline
+2. The user selects a game.\newline
+3. The system opens the game page in an in-app browser under a header with the domain and the session timer.\newline
+4. When the page has loaded for the first time today, the system records the play with the user's local date; the backend stores at most one play per user, game and day.\newline
+5. The user plays and goes back to the Game Corner, where the game is marked as played today.}
 \ucrow{Alternative Flows}{%
-A1. The session ended while the app was in the background: the summary is shown when the app is reopened.\newline
-A2. A service was not used: its value is shown as zero in the summary metrics.}
+A1. Guest mode: the play is recorded only on the device and the streak is calculated locally.\newline
+A2. The game was already played today: it can be opened again, but no second play is recorded.\newline
+A3. A link leads outside the game site: it opens in the system browser.}
 \ucrow{Exception Flows}{%
-E1. Metric computation error: default fallback metrics (total duration only) are shown.}
+E1. The game page cannot be loaded: the system shows an error state with a retry option; no play is recorded.\newline
+E2. The play cannot be sent to the backend: the local record keeps the game marked as played today.}
 \ucrow{Postconditions}{%
-The summary has been displayed and the user returns to the Home Space. (Note: session data persistence is completed in UC-05 or UC-06 upon session termination).}
+The game is marked as played today, the per-game streak is updated, and the game is counted in the Session Summary.}
 \end{ucspec}
+
+% ---------------------------------------------------------------------
+\subsubsection{Progress and Settings}
 
 % ---------------------------- UC-13 ----------------------------------
 \begin{ucspec}{UC-13: View history and streak}{tab:uc-13}
 \ucrow{Use Case ID}{UC-13}
-\ucrow{Module}{Module 7 --- Progress, Settings and Reliability}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{The user reviews past sessions and the current streak of consecutive days with at least one completed session.}
-\ucrow{Related FR}{FR 7.2, FR 7.3, FR 7.4, FR 7.8 (UR-17, UR-18, UR-20)}
+\ucrow{Secondary Actor}{--}
+\ucrow{Description}{The user reviews past breaks and the current streak of consecutive days with a break.}
+\ucrow{Related FR}{FR 7.3, FR 7.4}
 \ucrow{Priority}{Must}
-\ucrow{Preconditions}{The user is signed in.}
-\ucrow{Trigger}{The user opens the History screen from the Home Space.}
+\ucrow{Preconditions}{--}
+\ucrow{Trigger}{The user selects \textit{History} in the bottom bar.}
 \ucrow{Normal Flow}{%
-1. The user opens the History screen from the Home Space.\newline
-2. The system retrieves session records from the local SQLite cache and queries the Auth \& Sync Service for recent cloud updates.\newline
-3. The system calculates the current streak: consecutive calendar days (in device local time) ending today or yesterday with at least one session marked as completed.\newline
-4. The system displays the streak count and lists past sessions from newest to oldest, each with date, duration, completion status (\textit{completed} or \textit{ended\_early}), and services used.\newline
-5. The user leaves the History screen.}
+1. The system loads the session history from the backend (20 records per page) and the statistics: current streak, longest streak, total breaks and total minutes.\newline
+2. The system shows the statistics and lists the sessions grouped by day from newest to oldest; each row shows the duration, the start and end time and the services used, or \textit{ended early} when no service was opened.\newline
+3. The user scrolls through the history and leaves the screen.}
 \ucrow{Alternative Flows}{%
-A1. Offline history view: if offline, the system retrieves and displays historical sessions from the local SQLite cache (including unsynchronised records); an error state is only shown if the local cache is empty and network retrieval fails.\newline
-A2. No sessions yet: the system shows an empty-state message and a streak of zero.\newline
-A3. Missed day: the streak resets to zero only if the preceding calendar day had no session marked as completed.\newline
-A4. The user signs in on another device: the records saved from the previous device are listed.}
+A1. Guest mode: the history and the streak are calculated from the sessions stored on the device.\newline
+A2. No sessions yet: the system shows an empty-state message and a streak of zero.}
 \ucrow{Exception Flows}{%
-E1. The history cannot be loaded from the network and local cache is empty: the system shows an error message with a \textit{Retry} option.}
+E1. The history cannot be loaded from the backend: the system shows an error message with a retry option.}
 \ucrow{Postconditions}{%
-No data is modified; the user sees the current history and streak.}
+No data is changed; the user has seen the history and the current streak.}
 \end{ucspec}
 
 % ---------------------------- UC-14 ----------------------------------
 \begin{ucspec}{UC-14: Manage settings}{tab:uc-14}
 \ucrow{Use Case ID}{UC-14}
-\ucrow{Module}{Module 7 --- Progress, Settings and Reliability}
 \ucrow{Primary Actor}{User}
-\ucrow{Secondary Actor}{Auth \& Sync Service}
-\ucrow{Description}{The user turns the one-minute notice on or off and can view the content credits.}
-\ucrow{Related FR}{FR 7.5, FR 7.6 (UR-19)}
+\ucrow{Secondary Actor}{--}
+\ucrow{Description}{The user adjusts the break settings and views the content credits on the Profile and Settings screen.}
+\ucrow{Related FR}{FR 7.5, FR 7.6}
 \ucrow{Priority}{Should}
-\ucrow{Preconditions}{The user is signed in.}
-\ucrow{Trigger}{The user opens Settings from the Home Space.}
+\ucrow{Preconditions}{--}
+\ucrow{Trigger}{The user selects \textit{Profile} in the bottom bar.}
 \ucrow{Normal Flow}{%
-1. The user opens Settings from the Home Space.\newline
-2. The system shows the one-minute notice switch (on by default) and the \textit{Content credits} entry.\newline
-3. The user toggles the one-minute notice.\newline
-4. The system saves the setting in local storage immediately and synchronises it with the Auth \& Sync Service when online.}
+1. The system shows the profile card (name, email, number of breaks, streak and total time), the break settings and the content credits.\newline
+2. The user changes a setting: the default break length (10, 20 or 30 minutes), the one-minute warning (on or off) or the radio volume (40 to 100 percent).\newline
+3. The system applies the new value at once and saves it on the device and, when signed in, in the account preferences.}
 \ucrow{Alternative Flows}{%
-A1. The setting is changed during an active session: the new value applies immediately to the rest of that session.\newline
-A2. View content credits: at step 2 the user opens \textit{Content credits}; the system lists the sources of the news, music and video content; the flow returns to step 2.}
+A1. The user selects \textit{Room theme}: the flow continues in UC-06.\newline
+A2. A setting is changed during a session: the new value applies to the rest of that session.\newline
+A3. The user selects \textit{Sign out} (UC-03) or, in guest mode, \textit{Sign in / Create account} (UC-02).}
 \ucrow{Exception Flows}{%
-E1. The setting cannot be saved: the system shows an error message and the switch returns to its previous position.}
+E1. The preferences cannot be saved to the server: the value is kept on the device and sent with the next update.}
 \ucrow{Postconditions}{%
-The one-minute notice setting is kept after the app is restarted.}
+The settings are kept after the app is restarted.}
 \end{ucspec}
-\fi
-
-The representative descriptions above support the module diagrams and preserve
-the main use case name and ID for each module.
-and starting a break to the automatic end, the summary, and the history.

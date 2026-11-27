@@ -1,7 +1,39 @@
 \chapter*{Conclusion and Future Work}
 \addcontentsline{toc}{chapter}{Conclusion and Future Work}
 
-This report defines the context, requirements, analysis, design, and planned
-implementation of Breakly. Future work may include synchronisation,
-additional activity packs, richer personalisation, and expanded validation
-with intended users.
+\section*{Conclusion}
+
+Breakly delivers its central idea: entertainment inside a break that has a
+clear end. All Must and Should requirements of the current version are
+implemented. A break starts in two taps from an illustrated room, the
+countdown stays correct in the background, and every service has a limit or a
+natural end: music stops with the break, the TV stops after ten videos, and
+each daily game can be played once a day. The app works without an account,
+and signing in keeps sessions, streaks and preferences across devices; records
+made offline are uploaded later without duplicates. During development the
+team replaced the first video source, a short curated list, with the real
+YouTube website and a video limit, added the Game Corner, and extended the
+radio with eight stations, offline MP3 downloads, a seek bar and lock-screen
+controls on iOS.
+
+\section*{Limitations}
+
+The acceptance tests on the iPhone are still to be completed, and the app has
+no automated UI tests. The deployment workflow does not yet publish the
+backend to a server. The TV and the Game Corner depend on the page structure
+of YouTube and NYT Games, which may change, and the music catalogue depends on
+the availability of the Jamendo API.
+
+\section*{Future Work}
+
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt]
+  \item Complete the acceptance tests and the accessibility test of NFR-08, and
+        add automated tests for the session store and the API client.
+  \item Deploy the backend with Docker Compose and HTTPS on a VPS and
+        automate it with the deployment workflow.
+  \item Build the onboarding carousel and password reset designed in Figma.
+  \item Use an audio playlist so that the lock screen also offers next and
+        previous track buttons, and respect the system Reduce Motion setting.
+  \item Add more Spaces and games, and validate the personas and the effect
+        on break length with intended users.
+\end{itemize}

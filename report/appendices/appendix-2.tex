@@ -1,5 +1,22 @@
 \chapter{Supplementary Evaluation Material}
 \label{app:evaluation-material}
 
-Place complete test cases, additional results, questionnaires, or other
-supplementary evaluation evidence here.
+\section{Running the Automated Tests}
+
+The backend tests need Docker, because the integration tests start a
+PostgreSQL container with Testcontainers. From \texttt{src/backend}:
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt]
+  \item \texttt{./mvnw test} runs all tests of Table~\ref{tab:automated-tests}.
+\end{itemize}
+From \texttt{src/frontend-mobile}:
+\begin{itemize}[leftmargin=1.8em,itemsep=2pt]
+  \item \texttt{npx tsc --noEmit} checks the types of the whole app;
+  \item \texttt{npx expo lint} runs ESLint with the Expo and React Compiler rules.
+\end{itemize}
+
+\section{Device Test Record}
+
+The acceptance tests of Table~\ref{tab:acceptance-tests} are executed on the
+reference iPhone with a development build. For each test case the tester
+records the date, the build, the result (pass or fail) and, for a failure, a
+screenshot and a short description of the observed behaviour.

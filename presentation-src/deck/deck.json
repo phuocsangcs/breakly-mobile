@@ -1,0 +1,21 @@
+{
+  "v": 5,
+  "createdOnFiles": { "v": 1, "at": "2026-11-26T13:40:00Z" },
+  "lists": "css",
+  "format": { "v": 1, "shared": ["project/deck.css"] },
+  "title": "Breakly — Small breaks, with a stopping point",
+  "order": ["cover", "team", "landscape", "problem", "idea", "stakeholders", "fr", "nfr", "usecase", "architecture", "stack", "sequence", "erd", "ui-break", "ui-more", "testing", "thanks"],
+  "sections": {
+    "s1": { "description": "Who we are and what Breakly is", "start": "cover" },
+    "s2": { "description": "Why short breaks overrun and what Breakly changes", "start": "landscape" },
+    "s3": { "description": "Requirements: eight modules and measurable quality targets", "start": "fr" },
+    "s4": { "description": "Analysis and design: use cases, architecture, stack, sequence and data", "start": "usecase" },
+    "s5": { "description": "The product: screens of the running app", "start": "ui-break" },
+    "s6": { "description": "Testing and close", "start": "testing" }
+  },
+  "faces": {
+    "plus-jakarta-sans": { "family": "Plus Jakarta Sans", "href": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;700&display=swap" },
+    "be-vietnam-pro": { "family": "Be Vietnam Pro", "href": "https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@700;800&family=Be+Vietnam+Pro:wght@400;500;700&display=swap" }
+  },
+  "designSystems": []
+}
