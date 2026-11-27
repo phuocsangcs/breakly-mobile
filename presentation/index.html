@@ -93,6 +93,29 @@ h3 { font-family: 'Plus Jakarta Sans', Arial, sans-serif; font-size: 36px; font-
 .shotimg { border-radius: 20px; object-fit: cover; border: 2px solid var(--line); background: var(--card); }
 .phone { width: 300px; height: 650px; object-fit: cover; border-radius: 40px; border: 8px solid #17182A; box-shadow: 0 26px 52px rgba(40, 32, 20, 0.22); }
 .night .phone { box-shadow: 0 26px 52px rgba(5, 6, 15, 0.5); }
+
+/* Cover phones: a titanium rim, black bezel, Dynamic Island, side buttons, status bar and glass glare. */
+.device { position: absolute; width: 300px; height: 650px; padding: 12px; border-radius: 58px; background: #0B0C14;
+  box-shadow: 0 0 0 3px #6E7084, 0 0 0 5px #2A2B3A, 0 0 0 6px #8E90A3, 0 50px 90px rgba(40, 32, 20, .32), 0 18px 36px rgba(40, 32, 20, .2); }
+/* The usual image unveil clips 80px around the element, which would cut this large shadow; the phones rise in instead. */
+.device.zoom { animation-name: device-in; }
+@keyframes device-in { from { opacity: 0; translate: 0 70px; } to { opacity: 1; translate: 0 0; } }
+.device img { display: block; width: 300px; height: 650px; object-fit: cover; border-radius: 46px; }
+.device::before, .device::after { content: ""; position: absolute; width: 6px; border-radius: 3px; background: linear-gradient(90deg, #4C4E62, #9496A9 50%, #4C4E62); }
+.device::before { right: -11px; top: 190px; height: 104px; }
+.device::after { left: -11px; top: 140px; height: 34px; }
+.device .vol { position: absolute; left: -11px; top: 196px; width: 6px; height: 66px; border-radius: 3px; background: linear-gradient(90deg, #4C4E62, #9496A9 50%, #4C4E62); }
+.device .vol + .vol { top: 276px; }
+.device .island { position: absolute; left: 50%; top: 24px; width: 96px; height: 28px; margin-left: -48px; border-radius: 14px; background: #05060B; z-index: 2; }
+.device .island::after { content: ""; position: absolute; right: 12px; top: 9px; width: 10px; height: 10px; border-radius: 50%; background: radial-gradient(circle at 35% 35%, #3A4A7A, #0B0F22 70%); }
+.device .sb { position: absolute; left: 12px; right: 12px; top: 12px; height: 52px; padding: 0 30px 0 38px; display: flex; align-items: center; justify-content: space-between; z-index: 2;
+  font: 700 15px/1 'Be Vietnam Pro', Arial, sans-serif; color: #1D1E2C; }
+.device.dark .sb { color: #F6EBDD; }
+.device .bat { position: relative; width: 24px; height: 12px; border: 1.5px solid currentColor; border-radius: 4px; opacity: .9; }
+.device .bat::before { content: ""; position: absolute; inset: 1.5px; right: 5px; border-radius: 1.5px; background: currentColor; }
+.device .bat::after { content: ""; position: absolute; right: -4px; top: 3px; width: 2px; height: 4px; border-radius: 0 1px 1px 0; background: currentColor; }
+.device .glare { position: absolute; inset: 12px; border-radius: 46px; pointer-events: none; z-index: 1;
+  background: linear-gradient(118deg, rgba(255, 255, 255, .22) 0%, rgba(255, 255, 255, .06) 28%, rgba(255, 255, 255, 0) 42%); }
 .cap { font-size: 26px; font-weight: 700; color: var(--ink); margin: 0; text-align: center; }
 .night .cap { color: var(--cream); }
 .num { width: 52px; height: 52px; border-radius: 26px; background: var(--sage); display: flex; align-items: center; justify-content: center; }
@@ -218,9 +241,9 @@ svg.ico, svg.icon { display: block; }
 <body>
 <main id="stage" aria-live="polite">
 <section data-slide="0" id="cover" data-transition="fade" style="padding:128px; justify-content:center">
-<svg aria-label="Soft green circle behind the phones" width="780" height="780" viewBox="0 0 780 780" style="position:absolute; left:1010px; top:150px; width:780px; height:780px"><circle cx="390" cy="390" r="380" fill="#DCEAE3"/><circle cx="660" cy="110" r="26" fill="#F2B05E"/></svg>
-<img class="phone zoom" style="--i:3; position:absolute; left:1400px; top:170px" src="assets/home_active_dark.png" alt="Breakly Home Space at night during a break">
-<img class="phone zoom" style="--i:2; position:absolute; left:1110px; top:270px" src="assets/home_idle_light.png" alt="Breakly Home Space by day with the 10, 20 and 30 minute selector">
+<svg aria-label="Soft green circle behind the phones" width="780" height="780" viewBox="0 0 780 780" style="position:absolute; left:1010px; top:150px; width:780px; height:780px"><circle cx="390" cy="390" r="380" fill="#DCEAE3"/><circle cx="121" cy="659" r="26" fill="#F2B05E"/></svg>
+<div class="device dark zoom" style="--i:2; left:1110px; top:150px; transform:rotate(-9deg)"><img src="assets/home_active_dark.png" alt="Breakly Home Space at night during a break"><div class="island"></div><div class="sb"><span>9:41</span><i class="bat"></i></div><i class="vol"></i><i class="vol"></i><div class="glare"></div></div>
+<div class="device zoom" style="--i:3; left:1380px; top:236px; transform:rotate(7deg)"><img src="assets/home_idle_light.png" alt="Breakly Home Space by day with the 10, 20 and 30 minute selector"><div class="island"></div><div class="sb"><span>9:41</span><i class="bat"></i></div><i class="vol"></i><i class="vol"></i><div class="glare"></div></div>
 <div style="display:flex; flex-direction:column; gap:28px; width:860px">
 <p class="chip up" style="--i:0; align-self:flex-start">HCMUT · CO3043 · CC02</p>
 <h1 class="up" style="--i:1; font-size:168px; color:#2F6B5E">breakly</h1>

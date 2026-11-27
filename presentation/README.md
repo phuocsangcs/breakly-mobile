@@ -27,10 +27,12 @@ no build step; `vercel.json` only adds caching headers).
 - **Automatic**: the project is connected to this GitHub repository. A push to `main` that changes
   `presentation/` updates the live link; a push to another branch gets its own preview link.
   Pushes that do not touch `presentation/` are skipped.
-- **Manual**, from this folder (run `npx vercel login` once first):
+- **Manual** (run `npx vercel login` once first). The project's Root Directory is `presentation`, so deploy from a
+  folder that contains `presentation/`, not from inside it. Copying it to an empty folder avoids uploading the whole repository:
 
   ```bash
-  npx vercel deploy --prod --yes --project breakly-slides
+  mkdir -p /tmp/breakly-deploy && rm -rf /tmp/breakly-deploy/presentation && cp -r presentation /tmp/breakly-deploy/
+  cd /tmp/breakly-deploy && npx vercel deploy --prod --yes --project breakly-slides
   ```
 
 Fonts load from Google Fonts, so the page needs an internet connection for the exact typefaces.
